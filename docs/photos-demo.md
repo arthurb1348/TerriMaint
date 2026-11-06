@@ -178,7 +178,9 @@ peuvent donner des poids légèrement différents. Les seuils sont des choix de 
 - Santé HTTP simulée ; aucune intégration métier Django ni conformité WCAG globale annoncée.
   Les contrôles de contraste existants sont conservés et étendus aux deux actions.
 
-Commandes : `npm run lint`, `npm test`, `npm run build`, `npm run test:responsive`.
+Avant publication frontend : `npm run lint`, `npm test`, `npm run build`, avec parcours
+navigateur photo ciblés et revue visuelle utiles. La suite Responsive complète reste
+vérifiée en CI avant fusion ; suivre la [politique locale et CI](workflow.md#validation-locale-et-ci).
 Les résultats réels et liens CI/Hosting du dernier commit figurent dans la PR.
 Le Chromium Playwright 156 attendu est absent localement : téléchargement renvoyant un
 HTML de 195 octets, erreur ZIP « End of central directory record signature not found ».
