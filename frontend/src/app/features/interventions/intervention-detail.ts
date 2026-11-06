@@ -1,3 +1,4 @@
+import { PRESENTED_AGENT } from '../../core/presented-agent';
 import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { afterNextRender, Component, computed, inject } from '@angular/core';
@@ -25,8 +26,14 @@ export class InterventionDetail {
   private readonly queryParams = toSignal(this.route.queryParamMap, {
     initialValue: this.route.snapshot.queryParamMap,
   });
+  protected readonly agentView = this.route.snapshot.data['agentView'] === true;
+  protected readonly presentedAgent = PRESENTED_AGENT;
+  private readonly candidate = computed(() => this.data.getIntervention(this.params().get('id')));
+  protected readonly otherAgent = computed(
+    () => this.agentView && !!this.candidate() && this.candidate()!.agentId !== PRESENTED_AGENT.id,
+  );
   protected readonly intervention = computed(() =>
-    this.data.getIntervention(this.params().get('id')),
+    this.otherAgent() ? undefined : this.candidate(),
   );
   protected readonly incident = computed(() =>
     this.data.getIncident(this.intervention()?.incidentId),
@@ -42,7 +49,7 @@ export class InterventionDetail {
     return value?.trim() ? value : 'Non renseignées';
   });
   protected readonly query = computed(() =>
-    interventionQueryParams(readInterventionFilters(this.queryParams())),
+    interventionQueryParams(readInterventionFilters(this.queryParams(), this.agentView)),
   );
   protected readonly statuses = INTERVENTION_STATUSES;
 

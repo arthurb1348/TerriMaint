@@ -1,9 +1,7 @@
 <section class="feature-page" aria-labelledby="intervention-detail-title">
-  <a
-    class="back-link page-action secondary"
-    routerLink="/responsable/interventions"
-    [queryParams]="query()"
-    ><span aria-hidden="true">←</span><span>Retour aux interventions</span></a
+  <a class="back-link page-action secondary" [routerLink]="['..']" [queryParams]="query()"
+    ><span aria-hidden="true">←</span
+    ><span>{{ agentView ? 'Retour à mes interventions' : 'Retour aux interventions' }}</span></a
   >
   @if (intervention(); as item) {
     <p class="reference">{{ item.id }}</p>
@@ -34,14 +32,17 @@
         <p class="instructions">{{ instructions() }}</p>
       </section>
       <div class="origin">
-        <section class="origin-summary business-card single-destination" aria-labelledby="intervention-origin-title">
+        <section
+          class="origin-summary business-card single-destination"
+          aria-labelledby="intervention-origin-title"
+        >
           <h2 id="intervention-origin-title">Signalement d’origine</h2>
           @if (incident(); as source) {
             <p>
               <span class="reference">{{ source.id }}</span
               >{{ source.title }}
             </p>
-            <a class="page-action" [routerLink]="['/responsable/incidents', source.id]"
+            <a class="page-action" [routerLink]="['../../incidents', source.id]"
               >Voir le signalement</a
             >
           } @else {
@@ -58,9 +59,7 @@
               {{ material.name
               }}<span class="reference">{{ material.id }} · {{ material.location }}</span>
             </p>
-            <a
-              class="page-action secondary"
-              [routerLink]="['/responsable/equipements', material.id]"
+            <a class="page-action secondary" [routerLink]="['../../equipements', material.id]"
               >Voir le matériel</a
             >
           } @else {
@@ -69,6 +68,12 @@
         </section>
       </div>
     </div>
+  } @else if (otherAgent()) {
+    <h1 id="intervention-detail-title">Intervention non assignée</h1>
+    <p>
+      Cette intervention n’est pas assignée à {{ presentedAgent.name }}. Retrouvez vos affectations
+      dans Mes interventions.
+    </p>
   } @else {
     <h1 id="intervention-detail-title">Intervention introuvable</h1>
     <p>Aucune intervention ne correspond à cet identifiant.</p>

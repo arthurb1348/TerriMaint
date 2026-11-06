@@ -33,6 +33,9 @@ for (const space of ['agent', 'responsable'] as const) {
     const incidentTitle = `Signalement partagé ${space}`;
     const interventionTitle = `Intervention partagée ${space}`;
     await page.goto(`/${space}/incidents`);
+    // Le comptage doit suivre le rendu Angular, pas seulement la réponse HTML initiale.
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Incidents');
+    await expect(main.locator('tbody tr').first()).toBeVisible();
     const initialIncidents = await main.locator('tbody tr').count();
     await navigate(space, 'Matériel');
     await main.getByRole('searchbox').fill('  Débroussailleuse  ');

@@ -1,3 +1,5 @@
+import { PRESENTED_AGENT } from '../../core/presented-agent';
+import { assignedInterventions } from './assigned-interventions';
 import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { afterNextRender, Component, computed, inject } from '@angular/core';
@@ -27,21 +29,28 @@ export class Interventions {
   private readonly queryParams = toSignal(this.route.queryParamMap, {
     initialValue: this.route.snapshot.queryParamMap,
   });
-  protected readonly filters = computed(() => readInterventionFilters(this.queryParams()));
+  protected readonly agentView = this.route.snapshot.data['agentView'] === true;
+  protected readonly presentedAgent = PRESENTED_AGENT;
+  private readonly scopedInterventions = computed(() =>
+    this.agentView ? assignedInterventions(this.data.interventions()) : this.data.interventions(),
+  );
+  protected readonly filters = computed(() =>
+    readInterventionFilters(this.queryParams(), this.agentView),
+  );
   protected readonly query = computed(() => interventionQueryParams(this.filters()));
   protected readonly statuses = INTERVENTION_STATUSES;
   protected readonly statusOptions = Object.entries(INTERVENTION_STATUSES);
   protected readonly agents = DEMO_AGENTS;
-  protected readonly total = computed(() => this.data.interventions().length);
+  protected readonly total = computed(() => this.scopedInterventions().length);
   protected readonly counts = computed(() =>
     this.statusOptions.map(([status, label]) => ({
       status,
       label,
-      count: this.data.interventions().filter((item) => item.status === status).length,
+      count: this.scopedInterventions().filter((item) => item.status === status).length,
     })),
   );
   private readonly rows = computed(() =>
-    this.data.interventions().map((intervention) => {
+    this.scopedInterventions().map((intervention) => {
       const incident = this.data.getIncident(intervention.incidentId);
       return {
         intervention,

@@ -203,3 +203,20 @@ test('Contrastes rendus : Scanner, saisie et erreur', async ({ page }, info) => 
   await measure(main.getByRole('alert'), info, 'scanner-erreur', true);
   await capture(page, info, 'scanner-contrastes');
 });
+
+test('Contrastes rendus : aperçu et consultation des interventions Agent', async ({ page }, info) => {
+  const main = page.getByRole('main');
+  await page.goto('/agent');
+  const preview = main.locator('.preview-link').first();
+  await states(page, preview, info, 'apercu-agent');
+  await measure(preview.locator('.reference'), info, 'reference-apercu');
+  await measure(preview.locator('.badge'), info, 'statut-apercu');
+  await page.goto('/agent/interventions');
+  for (const field of await main.locator('input, select').all()) await states(page, field, info, 'filtre-agent', true);
+  await focusControl(page, main.locator('tbody a').first(), info, 'lien-intervention-agent');
+  for (const badge of await main.locator('.badge').all()) await measure(badge, info, 'statut-agent');
+  await page.goto('/agent/interventions/INT-2026-032');
+  await focusControl(page, main.locator('.back-link'), info, 'retour-agent');
+  await measure(main.locator('.badge'), info, 'statut-detail-agent');
+  await capture(page, info, 'contraste-detail-agent');
+});

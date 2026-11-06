@@ -1,3 +1,5 @@
+import { signal } from '@angular/core';
+import { DemoData } from '../../core/demo-data';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -184,4 +186,36 @@ describe('Consultation locale des interventions', () => {
       });
     },
   );
+  it('limite la liste Agent à Camille malgré assignee, conserve recherche/statut et distingue les vides', async () => {
+    await harness.navigateByUrl('/agent/interventions?assignee=AG-DEMO-002', Interventions);
+    expect(rows()).toHaveLength(2);
+    expect(content().querySelector('h1')?.textContent).toBe('Mes interventions');
+    expect(content().querySelector('#intervention-assignee-filter')).toBeNull();
+    expect(content().textContent).not.toContain('Alex Martin');
+    await change('search', 'Tondeuse');
+    await change('status-filter', 'in-progress');
+    expect(rows()).toHaveLength(1);
+    expect(rows()[0].querySelector('a')?.getAttribute('href')).toBe(
+      '/agent/interventions/INT-2026-035?q=Tondeuse&status=in-progress',
+    );
+    expect(TestBed.inject(Router).url).not.toContain('assignee');
+    await change('status-filter', 'completed');
+    expect(content().textContent).toContain('Aucune intervention ne correspond');
+    expect(content().textContent).not.toContain('Aucune intervention ne vous est assignée');
+    const interventions = signal(
+      DEMO_INTERVENTIONS.map((item) => ({ ...item, agentId: 'AG-DEMO-002' })),
+    );
+    Object.defineProperty(TestBed.inject(DemoData), 'interventions', {
+      value: interventions.asReadonly(),
+    });
+    // Une nouvelle instance lit cette source vide pour Camille, sans modifier les données de départ.
+    await harness.navigateByUrl('/agent');
+    await harness.navigateByUrl('/agent/interventions', Interventions);
+    expect(content().textContent).toContain('Aucune intervention ne vous est assignée');
+    interventions.set(DEMO_INTERVENTIONS.map((item) => ({ ...item, agentId: 'AG-DEMO-001' })));
+    harness.detectChanges();
+    expect(rows()).toHaveLength(6);
+    await change('status-filter', 'completed');
+    expect(rows()).toHaveLength(2);
+  });
 });

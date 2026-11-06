@@ -144,7 +144,7 @@ reconnu ; une adresse LAN HTTP ne remplace pas le `localhost` de l’ordinateur.
 
 Matériel et agents restent des références locales fixes. Les signalements et interventions
 sont amorcés avec les exemples, puis les confirmations ajoutent de vrais éléments **en mémoire**
-dans cette branche de #59, en revue jusqu’à fusion. Listes, fiches, recherches et relations
+depuis #59, intégrée par la PR #69. Listes, fiches, recherches et relations
 partagent cet état dans le même onglet, entre Agent et Responsable. Les photos confirmées
 suivent le signalement après départ du formulaire. Recharger ou fermer perd ces créations ;
 les brouillons non confirmés restent abandonnés au départ. Aucun envoi métier ni notification. Aucun stockage distant,
@@ -163,9 +163,14 @@ préparation locale séquentielle, 3 photos facultatives, entrées JPEG/PNG/WebP
 contrôlés. Aperçu, récapitulatif et Modifier partagent la version préparée, puis #59
 transfère ses URL au signalement confirmé ; aucun téléversement. Le [guide photos](docs/photos-demo.md) détaille les bornes,
 mesures et limites ; caméra/galerie natives et qualité sur Pixel restent à Arthur.
-Le [guide de mémoire partagée #59](docs/shared-memory.md) précise le fonctionnement proposé,
-la propriété des photos et la revue PC/Pixel. Suite prévue : #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
+Le [guide de mémoire partagée #59](docs/shared-memory.md) précise le fonctionnement intégré,
+la propriété des photos et la revue PC/Pixel. Suite validée : Mes interventions (#70, en revue) → interventions sur la fiche matériel → gestion des états → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
 Django/DRF/PostgreSQL reste la cible backend ; aucune nouvelle configuration Firebase.
+
+La consultation Agent [#70](https://github.com/arthurb1348/terrimaint/issues/70) est **en revue** :
+accès Mes interventions, aperçu de trois affectations actives au maximum, liste et détail
+partagés avec Responsable. Camille Durand est l’identité de présentation ; ce filtrage
+frontend ne constitue pas une autorisation serveur. Voir le [guide de revue PC/Pixel](docs/agent-interventions.md).
 
 ## Prévisualiser sur Pixel avec Firebase Hosting
 

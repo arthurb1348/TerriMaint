@@ -1,5 +1,8 @@
 <section class="feature-page" aria-labelledby="interventions-title">
-  <h1 id="interventions-title">Interventions</h1>
+  <h1 id="interventions-title">{{ agentView ? 'Mes interventions' : 'Interventions' }}</h1>
+  @if (agentView) {
+    <p>Pour {{ presentedAgent.name }}</p>
+  }
   <dl class="status-counts" aria-label="Effectifs des interventions">
     @for (item of counts(); track item.status) {
       <div>
@@ -38,21 +41,23 @@
         }
       </select>
     </div>
-    <div>
-      <label for="intervention-assignee-filter">Agent affecté</label>
-      <select
-        #assigneeInput
-        id="intervention-assignee-filter"
-        (change)="updateFilter('assignee', assigneeInput.value)"
-      >
-        <option value="" [selected]="!filters().assignee">Tous les agents</option>
-        @for (agent of agents; track agent.id) {
-          <option [value]="agent.id" [selected]="filters().assignee === agent.id">
-            {{ agent.name }}
-          </option>
-        }
-      </select>
-    </div>
+    @if (!agentView) {
+      <div>
+        <label for="intervention-assignee-filter">Agent affecté</label>
+        <select
+          #assigneeInput
+          id="intervention-assignee-filter"
+          (change)="updateFilter('assignee', assigneeInput.value)"
+        >
+          <option value="" [selected]="!filters().assignee">Tous les agents</option>
+          @for (agent of agents; track agent.id) {
+            <option [value]="agent.id" [selected]="filters().assignee === agent.id">
+              {{ agent.name }}
+            </option>
+          }
+        </select>
+      </div>
+    }
     <button class="page-action secondary" type="button" (click)="resetFilters(searchInput)">
       Réinitialiser les filtres
     </button>
@@ -73,7 +78,9 @@
         <tr role="row">
           <th scope="col" role="columnheader">Intervention</th>
           <th scope="col" role="columnheader">Matériel</th>
-          <th scope="col" role="columnheader">Agent affecté</th>
+          @if (!agentView) {
+            <th scope="col" role="columnheader">Agent affecté</th>
+          }
           <th scope="col" role="columnheader">Date prévue</th>
           <th scope="col" role="columnheader">Statut</th>
         </tr>
@@ -92,10 +99,12 @@
               {{ row.equipment?.name ?? 'Matériel introuvable' }}
               <span class="reference">{{ row.equipment?.id }}</span>
             </td>
-            <td role="cell">
-              <span class="cell-label" aria-hidden="true">Agent affecté</span>
-              {{ row.agent?.name ?? 'Agent introuvable' }}
-            </td>
+            @if (!agentView) {
+              <td role="cell">
+                <span class="cell-label" aria-hidden="true">Agent affecté</span>
+                {{ row.agent?.name ?? 'Agent introuvable' }}
+              </td>
+            }
             <td role="cell">
               <span class="cell-label" aria-hidden="true">Date prévue</span>
               <time [attr.datetime]="row.intervention.plannedOn">{{
@@ -110,6 +119,11 @@
         }
       </tbody>
     </table>
+  } @else if (agentView && total() === 0) {
+    <p>
+      Aucune intervention ne vous est assignée pour le moment. Les nouvelles affectations
+      apparaîtront ici.
+    </p>
   } @else {
     <p>
       Aucune intervention ne correspond à ces critères. Modifiez la recherche ou réinitialisez les

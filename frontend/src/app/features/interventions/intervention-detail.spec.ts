@@ -162,4 +162,33 @@ describe('Détail local des interventions', () => {
       expect(content().querySelector(selector)).toBeNull();
     },
   );
+  it('adapte les liens Agent et masque toute relation étrangère après changement d’id dans la même instance', async () => {
+    const base = '/agent/interventions';
+    const first = await harness.navigateByUrl(
+      `${base}/INT-2026-032?q=OUT&status=planned&assignee=AG-DEMO-002`,
+      InterventionDetail,
+    );
+    expect(content().querySelector('.back-link')?.getAttribute('href')).toBe(
+      `${base}?q=OUT&status=planned`,
+    );
+    expect(content().querySelector('.origin-summary a')?.getAttribute('href')).toBe(
+      '/agent/incidents/INC-2026-045',
+    );
+    expect(content().querySelector('.equipment-summary a')?.getAttribute('href')).toBe(
+      '/agent/equipements/EQ-OUT-0003',
+    );
+    expect(await harness.navigateByUrl(`${base}/INT-2026-033`, InterventionDetail)).toBe(first);
+    expect(content().querySelector('h1')?.textContent).toBe('Intervention non assignée');
+    expect(content().textContent).not.toContain('Contrôle du système de freinage');
+    expect(content().querySelector('.origin')).toBeNull();
+    expect(content().querySelectorAll('a')).toHaveLength(1);
+    expect(await harness.navigateByUrl(`${base}/absent`, InterventionDetail)).toBe(first);
+    expect(content().querySelector('h1')?.textContent).toBe('Intervention introuvable');
+    expect(await harness.navigateByUrl(`${base}/INT-2026-035`, InterventionDetail)).toBe(first);
+    expect(content().querySelector('.instructions')?.textContent).toBe('Non renseignées');
+    content().querySelector<HTMLAnchorElement>('.back-link')!.click();
+    await harness.fixture.whenStable();
+    expect(TestBed.inject(Router).url).toBe(base);
+    expect(content().querySelectorAll('tbody tr')).toHaveLength(2);
+  });
 });

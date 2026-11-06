@@ -5,3 +5,36 @@
     display: none;
   }
 }
+
+.intervention-preview {
+  margin-top: 32px;
+}
+.preview-list {
+  display: grid;
+  gap: 16px;
+  padding: 0;
+  list-style: none;
+}
+.preview-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  color: var(--text);
+  text-decoration: none;
+}
+.preview-link strong {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.preview-link .reference {
+  flex-basis: 100%;
+}
+.preview-link:hover {
+  background: var(--surface);
+}
+.preview-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
