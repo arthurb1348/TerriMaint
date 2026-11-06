@@ -87,6 +87,9 @@ for (const space of ['agent', 'responsable'] as const) {
     // Le menu change seulement la route Angular : aucun goto/rechargement ne masque la durée de vie.
     await page.locator('.space-menu > summary').click();
     await page.getByRole('link', { name: 'Espace Responsable', exact: true }).click();
+    // Les deux espaces ont maintenant un lien Interventions : attendre le nouveau contexte.
+    await expect(page).toHaveURL('/responsable');
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Tableau de bord');
     await navigate('responsable', 'Interventions');
     const initialInterventions = await main.locator('tbody tr').count();
     await navigate('responsable', 'Incidents');

@@ -44,19 +44,23 @@ async function installCamera(
             await image.decode();
             context.drawImage(image, 0, 0, 300, 300);
           }
+          const stream = canvas.captureStream(5);
+          // Les scènes modifiées doivent émettre une image même sans rafraîchissement du canvas dans le DOM.
+          const captureTrack = stream.getVideoTracks()[0] as CanvasCaptureMediaStreamTrack;
           state.resize = (width, height) => {
             canvas.width = width;
             canvas.height = height;
             context.fillStyle = 'white';
             context.fillRect(0, 0, width, height);
+            captureTrack.requestFrame();
           };
           state.showQR = async () => {
             const image = new Image();
             image.src = `/qr-demo/${reference}.png`;
             await image.decode();
             context.drawImage(image, 0, 0, 120, 120);
+            captureTrack.requestFrame();
           };
-          const stream = canvas.captureStream(5);
           stream.getTracks().forEach((track) => {
             const stop = track.stop.bind(track);
             track.stop = () => {
