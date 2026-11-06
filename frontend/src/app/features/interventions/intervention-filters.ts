@@ -9,7 +9,7 @@ export interface InterventionFilters {
 }
 
 // Liste et détail interprètent l'URL avec les mêmes règles, sans accepter de filtre étranger.
-export function readInterventionFilters(params: ParamMap): InterventionFilters {
+export function readInterventionFilters(params: ParamMap, agentView = false): InterventionFilters {
   const status = params.get('status');
   const assignee = params.get('assignee');
   return {
@@ -17,7 +17,7 @@ export function readInterventionFilters(params: ParamMap): InterventionFilters {
     status: Object.hasOwn(INTERVENTION_STATUSES, status ?? '')
       ? (status as Intervention['status'])
       : '',
-    assignee: DEMO_AGENTS.some((agent) => agent.id === assignee) ? assignee! : '',
+    assignee: !agentView && DEMO_AGENTS.some((agent) => agent.id === assignee) ? assignee! : '',
   };
 }
 

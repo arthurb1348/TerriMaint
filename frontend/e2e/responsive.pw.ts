@@ -838,7 +838,9 @@ test('Les accès Scanner suivent la présentation et la route reste accessible',
   await expect(shortcut).toBeVisible({ visible: scannerVisible });
   await expect(scanner).toBeVisible({ visible: scannerVisible });
   // Le masquage du li doit aussi retirer sa puce et son espace dans la liste.
-  await expect(main.getByRole('listitem')).toHaveCount(scannerVisible ? 3 : 2);
+  await expect(main.locator('.page-shortcuts').getByRole('listitem')).toHaveCount(
+    scannerVisible ? 4 : 3,
+  );
   await capture(page, info, 'acces-scanner');
 
   await main.focus();
@@ -846,6 +848,8 @@ test('Les accès Scanner suivent la présentation et la route reste accessible',
   await expect(main.getByRole('link', { name: 'Matériel', exact: true })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(main.getByRole('link', { name: 'Incidents', exact: true })).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(main.getByRole('link', { name: 'Mes interventions', exact: true })).toBeFocused();
   await page.keyboard.press('Tab');
   if (scannerVisible) {
     await expect(shortcut).toBeFocused();
@@ -900,7 +904,9 @@ test('Redimensionner conserve les accès Scanner sous 1200 px et répartit la na
     const scannerVisible = width < 1200;
     await expect(shortcut).toBeVisible({ visible: scannerVisible });
     await expect(scanner).toBeVisible({ visible: scannerVisible });
-    await expect(main.getByRole('listitem')).toHaveCount(scannerVisible ? 3 : 2);
+    await expect(main.locator('.page-shortcuts').getByRole('listitem')).toHaveCount(
+      scannerVisible ? 4 : 3,
+    );
     if (width > 760) {
       const names = ['Accueil', 'Matériel', 'Incidents', 'Profil'];
       if (scannerVisible) names.splice(2, 0, 'Scanner');
@@ -1191,9 +1197,7 @@ test('La programmation gère accès direct, rechargement, annulation, clôturé 
   ).toHaveAttribute('href', '/responsable/incidents?q=OUT');
 });
 
-test('La consultation Agent conserve ses liens sans programmation ni route dédiée', async ({
-  page,
-}) => {
+test('La consultation Agent conserve ses liens sans programmation', async ({ page }) => {
   const main = page.getByRole('main');
   for (const id of ['INC-2026-045', 'INC-2026-047', 'INC-2026-049']) {
     await page.goto(`/agent/incidents/${id}`);
@@ -1212,8 +1216,14 @@ test('La consultation Agent conserve ses liens sans programmation ni route dédi
   await expect(page.locator('nav a[href*="/interventions"]')).toHaveCount(0);
   for (const path of ['/agent/interventions', '/agent/interventions/INT-2026-032']) {
     await page.goto(path);
-    await expect(page).toHaveURL('/');
-    await expect(main.getByRole('status')).toContainText('API disponible');
+    await expect(page).toHaveURL(path);
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText(
+      path.endsWith('032')
+        ? 'Diagnostic et remise en état du système d’alimentation'
+        : 'Mes interventions',
+    );
+    await expect(main.locator('form')).toHaveCount(0);
+    await expect(page.locator('nav a[href*="/interventions"]')).toHaveCount(0);
   }
 });
 
@@ -1478,7 +1488,8 @@ test('Déclarer puis programmer ajoute en mémoire sans écriture métier ni sto
   await navigate('Interventions');
   await expect(main.locator('tbody tr')).toHaveCount(7);
   await expect(main.locator('tbody')).toContainText('Intervention ajoutée en mémoire');
-  for (const id of initial.match(/INT-2026-\d+/g) ?? []) await expect(main.locator('tbody')).toContainText(id);
+  for (const id of initial.match(/INT-2026-\d+/g) ?? [])
+    await expect(main.locator('tbody')).toContainText(id);
   expect(requests).toEqual([]);
   expect(
     await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length })),

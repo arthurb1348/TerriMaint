@@ -1,11 +1,20 @@
 # Guide des fichiers et configurations
 
-## Mémoire partagée #59 — en revue
+## Consultation Agent #70 — en revue
+
+Le [guide Agent](agent-interventions.md) décrit `core/presented-agent.ts` (identité locale),
+`assigned-interventions.ts` (sélection/aperçu stable), `agent.ts/.css` (accueil) et les
+composants liste/détail partagés. `app.routes.ts` fournit `agentView` ; les filtres ignorent
+`assignee` côté Agent et les liens relatifs conservent l’espace. Tests unitaires adjacents,
+parcours `e2e/agent-interventions.pw.ts` et mesures dans `e2e/contrast.pw.ts`.
+Aucune transition d’état ni autorisation serveur. Les workflows de #68 restent inchangés.
+
+## Mémoire partagée #59 — intégrée par #69
 
 Le [guide de #59](shared-memory.md) décrit le service applicatif `core/demo-data.ts`,
 les créations réactives, les identifiants temporaires et la propriété des photos.
 Photos #57/#63 et Responsive #67/#68 sont intégrés dans la base `0567919…`.
-Cette branche remplace les simulations sans ajout par des créations partagées dans le
+Depuis #69, le service remplace les simulations sans ajout par des créations partagées dans le
 même onglet ; aucune persistance, transition métier supplémentaire ou API ajoutée.
 Les passages historiques datés gardent le contexte de leurs incréments.
 
@@ -13,7 +22,7 @@ Les passages historiques datés gardent le contexte de leurs incréments.
 
 #56/Scanner est intégrée à `main` (`5d1867a17a993f1005c87276665b29004787eab6`).
 #58 est intégrée au commit `73889125a5683af04d7360423d53e16802e73be7`.
-#57 photos est intégrée par #63 ; #59 mémoire partagée est en revue, puis #45 GPS, #46 audio, #47 dashboard, #48 stabilisation.
+#57 photos est intégrée par #63 ; #59 mémoire partagée est intégrée par #69. Suite : Mes interventions #70 (en revue) → interventions sur fiche matériel → gestion des états → #45 GPS, #46 audio, #47 dashboard, #48 stabilisation.
 
 - `equipements.html/.css` : le lien natif englobe image, titre et textes ; `aria-labelledby`
   nomme la fiche par le titre sans annoncer toute la carte comme nom de lien.
@@ -33,7 +42,7 @@ Les passages historiques datés gardent le contexte de leurs incréments.
   Contrastes, caméra et photos gardent leurs contrôles.
 
 Le [guide de revue Pixel](pixel-ux.md) donne la procédure et les limites de #58.
-#59 ajoute en revue un état partagé initialisé depuis ces jeux ; aucune persistance,
+#59 a intégré un état partagé initialisé depuis ces jeux ; aucune persistance,
 synchronisation ou notification n’est ajoutée.
 Django/DRF/PostgreSQL reste la cible backend. Les décisions datées détaillent les incréments.
 

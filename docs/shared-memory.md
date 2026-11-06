@@ -1,10 +1,11 @@
-# Données partagées dans l’onglet — #59 en revue
+# Données partagées dans l’onglet — #59 intégrée par #69
 
-Base distante vérifiée le 6 novembre 2026 : `0567919…`, intégrant les photos
+Base historique de préparation vérifiée le 6 novembre 2026 : `0567919…`, intégrant les photos
 [#63](https://github.com/arthurb1348/terrimaint/pull/63) et le sharding Responsive
 [#68](https://github.com/arthurb1348/terrimaint/pull/68), tous deux fusionnés.
-Cette branche propose [#59](https://github.com/arthurb1348/terrimaint/issues/59) ; elle reste
-en revue jusqu’à fusion. Django/DRF/PostgreSQL reste la cible backend. Hosting sert le frontend.
+[#59](https://github.com/arthurb1348/terrimaint/issues/59) est intégrée par la PR #69
+(`8415eb7…`). La consultation Agent #70 est en revue ; son [guide](agent-interventions.md)
+explique la sélection des affectations dans ce même état partagé. Django/DRF/PostgreSQL reste la cible backend. Hosting sert le frontend.
 
 ## Un état commun, des composants qui gardent leur rôle
 

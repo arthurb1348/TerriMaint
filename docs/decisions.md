@@ -1,6 +1,23 @@
 # Décisions techniques et métier
 
-## 2026-11-06 — Données partagées dans l’onglet (issue #59, en revue)
+## 2026-11-06 — Consultation des affectations Agent (#70, en revue)
+
+Base `8415eb7…`, #69 fusionnée. À la demande d’Arthur, Camille Durand est l’identité
+locale de présentation, référencée une fois dans `core/presented-agent.ts`. Cela précise
+la restriction historique de #47 sur « Mes interventions » : afficher ce nom est désormais
+possible avec une identité présentée et un filtrage explicites, sans dashboard ni connexion.
+Le backend devra fournir identité et autorisations ; filtrer dans Angular ne les remplace pas.
+
+Liste/détail sont partagés avec Responsable ; le contexte de route fixe la sélection Agent,
+ignore `assignee`, garde recherche/statut et adapte les liens. L’aperçu affiche au plus trois
+affectations actives, En cours puis Planifiée, date prévue croissante, égalités stables,
+sans exclure les dates passées. Le même `DemoData` sert les deux espaces sans persistance.
+Voir le [guide et la procédure de revue](agent-interventions.md).
+
+Suite validée : Mes interventions → interventions sur fiche matériel → gestion des états
+→ GPS #45 → audio #46 → dashboard #47 → stabilisation #48. Aucune transition ajoutée ici.
+
+## 2026-11-06 — Données partagées dans l’onglet (issue #59, intégrée par #69)
 
 Base distante `0567919…`, photos #63 et Responsive #68 fusionnés. Un service Angular
 `DemoData`, fourni à l’application, expose deux collections réactives en lecture seule et
@@ -21,7 +38,7 @@ navigateur libère les URL du document à sa fermeture. Annulation/file et résu
 restent protégés. Le [guide de #59](shared-memory.md) décrit propriété, tests et revue.
 La cible reste Django/DRF/PostgreSQL ; Firebase Hosting ne reçoit que le frontend.
 
-## 2026-11-06 — Fin d’intervention et clôture du signalement (validé, prochaine PR)
+## 2026-11-06 — Fin d’intervention et clôture du signalement (validé, futur incrément de gestion des états)
 
 Décision d’Arthur, documentée sans implémentation dans #59 :
 
@@ -32,7 +49,8 @@ Décision d’Arthur, documentée sans implémentation dans #59 :
 - La clôture est empêchée tant qu’une intervention liée reste active.
 
 #59 conserve uniquement les statuts initiaux Ouvert / Planifiée des créations. Aucune action
-« Mes interventions », transition d’état, GPS, audio, logo, footer ou ajustement photo PC ajouté.
+« Mes interventions », transition d’état, GPS, audio, logo, footer ou ajustement photo PC ajouté
+dans #59. La consultation est traitée séparément dans #70, décrite plus haut.
 
 ## 2026-11-06 — Deux lots Responsive parallèles (issue #67, intégrée par #68)
 

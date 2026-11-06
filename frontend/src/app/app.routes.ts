@@ -74,20 +74,28 @@ export const routes: Routes = [
     title: 'Programmer une intervention — TerriMaint',
     data: { label: 'Interventions' },
   },
-  {
-    // La programmation nouvelle/:incidentId reste prioritaire sur le détail par id.
-    path: 'responsable/interventions/:id',
-    loadComponent: () =>
-      import('./features/interventions/intervention-detail').then((m) => m.InterventionDetail),
-    title: 'Détail de l’intervention — TerriMaint',
-    data: { label: 'Interventions' },
-  },
-  {
-    path: 'responsable/interventions',
-    loadComponent: interventionsPage,
-    title: 'Interventions — TerriMaint',
-    data: { label: 'Interventions' },
-  },
+  ...(['agent', 'responsable'] as const).flatMap((space): Routes => [
+    {
+      // La programmation Responsable reste prioritaire sur le détail par id.
+      path: `${space}/interventions/:id`,
+      loadComponent: () =>
+        import('./features/interventions/intervention-detail').then((m) => m.InterventionDetail),
+      title: 'Détail de l’intervention — TerriMaint',
+      data: {
+        label: space === 'agent' ? 'Mes interventions' : 'Interventions',
+        agentView: space === 'agent',
+      },
+    },
+    {
+      path: `${space}/interventions`,
+      loadComponent: interventionsPage,
+      title: `${space === 'agent' ? 'Mes interventions' : 'Interventions'} — TerriMaint`,
+      data: {
+        label: space === 'agent' ? 'Mes interventions' : 'Interventions',
+        agentView: space === 'agent',
+      },
+    },
+  ]),
   {
     path: 'agent/scanner',
     loadComponent: () => import('./features/scanner/scanner').then((m) => m.Scanner),
