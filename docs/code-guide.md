@@ -1196,9 +1196,14 @@ Ces vérifications Chromium ne remplacent pas les essais sur téléphone physiqu
 Depuis `frontend/`, installer le navigateur avec `npx playwright install chromium` (sous Linux,
 `--with-deps` ajoute les bibliothèques système), puis lancer `npm run test:responsive`.
 `npm run test:responsive:report` ouvre le dernier rapport. `.github/workflows/responsive.yml`
-exécute la même commande sur chaque PR, sur `main` ou manuellement et conserve l'artifact
-`responsive-report` sept jours, y compris après un échec de test. Les résultats générés sont
-ignorés par Git. Le ruleset n'est pas modifié : `Responsive` est informatif au départ, tandis
+ajoute en CI `--shard=1/2` ou `--shard=2/2` et `--reporter=list,blob` à la commande locale
+complète, avec deux workers par job. Le job de rapport utilise `playwright merge-reports`
+pour conserver l'artifact HTML commun `responsive-report` sept jours, y compris après un
+échec de test si les deux blobs ont été produits. Les blobs et diagnostics sont conservés
+séparément par lot. Le [guide Responsive CI](responsive-ci.md) décrit les garde-fous,
+l'inventaire et la comparaison des durées. Les résultats locaux générés sont
+ignorés par Git ; les blobs CI restent dans le dossier temporaire du runner.
+Le ruleset n'est pas modifié : `Responsive` est informatif au départ, tandis
 que ses échecs restent rouges. Pour ajouter une page, compléter `routes` ; pour changer les
 formats, modifier les projets Playwright ; pour changer l'interface, modifier ses composants.
 

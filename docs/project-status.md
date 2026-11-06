@@ -2,6 +2,14 @@
 
 ## Référence et usage
 
+Vérification ciblée du 6 novembre 2026 pour [#67](https://github.com/arthurb1348/terrimaint/issues/67) :
+`origin/main` distant à `8b9318beb27267c078a336c7ff487f3783b047ce`, #63 et Dependabot
+#64/#65/#66 fusionnés. La suite intégrée comprend **376 scénarios** aux quatre formats,
+avec deux workers CI et `fullyParallel: true`. L'optimisation en deux lots est **en revue**
+dans cette branche jusqu'à fusion ; elle n'implémente aucune fonctionnalité de #59.
+Le [guide Responsive CI](responsive-ci.md) et la PR liée à #67 portent l'inventaire,
+les résultats et les limites mesurées. Les constats historiques ci-dessous gardent leur date.
+
 
 - Date de vérification ciblée : 2026-11-01 (Europe/Paris), fusion #58/#60 et #61/#62, préparation photos #57. Les autres preuves conservent leur date.
 - Dépôt source : [arthurb1348/terrimaint](https://github.com/arthurb1348/terrimaint).

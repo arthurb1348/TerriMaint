@@ -112,10 +112,15 @@ avec critères dans l’URL, l’harmonisation des actions/retours/cartes et les
 320, 390, 768 et 1440 px. Le [guide du code](docs/code-guide.md#tests-navigateur-responsive)
 explique les vérifications et leurs limites.
 
-Le workflow **Responsive** lance ces tests sur chaque PR, sur `main` et manuellement.
-Son artifact **responsive-report**, conservé sept jours dans l'exécution GitHub Actions,
-contient le rapport HTML avec les captures et les traces d'échec. Après extraction, ouvrir
-`playwright-report/index.html` ; en local, la commande de rapport ci-dessus sert le rapport.
+Sur chaque PR, sur `main` et manuellement, le workflow **Responsive** répartit toute la suite
+entre **deux jobs parallèles**, chacun
+avec deux workers Playwright. La commande locale ci-dessus exécute toujours la suite entière.
+Les rapports blob de chaque lot sont fusionnés dans l'artifact **responsive-report**,
+conservé sept jours avec les captures et les traces d'échec ; les blobs et diagnostics portent
+des noms distincts par lot. Après extraction de l'artifact commun, ouvrir `index.html`
+(ou `npx playwright show-report chemin/du/rapport`). Le contrôle final **Responsive** exige
+le succès des deux lots et de la préparation du rapport commun. Le
+[guide Responsive CI](docs/responsive-ci.md) explique la répartition, les mesures et la revue.
 Ce nouveau contrôle n'est pas ajouté aux contrôles obligatoires du ruleset : un échec reste
 visible et doit être examiné avant la décision de fusion.
 

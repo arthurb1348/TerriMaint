@@ -14,11 +14,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  responsive:
-    # Contrôle visible, non requis par le ruleset ; un échec reste un échec.
-    name: Responsive
+  responsive-shards:
+    name: Responsive — lot ${{ matrix.shard }}/2
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     defaults:
       run:
         working-directory: frontend
@@ -38,14 +41,84 @@ jobs:
       - name: Installer Chromium et ses dépendances système
         run: npx playwright install --with-deps chromium
       - name: Vérifier les pages et navigations responsive
-        run: npm run test:responsive
-      - name: Conserver le rapport, les captures et les traces d'échec
+        run: npm run test:responsive -- --shard=${{ matrix.shard }}/2 --reporter=list,blob
+        env:
+          PLAYWRIGHT_BLOB_OUTPUT_DIR: ${{ runner.temp }}/blob-report
+          PLAYWRIGHT_BLOB_OUTPUT_NAME: responsive-shard-${{ matrix.shard }}.zip
+      - name: Conserver le rapport blob du lot et ses pièces jointes
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: responsive-blob-${{ matrix.shard }}
+          path: ${{ runner.temp }}/blob-report/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Conserver les captures et les traces d'échec du lot
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: responsive-results-${{ matrix.shard }}
+          path: frontend/test-results/
+          retention-days: 7
+          if-no-files-found: warn
+
+  responsive-report:
+    name: Responsive — rapport commun
+    needs: responsive-shards
+    # Un lot en échec doit aussi pouvoir être examiné dans le rapport commun.
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Installer Node LTS
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Installer les dépendances verrouillées
+        run: npm ci
+      - name: Télécharger les rapports des deux lots
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: responsive-blob-*
+          path: frontend/all-blob-reports
+          merge-multiple: true
+      - name: Exiger les deux rapports et préparer le HTML commun
+        run: |
+          test -f all-blob-reports/responsive-shard-1.zip
+          test -f all-blob-reports/responsive-shard-2.zip
+          npx playwright merge-reports --reporter html ./all-blob-reports
+        env:
+          PLAYWRIGHT_HTML_OPEN: never
+      - name: Conserver le rapport HTML commun
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: responsive-report
-          path: |
-            frontend/playwright-report/
-            frontend/test-results/
+          path: frontend/playwright-report/
           retention-days: 7
-          if-no-files-found: warn
+          if-no-files-found: error
+
+  responsive:
+    # Le nom public reste stable ; aucun succès si un besoin est absent ou annulé.
+    name: Responsive
+    needs: [responsive-shards, responsive-report]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Exiger le succès des deux lots et du rapport commun
+        env:
+          SHARDS_RESULT: ${{ needs.responsive-shards.result }}
+          REPORT_RESULT: ${{ needs.responsive-report.result }}
+        run: |
+          test "$SHARDS_RESULT" = success
+          test "$REPORT_RESULT" = success
