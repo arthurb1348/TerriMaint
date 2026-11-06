@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { DemoData } from '../../core/demo-data';
 import { routes } from '../../app.routes';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 import { IncidentDeclaration } from './incident-declaration';
@@ -71,7 +72,9 @@ describe('Déclaration locale d’incident', () => {
       expect(heading()).toBe('Déclarer un incident');
       expect(content().textContent).not.toContain('Données de démonstration');
       expect(content().textContent).not.toContain("Cette simulation n'enregistre et n'envoie rien");
-      expect(content().textContent).not.toContain('perdue en quittant cette page ou en la rechargeant');
+      expect(content().textContent).not.toContain(
+        'perdue en quittant cette page ou en la rechargeant',
+      );
       expect(content().querySelector('.equipment-summary')?.textContent).toContain(
         'Débroussailleuse n°3',
       );
@@ -126,7 +129,18 @@ describe('Déclaration locale d’incident', () => {
       expect(content().textContent).toContain('Urgente — danger immédiat');
       await click('Envoyer le signalement');
       expect(heading()).toBe('Signalement terminé');
-      expect(content().querySelectorAll('a')).toHaveLength(2);
+      expect(content().querySelectorAll('a')).toHaveLength(3);
+      const component = harness.routeDebugElement!.componentInstance as {
+        complete(): void;
+        edit(): void;
+      };
+      component.complete();
+      component.edit();
+      component.complete();
+      const created = TestBed.inject(DemoData).incidents().at(-1)!;
+      expect(TestBed.inject(DemoData).incidents()).toHaveLength(7);
+      expect(created.title).toBe('Le moteur cale à chaud');
+      expect(content().querySelector(`a[href="/${space}/incidents/${created.id}"]`)).not.toBeNull();
       expect(content().querySelector('form')).toBeNull();
       expect(JSON.stringify(DEMO_EQUIPMENT)).toBe(sourceBefore);
       expect(TestBed.inject(Router).url).toBe(`${base}/EQ-OUT-0003?q=OUT`);
@@ -197,6 +211,7 @@ describe('Déclaration locale d’incident', () => {
       await fillValid();
       await submit();
       await click('Annuler');
+      expect(TestBed.inject(DemoData).incidents()).toHaveLength(6);
       const router = TestBed.inject(Router);
       expect(router.url.split('?')[0]).toBe(`/${space}/equipements/EQ-OUT-0001`);
       expect(router.parseUrl(router.url).queryParams['q']).toBe(query);

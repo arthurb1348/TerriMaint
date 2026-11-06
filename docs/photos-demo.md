@@ -47,13 +47,13 @@ Pour remplacer un visuel, modifier l’association image/alternative dans
 `equipements-demo.ts`, ou les `photos` dans `incidents-demo.ts`, puis remplacer
 l’asset local. Ne pas dupliquer nom, référence ou emplacement des équipements.
 
-## Prise de vue et préparation — #57 en revue
+## Prise de vue et préparation — #57 intégrée par #63
 
 La branche `feat/57-prepare-report-photos` part de `origin/main`
 `73889125a5683af04d7360423d53e16802e73be7`, vérifié avec Git distant et GitHub :
 #58/PR #60 fusionnée le 1er novembre 2026 ; Hosting #61/PR #62 est aussi intégré.
-#43 reste intégrée ; la préparation #57 reste **en revue jusqu’à fusion**.
-Ordre : #58 intégrée → #57 en revue → #59 mémoire partagée → #45 GPS → #46 audio
+#43 reste intégrée ; la préparation #57 est **intégrée par #63** (`d9ad574…`).
+Ordre : #58 et #57 intégrées → #59 mémoire partagée en revue → #45 GPS → #46 audio
 → #47 dashboard → #48 stabilisation. Django/DRF/PostgreSQL reste la cible backend.
 
 Deux boutons natifs du formulaire partagé Agent/Responsable ouvrent deux `input file` :
@@ -127,10 +127,14 @@ clavier avec focus visible. La soumission est désactivée et `review()` garde a
 protection logique pendant le traitement et hors de l’étape formulaire : pas de double
 validation ni de récapitulatif incomplet.
 
-Les photos restent uniquement dans l’instance du parcours. Aucune modification des listes,
-aucun téléversement, stockage persistant, Firebase Storage, backend métier, authentification,
-GPS, audio ou abstraction pour #59. Les illustrations Matériel, QR, recherches et retours
-restent indépendants. Quitter/recharger remet un parcours vide.
+Avant confirmation, les photos restent dans le brouillon. La branche #59 en revue transfère
+les URL préparées au signalement confirmé dans `DemoData` : elles survivent au formulaire
+et au changement d’espace du même onglet. `IncidentPhotos.transfer()` retire la propriété des
+URL avant de nettoyer le brouillon ; le service les libère à sa destruction, le navigateur
+à la fermeture/recharge du document. Les préparations tardives restent annulées/ignorées.
+Le [guide #59](shared-memory.md) détaille ce transfert sans réencodage.
+Quitter sans confirmer libère le brouillon ; recharger perd aussi les créations partagées.
+Aucun téléversement, stockage persistant, Firebase Storage, backend métier, GPS ou audio.
 
 ### Mesures reproductibles et limites
 
@@ -196,7 +200,8 @@ Utiliser le lien HTTPS du résumé **Firebase Hosting de cette exécution**, com
    aucun ancien aperçu ne doit revenir. Vérifier focus/clavier et actions dégagées du menu.
 4. Vérifier le signalement, contrôler les mêmes photos, puis Modifier : tout est conservé.
 5. Annuler/quitter vers un autre matériel pendant une préparation, revenir et recharger :
-   aucun résultat tardif ni ancienne photo. Les listes restent fixes jusqu’à #59.
+   aucun résultat tardif ni ancienne photo du brouillon. Avec #59 en revue, confirmer puis
+   quitter doit au contraire conserver les photos dans la fiche partagée jusqu’au rechargement.
 
 À modifier : limites et réencodage dans `photo-preparation.ts`, file/URL dans
 `incident-photos.ts`, boutons/focus dans `incident-declaration.*`. Pour l’oral, suivre

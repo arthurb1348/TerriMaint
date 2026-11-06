@@ -1,10 +1,19 @@
 # Guide des fichiers et configurations
 
+## Mémoire partagée #59 — en revue
+
+Le [guide de #59](shared-memory.md) décrit le service applicatif `core/demo-data.ts`,
+les créations réactives, les identifiants temporaires et la propriété des photos.
+Photos #57/#63 et Responsive #67/#68 sont intégrés dans la base `0567919…`.
+Cette branche remplace les simulations sans ajout par des créations partagées dans le
+même onglet ; aucune persistance, transition métier supplémentaire ou API ajoutée.
+Les passages historiques datés gardent le contexte de leurs incréments.
+
 ## Ajustements Pixel #58 — intégrés par #60
 
 #56/Scanner est intégrée à `main` (`5d1867a17a993f1005c87276665b29004787eab6`).
 #58 est intégrée au commit `73889125a5683af04d7360423d53e16802e73be7`.
-#57 photos est en revue, puis #59 mémoire partagée, #45 GPS, #46 audio, #47 dashboard, #48 stabilisation.
+#57 photos est intégrée par #63 ; #59 mémoire partagée est en revue, puis #45 GPS, #46 audio, #47 dashboard, #48 stabilisation.
 
 - `equipements.html/.css` : le lien natif englobe image, titre et textes ; `aria-labelledby`
   nomme la fiche par le titre sans annoncer toute la carte comme nom de lien.
@@ -15,15 +24,17 @@
   de contexte Matériel/Signalement d’origine. Les résumés sans lien restent statiques.
 - `responsable.ts` : trois raccourcis métier ; le sélecteur du shell change d’espace.
 - Templates métier : aides utiles conservées, limites regroupées dans README et guides.
-  La fin de formulaire change seulement `step`, sans HTTP métier, stockage ni mutation.
+  La confirmation appelle désormais `DemoData` dans la branche #59, sans HTTP métier
+  ni stockage persistant ; le brouillon garde ses propres étapes.
 - `scanner.html/.css/.ts` : bloc d’erreur au-dessus du champ, titre, texte et bordure ;
   une seule région `alert` associée au champ. Le statut ne répète plus l’erreur QR.
 - `e2e/pixel-ux.pw.ts`, tests Scanner et assertions existantes : grandes surfaces,
   Ctrl/Cmd-clic natif, clavier, recherche exacte, filtres/retours et erreurs distinctes.
   Contrastes, caméra et photos gardent leurs contrôles.
 
-Le [guide de revue Pixel](pixel-ux.md) donne la procédure et les limites. Les jeux restent
-fixes jusqu’à #59 ; aucune persistance, synchronisation ou notification n’est ajoutée.
+Le [guide de revue Pixel](pixel-ux.md) donne la procédure et les limites de #58.
+#59 ajoute en revue un état partagé initialisé depuis ces jeux ; aucune persistance,
+synchronisation ou notification n’est ajoutée.
 Django/DRF/PostgreSQL reste la cible backend. Les décisions datées détaillent les incréments.
 
 Ce guide détaille le code présent et les configurations. La [revue technique](technical-review.md)
@@ -320,10 +331,11 @@ récapitulatif avec **Vérifier le signalement**. Il lit les contrôles existant
 ou la valeur exacte dans le cas contraire. Cette méthode ne modifie pas le `FormControl` :
 le texte d'absence n'est jamais une donnée saisie et une description blanche est retrouvée
 telle quelle avec Modifier. Les retours à la ligne des descriptions renseignées sont conservés.
-**Envoyer le signalement** change seulement l'étape : aucun numéro, appel HTTP ni sauvegarde.
-La confirmation **Signalement terminé** garde un retour à la fiche existante, sans lien
-vers un nouvel enregistrement. #58 retire les avertissements répétés ; README et les guides
-expliquent la perte de saisie au départ/rechargement et l’absence d’envoi.
+**Envoyer le signalement** appelle `DemoData.createIncident` : identifiant temporaire,
+statut Ouvert et photos préparées, sans appel HTTP ni sauvegarde durable. La confirmation
+**Signalement terminé** propose Voir le signalement et garde le retour au matériel avec `q`.
+Après succès, `createdIncident` bloque toute nouvelle confirmation et les photos passent
+au service ; le départ libère seulement le brouillon, le rechargement perd aussi les créations.
 Le composant est détruit à la sortie. S'il est réutilisé pour un autre `equipmentId`, un
 `effect` remet valeurs, erreurs et étape à zéro ; observer seulement l'initialisation serait
 insuffisant. Le `computed` d'identifiant évite d'effacer le formulaire quand seul `q` change.
@@ -414,7 +426,8 @@ TypeScript possibles ; elles produisent les textes Basse/Haute/Urgente et Ouvert
 `incidents-demo.ts` contient une seule liste de six objets fixes : référence, intitulé,
 description facultative, `equipmentId`, priorité, statut, date ISO fixe et risque facultatif.
 `readonly` interdit une modification accidentelle dans le code typé ; ce n'est pas une
-permission serveur. Le formulaire de déclaration ne crée ni ne modifie ces objets.
+permission serveur. Ces objets d’amorçage ne sont pas modifiés ; #59 ajoute ses nouvelles
+créations dans le signal commun de `DemoData`.
 
 `equipmentId` est la référence vers `DEMO_EQUIPMENT`. Liste et détail cherchent l'objet
 correspondant pour lire son nom et son emplacement, sans dupliquer ces valeurs. Les tests
@@ -503,7 +516,7 @@ Questions de compréhension :
 
 La [PR #49](https://github.com/arthurb1348/terrimaint/pull/49), fusionnée le 31 octobre 2026,
 a intégré ce parcours après la consultation des signalements de #40. Il utilise les mêmes
-objets, sans transformer la simulation de déclaration en création réelle. La [décision](decisions.md) explique l'adaptation des
+références ; #59 en revue ajoute les créations à l’état commun en mémoire. La [décision](decisions.md) explique l'adaptation des
 références Figma : un formulaire regroupé, un récapitulatif modifiable, puis la confirmation.
 PostgreSQL #38 reste différé ; la consultation #42/PR #50 est désormais intégrée,
 sans enregistrement depuis ce formulaire.
@@ -576,11 +589,13 @@ de stockage n'est appelé. `form.controls.*.value` n'est pas un signal : les mé
 lisent ces valeurs lors du rendu, sans `computed` qui pourrait garder une ancienne saisie.
 L'effet de réinitialisation dépend de l'identifiant, indépendamment des filtres de retour :
 nouvel identifiant, nouvelles valeurs initiales et nouvelle étape ; seuls les filtres modifiés,
-saisie intacte. Départ et rechargement détruisent aussi cet état en mémoire.
+saisie intacte. Départ et rechargement détruisent le brouillon ; la création confirmée
+reste dans le service jusqu’au rechargement de l’application.
 
-**Programmer l’intervention** aboutit à **Programmation terminée**, avec retour au signalement
-existant. Aucun numéro ni lien vers une intervention inventée. Depuis #58, les limites
-sont portées par README et les guides ; les sources et statuts ne changent jamais.
+**Programmer l’intervention** appelle `DemoData.createIntervention` et aboutit à
+**Programmation terminée**, avec Voir l’intervention et le retour au signalement d’origine.
+L’intervention Planifiée possède un identifiant temporaire ; le signalement garde son statut.
+`createdIntervention` bloque les confirmations répétées. Les sources initiales restent immuables.
 Ces règles locales devront être validées et reprises dans le contrat serveur futur.
 
 `intervention-planning.css` garde le contenu à 768 px maximum et reprend les variables de la
@@ -641,7 +656,8 @@ Questions de compréhension :
 La programmation #41/PR #49 est intégrée. La consultation Responsable est intégrée par la
 [PR #50](https://github.com/arthurb1348/terrimaint/pull/50), fusionnée le 31 octobre 2026 ;
 PostgreSQL #38 demeure différé. La liste de consultation
-est indépendante des simulations : programmer ne crée aucun objet consultable.
+lit désormais l’état de `DemoData` dans #59 en revue : programmer ajoute une intervention
+consultable, reliée au même signalement et au matériel par leurs identifiants.
 
 ### Relations et filtres
 
@@ -1221,7 +1237,7 @@ les fichiers à modifier, la procédure manuelle et les limites du contrôle WCA
 Voir le [guide photos](photos-demo.md) pour les sources, la préparation des visuels,
 le cycle de vie des fichiers, les tests et la procédure manuelle.
 
-## Prise de vue et préparation bornée (issue #57, en revue)
+## Prise de vue et préparation bornée (issue #57, intégrée par #63)
 
 Le [guide photos](photos-demo.md) est la référence pour limites, mesures, ressources et revue Pixel.
 
@@ -1234,6 +1250,7 @@ Le [guide photos](photos-demo.md) est la référence pour limites, mesures, ress
 | `e2e/photo-preparation.pw.ts`, `e2e/photos.pw.ts` | Vraies images et codecs, EXIF 1–8 contrôlé par les pixels, > 5 Mio, proportions, retour Modifier et sélection vide simulée |
 | `e2e/contrast.pw.ts` | Contrôles existants conservés et deux actions photo mesurées dans leurs différents états |
 
+La propriété des URL confirmées est décrite dans le [guide #59](shared-memory.md).
 Le fichier original n’entre jamais dans les aperçus : seule l’URL du Blob préparé y entre,
 puis le récapitulatif réutilise cette même URL. `clear()` invalide les continuations et
 révoque les URL acceptées. Il garde la file pour attendre le nettoyage des API non

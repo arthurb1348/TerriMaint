@@ -1,13 +1,12 @@
+import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { afterNextRender, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
-import { DEMO_INCIDENTS } from '../incidents/incidents-demo';
 import { DEMO_AGENTS } from './agents-demo';
 import { INTERVENTION_STATUSES } from './intervention';
 import { interventionQueryParams, readInterventionFilters } from './intervention-filters';
-import { DEMO_INTERVENTIONS } from './interventions-demo';
 
 @Component({
   selector: 'app-intervention-detail',
@@ -17,6 +16,7 @@ import { DEMO_INTERVENTIONS } from './interventions-demo';
   styleUrls: ['../incidents/incident-presentation.css', './intervention-detail.css'],
 })
 export class InterventionDetail {
+  private readonly data = inject(DemoData);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
   private readonly params = toSignal(this.route.paramMap, {
@@ -26,10 +26,10 @@ export class InterventionDetail {
     initialValue: this.route.snapshot.queryParamMap,
   });
   protected readonly intervention = computed(() =>
-    DEMO_INTERVENTIONS.find((item) => item.id === this.params().get('id')),
+    this.data.getIntervention(this.params().get('id')),
   );
   protected readonly incident = computed(() =>
-    DEMO_INCIDENTS.find((item) => item.id === this.intervention()?.incidentId),
+    this.data.getIncident(this.intervention()?.incidentId),
   );
   protected readonly equipment = computed(() =>
     DEMO_EQUIPMENT.find((item) => item.id === this.incident()?.equipmentId),

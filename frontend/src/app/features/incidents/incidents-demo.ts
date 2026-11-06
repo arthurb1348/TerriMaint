@@ -1,6 +1,6 @@
 import { Incident } from './incident';
 
-// Jeu fixe de consultation : la déclaration simulée ne crée ni ne modifie ces exemples.
+// Amorçage immuable de DemoData : les créations en mémoire ne modifient pas ces exemples.
 // Les noms et emplacements restent dans DEMO_EQUIPMENT, reliés uniquement par equipmentId.
 export const DEMO_INCIDENTS: readonly Incident[] = [
   {

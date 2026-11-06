@@ -1,6 +1,40 @@
 # Décisions techniques et métier
 
-## 2026-11-06 — Deux lots Responsive parallèles (issue #67, en revue)
+## 2026-11-06 — Données partagées dans l’onglet (issue #59, en revue)
+
+Base distante `0567919…`, photos #63 et Responsive #68 fusionnés. Un service Angular
+`DemoData`, fourni à l’application, expose deux collections réactives en lecture seule et
+des méthodes explicites de création/consultation. Les jeux typés restent un amorçage
+immuable ; listes, fiches, filtres, relations et effectifs lisent les mêmes données.
+Pas de NgRx, dépendance, faux serveur, repository générique ou dashboard anticipé.
+
+Les confirmations créent exactement un signalement Ouvert ou une intervention Planifiée,
+avec références validées, sans autre transition de statut. Un UUID d’application et des
+compteurs produisent les routes temporaires ; une recharge ne réattribue pas une ancienne
+route à un autre objet. Navigation et changement d’espace conservent l’état du même onglet ;
+recharge/fermeture le perdent. Aucun stockage persistant, écriture métier ou synchronisation.
+
+Les brouillons gardent leur cycle de vie ; après confirmation acceptée, leurs URL de photos
+préparées sont transférées au service. Pas de réencodage, copie des originaux ou révocation
+par le formulaire détruit. Le service libère les URL confirmées à sa destruction ; le
+navigateur libère les URL du document à sa fermeture. Annulation/file et résultats tardifs
+restent protégés. Le [guide de #59](shared-memory.md) décrit propriété, tests et revue.
+La cible reste Django/DRF/PostgreSQL ; Firebase Hosting ne reçoit que le frontend.
+
+## 2026-11-06 — Fin d’intervention et clôture du signalement (validé, prochaine PR)
+
+Décision d’Arthur, documentée sans implémentation dans #59 :
+
+- L’agent termine son intervention : elle passe à Terminée, sans validation intermédiaire.
+- Cela ne clôture pas automatiquement le signalement ; une intervention terminée reste consultable.
+- Le responsable choisit de clôturer le signalement ou de le garder En cours et de créer
+  une nouvelle intervention si le problème persiste.
+- La clôture est empêchée tant qu’une intervention liée reste active.
+
+#59 conserve uniquement les statuts initiaux Ouvert / Planifiée des créations. Aucune action
+« Mes interventions », transition d’état, GPS, audio, logo, footer ou ajustement photo PC ajouté.
+
+## 2026-11-06 — Deux lots Responsive parallèles (issue #67, intégrée par #68)
 
 Préalables #64/#65/#66 fusionnés ; base distante vérifiée `8b9318b…`.
 Répartir les 376 scénarios intégrés après #63 avec le sharding natif Playwright en deux
@@ -17,7 +51,7 @@ Backend/Frontend, ruleset et Hosting restent inchangés. Le gain attendu concern
 écoulé ; préparer trois environnements npm peut augmenter le calcul cumulé. Le
 [guide de mesure et de revue](responsive-ci.md) distingue aussi l'incident réseau Ubuntu de #66.
 
-## 2026-11-01 — Photos de terrain bornées (issue #57, en revue)
+## 2026-11-01 — Photos de terrain bornées (issue #57, intégrée par #63)
 
 Préalable vérifié : #60 fusionnée, dernier `origin/main` à `73889125a5683af04d7360423d53e16802e73be7`.
 Branche dédiée `feat/57-prepare-report-photos`, états locaux précédents préservés par nouveau clone.

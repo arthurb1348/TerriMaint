@@ -1,8 +1,8 @@
 # Responsive : deux lots parallèles
 
-Optimisation de l'[issue #67](https://github.com/arthurb1348/terrimaint/issues/67), en revue
-jusqu'à fusion. Base distante du 6 novembre 2026 : `8b9318b…`, après fusion de #64/#65/#66.
-Les 376 scénarios et les quatre formats de #63 sont conservés : 320 × 568, 390 × 844,
+Optimisation de l'[issue #67](https://github.com/arthurb1348/terrimaint/issues/67), intégrée
+par la [PR #68](https://github.com/arthurb1348/terrimaint/pull/68) (`0567919…`). Base distante du 6 novembre 2026 : `8b9318b…`, après fusion de #64/#65/#66.
+À l’intégration de #68, les 376 scénarios et les quatre formats de #63 sont conservés : 320 × 568, 390 × 844,
 768 × 1024 et 1440 × 1024. Aucun code frontend ni scénario n'est modifié.
 
 ## Workers et jobs
@@ -16,7 +16,7 @@ Chaque runner installe son environnement et démarre son propre serveur Angular.
 Le workflow ajoute à `npm run test:responsive` respectivement `--shard=1/2` et
 `--shard=2/2`. Playwright calcule ces deux lots complémentaires à partir du même inventaire,
 sans liste de fichiers ni filtre manuel. `fullyParallel: true` permet de distribuer les
-tests à l'intérieur d'un fichier. Avec cet inventaire, chaque lot contient 188 scénarios ;
+tests à l'intérieur d'un fichier. Avec l’inventaire historique de #68, chaque lot contient 188 scénarios ;
 la répartition peut évoluer quand des tests sont ajoutés. Le nombre ne mesure pas leur coût :
 les parcours photo ou clavier peuvent durer davantage qu'une simple ouverture de page.
 
@@ -74,9 +74,10 @@ Pour la revue d'Arthur :
 1. Lire le diff de `.github/workflows/responsive.yml` et vérifier la matrice `[1, 2]`,
    `fail-fast: false`, les noms d'artifacts et les deux dépendances du contrôle final.
 2. Sur **le dernier commit proposé**, ouvrir l'exécution Responsive liée dans la PR : les
-   deux lots doivent avoir travaillé en parallèle, chacun avec deux workers et 188 succès.
+   deux lots doivent avoir travaillé en parallèle, chacun avec deux workers et le nombre
+   de scénarios attendu par l’inventaire courant.
    Lire aussi Backend et Frontend de ce commit ; une ancienne CI verte ne suffit pas.
-3. Extraire le rapport commun, vérifier ses 376 résultats aux quatre formats et ouvrir
+3. Extraire le rapport commun, vérifier que ses résultats couvrent l’inventaire courant aux quatre formats et ouvrir
    quelques captures de navigation/clavier, photos et contraste. Vérifier les liens vers
    les pièces jointes ; les traces ne sont attendues qu'en cas d'échec.
 4. Lire les durées et limites consignées dans la PR, puis décider de la validation humaine.

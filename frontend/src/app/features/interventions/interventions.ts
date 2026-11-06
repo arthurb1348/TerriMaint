@@ -1,9 +1,9 @@
+import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { afterNextRender, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
-import { DEMO_INCIDENTS } from '../incidents/incidents-demo';
 import { DEMO_AGENTS } from './agents-demo';
 import { INTERVENTION_STATUSES } from './intervention';
 import {
@@ -11,7 +11,6 @@ import {
   interventionQueryParams,
   readInterventionFilters,
 } from './intervention-filters';
-import { DEMO_INTERVENTIONS } from './interventions-demo';
 
 @Component({
   selector: 'app-interventions',
@@ -21,6 +20,7 @@ import { DEMO_INTERVENTIONS } from './interventions-demo';
   styleUrls: ['../incidents/incident-presentation.css', './interventions.css'],
 })
 export class Interventions {
+  private readonly data = inject(DemoData);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
@@ -32,24 +32,28 @@ export class Interventions {
   protected readonly statuses = INTERVENTION_STATUSES;
   protected readonly statusOptions = Object.entries(INTERVENTION_STATUSES);
   protected readonly agents = DEMO_AGENTS;
-  protected readonly total = DEMO_INTERVENTIONS.length;
-  protected readonly counts = this.statusOptions.map(([status, label]) => ({
-    status,
-    label,
-    count: DEMO_INTERVENTIONS.filter((item) => item.status === status).length,
-  }));
-  private readonly rows = DEMO_INTERVENTIONS.map((intervention) => {
-    const incident = DEMO_INCIDENTS.find((item) => item.id === intervention.incidentId);
-    return {
-      intervention,
-      equipment: DEMO_EQUIPMENT.find((item) => item.id === incident?.equipmentId),
-      agent: DEMO_AGENTS.find((item) => item.id === intervention.agentId),
-    };
-  });
+  protected readonly total = computed(() => this.data.interventions().length);
+  protected readonly counts = computed(() =>
+    this.statusOptions.map(([status, label]) => ({
+      status,
+      label,
+      count: this.data.interventions().filter((item) => item.status === status).length,
+    })),
+  );
+  private readonly rows = computed(() =>
+    this.data.interventions().map((intervention) => {
+      const incident = this.data.getIncident(intervention.incidentId);
+      return {
+        intervention,
+        equipment: DEMO_EQUIPMENT.find((item) => item.id === incident?.equipmentId),
+        agent: DEMO_AGENTS.find((item) => item.id === intervention.agentId),
+      };
+    }),
+  );
   protected readonly filteredInterventions = computed(() => {
     const { q, status, assignee } = this.filters();
     const search = q.trim().toLowerCase();
-    return this.rows.filter(
+    return this.rows().filter(
       ({ intervention, equipment }) =>
         (!status || intervention.status === status) &&
         (!assignee || intervention.agentId === assignee) &&

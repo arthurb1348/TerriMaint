@@ -467,6 +467,9 @@ for (const space of ['agent', 'responsable']) {
       await page.evaluate(() => ({ local: { ...localStorage }, session: { ...sessionStorage } })),
     ).toEqual({ local: {}, session: {} });
     await page.keyboard.press('Tab');
+    const created = main.getByRole('link', { name: 'Voir le signalement', exact: true });
+    await expectFocusedControlVisible(page, created, space);
+    await page.keyboard.press('Tab');
     const back = main.getByRole('link', { name: 'Retour à la fiche', exact: true });
     await expectFocusedControlVisible(page, back, space);
     await page.keyboard.press('Enter');
@@ -1113,6 +1116,9 @@ for (const timezoneId of ['Europe/Paris', 'America/New_York']) {
       expect(await page.evaluate(() => indexedDB.databases())).toEqual([]);
       expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual(query);
       await page.keyboard.press('Tab');
+      const created = main.getByRole('link', { name: 'Voir l’intervention', exact: true });
+      await expectFocusedControlVisible(page, created, 'responsable');
+      await page.keyboard.press('Tab');
       const back = main.getByRole('link', { name: 'Retour au signalement', exact: true });
       await expectFocusedControlVisible(page, back, 'responsable');
       await page.keyboard.press('Enter');
@@ -1425,7 +1431,7 @@ for (const timezoneId of ['Europe/Paris', 'America/New_York']) {
   });
 }
 
-test('Déclarer et programmer restent des simulations sans ajout au jeu fixe de consultation', async ({
+test('Déclarer puis programmer ajoute en mémoire sans écriture métier ni stockage persistant', async ({
   page,
 }) => {
   await page.clock.setFixedTime(new Date('2026-10-31T12:00:00Z'));
@@ -1448,7 +1454,7 @@ test('Déclarer et programmer restent des simulations sans ajout au jeu fixe de 
   await navigate('Matériel');
   await main.getByRole('link', { name: /Débroussailleuse n°3/ }).click();
   await main.getByRole('link', { name: 'Déclarer un incident', exact: true }).click();
-  await main.getByLabel('Intitulé', { exact: true }).fill('Exemple à ne pas ajouter');
+  await main.getByLabel('Intitulé', { exact: true }).fill('Exemple ajouté en mémoire');
   await main.getByRole('radio', { name: 'Basse — intervention à planifier', exact: true }).check();
   await main.getByRole('button', { name: 'Vérifier le signalement', exact: true }).click();
   await main.getByRole('button', { name: 'Envoyer le signalement', exact: true }).click();
@@ -1461,7 +1467,7 @@ test('Déclarer et programmer restent des simulations sans ajout au jeu fixe de 
   await main.getByRole('link', { name: 'Programmer une intervention', exact: true }).click();
   await main
     .getByLabel('Titre de l’intervention (obligatoire)', { exact: true })
-    .fill('Autre exemple à ne pas ajouter');
+    .fill('Intervention ajoutée en mémoire');
   await main
     .getByLabel('Agent à affecter (obligatoire)', { exact: true })
     .selectOption('AG-DEMO-002');
@@ -1470,8 +1476,9 @@ test('Déclarer et programmer restent des simulations sans ajout au jeu fixe de 
   await main.getByRole('button', { name: 'Programmer l’intervention', exact: true }).click();
   await expect(main.getByRole('heading', { level: 1 })).toHaveText('Programmation terminée');
   await navigate('Interventions');
-  await expect(main.locator('tbody tr')).toHaveCount(6);
-  expect(await main.locator('tbody').innerText()).toBe(initial);
+  await expect(main.locator('tbody tr')).toHaveCount(7);
+  await expect(main.locator('tbody')).toContainText('Intervention ajoutée en mémoire');
+  for (const id of initial.match(/INT-2026-\d+/g) ?? []) await expect(main.locator('tbody')).toContainText(id);
   expect(requests).toEqual([]);
   expect(
     await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length })),

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DemoData } from '../../core/demo-data';
 import { routes } from '../../app.routes';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 import { DEMO_INCIDENTS } from '../incidents/incidents-demo';
@@ -141,7 +142,9 @@ describe('Détail local des interventions', () => {
           : relation === 'equipment'
             ? DEMO_EQUIPMENT
             : DEMO_AGENTS;
-      vi.spyOn(source, 'find').mockReturnValue(undefined);
+      if (relation === 'incident')
+        vi.spyOn(TestBed.inject(DemoData), 'getIncident').mockReturnValue(undefined);
+      else vi.spyOn(source, 'find').mockReturnValue(undefined);
       await harness.navigateByUrl(`${base}/INT-2026-032`, InterventionDetail);
       const expected =
         relation === 'incident'

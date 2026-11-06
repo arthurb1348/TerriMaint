@@ -208,6 +208,10 @@
         </div>
       }
       @case ('complete') {
+        <p>L’intervention est disponible dans cet onglet jusqu’au rechargement.</p>
+        <a class="page-action secondary" [routerLink]="['../../', createdIntervention()!.id]"
+          >Voir l’intervention</a
+        >
         <a
           class="return-link page-action back-link"
           [routerLink]="['../../../incidents', incident()!.id]"

@@ -188,7 +188,7 @@ describe('Shell et routage', () => {
       expect(element.querySelector('main h1')?.textContent).toContain('Signalement terminé');
       assertNavigation();
       await navigate(`/${space}/incidents`);
-      expect(element.querySelectorAll('main tbody tr')).toHaveLength(6);
+      expect(element.querySelectorAll('main tbody tr')).toHaveLength(7);
       expect(JSON.stringify([DEMO_INCIDENTS, DEMO_INTERVENTIONS])).toBe(source);
       http.expectNone(() => true);
     },
@@ -265,7 +265,7 @@ describe('Shell et routage', () => {
     expect(element.querySelector('main h1')?.textContent).toContain('Programmation terminée');
     assertNavigation();
     await navigate('/responsable/interventions');
-    expect(element.querySelectorAll('main tbody tr')).toHaveLength(6);
+    expect(element.querySelectorAll('main tbody tr')).toHaveLength(7);
     expect(JSON.stringify(DEMO_INTERVENTIONS)).toBe(source);
     http.expectNone(() => true);
   });

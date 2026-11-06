@@ -8,7 +8,7 @@ export interface SelectedPhoto {
   readonly alt: string;
 }
 
-// Une instance par parcours : ni service global, ni stockage, ni envoi de fichiers.
+// Une instance par brouillon ; après confirmation, DemoData devient propriétaire des URL.
 export class IncidentPhotos {
   readonly photos = signal<readonly SelectedPhoto[]>([]);
   readonly errors = signal<readonly string[]>([]);
@@ -72,6 +72,13 @@ export class IncidentPhotos {
     const photo = this.photos().find((item) => item.id === id);
     if (photo) this.release(photo.src);
     this.photos.update((photos) => photos.filter((item) => item.id !== id));
+  }
+
+  transfer(): void {
+    // Appeler après création acceptée : clear annule encore les travaux tardifs,
+    // mais ne doit plus révoquer les photos désormais possédées par le signalement.
+    this.urls.clear();
+    this.clear();
   }
 
   clear(): void {
