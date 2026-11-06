@@ -1,36 +1,30 @@
-# Accueil, navigation Agent et guide QR — #72 en revue
+# Accueil, navigation et guide QR — #72 intégrée, #76 en revue
 
 Base distante vérifiée le 6 novembre 2026 : `7967098b62114412bc69e6142399af5eead3b22f`,
 avec [#71 Mes interventions](https://github.com/arthurb1348/terrimaint/pull/71) fusionnée.
 Les adaptations ci-dessous sont demandées par Arthur et priment sur les anciens raccourcis.
-Elles restent en revue jusqu’à fusion. Les résultats et preuves du dernier commit sont dans la PR.
+Les adaptations #72 sont intégrées par #73 ; les compléments #76 restent en revue. Les résultats et preuves du dernier commit sont dans la PR.
 
-## Navigation permanente et accueil contextuel
+## Accès Scanner finalisés (#76, en revue)
 
-La navigation ouvre les grandes rubriques ; l’accueil sert au scan et aux affectations actives.
-Sous 761 px : **Accueil — Matériel — Interventions — Plus**. Plus garde Incidents et Profil,
-son état actif, Échap, appui extérieur, fermeture au changement de page et restitution du focus.
-Au-delà, les cinq liens sont directement visibles. Scanner n’est plus dans la navbar,
-Interventions reste visible à toute largeur et active sur liste/détail, même avec recherche.
-La navigation Responsable est conservée.
+#72 est intégrée par #73 ; #76 part de `b6c322d…`, avec #75 également fusionnée.
+Sous 761 px, les destinations principales Agent restent **Accueil — Matériel — Interventions — Plus**.
+Plus propose Scanner, Incidents et Profil. État actif, Échap, clic extérieur, fermeture au
+changement de page et focus sont conservés. De 761 à 1199 px, les six liens sont directs
+et répartis dans la barre ; dès 1200 px, les cinq liens sans Scanner restent visibles.
 
-Sur petit mobile, le lien Interventions dispose d’un peu plus de largeur pour garder son
-libellé sur une ligne à 320 px, sans réduire la police ni les cibles tactiles. Les cinq liens
-gardent une répartition égale sur tablette/ordinateur. Icônes SVG locales existantes.
+La carte d’accueil est un seul lien natif nommé **Scanner**, avec son icône décorative
+blanche et son style. Elle reste un raccourci en complément de Plus. Responsable possède
+une entrée Scanner et `/responsable/scanner` ; `/agent/scanner` reste disponible.
+Carte et liens Scanner sont présentés sous 1200 px seulement ; les routes directes et
+la saisie restent utilisables à toute largeur. Ce seuil ne détecte pas la caméra.
 
-Depuis une autre page, scanner demande désormais **Accueil → Scanner**, soit deux appuis.
-Ce compromis garde une barre mobile de quatre destinations lisibles. À partir de 1200 px,
-la carte disparaît comme l’ancien raccourci ; l’URL `/agent/scanner` reste accessible.
-La largeur CSS est un choix de présentation, pas une détection d’appareil ou de caméra.
-Sur la page Scanner, aucune rubrique principale n’est marquée active ; le retour à l’accueil
-est explicite. Le bouton Démarrer reste nécessaire, même après navigation directe.
-
-L’accueil retire toute la rangée de raccourcis. La carte vert foncé est un **seul lien natif** :
-clavier, clic sur ses marges, nouvel onglet et menu du navigateur fonctionnent sans gestionnaire
-JavaScript de carte. L’icône `scan.svg` est réutilisée en blanc et masquée aux technologies
-d’assistance. Le texte visible « Scanner un matériel » fournit le nom accessible : la grande
-icône ne remplace pas le libellé. Hauteur minimale 112 px, espacements limités pour laisser
-l’aperçu proche du haut de page ; à 320 px, le texte peut occuper deux lignes.
+Le même composant Scanner reçoit l’espace par les données de route. Retour, scan reconnu
+et référence manuelle conservent l’espace : fiche `/agent/equipements/:id` ou
+`/responsable/equipements/:id`. Le titre reste Scanner ; la rubrique active appartient
+au bon espace, y compris en accès direct ou après changement de route. Responsable ne
+bascule pas implicitement vers Agent. Les espaces restent sans authentification serveur.
+Démarrer reste explicite, et le moteur caméra/décodeur est inchangé.
 
 Camille, les trois affectations actives au maximum, le tri stable, les dates passées, les liens,
 l’état vide et « Voir toutes mes interventions » gardent le même `DemoData`. Aucune donnée,
@@ -66,16 +60,26 @@ nettoyage ; aucune ouverture de page ne demande automatiquement la caméra.
 2. À 320×568, 390×844, 768×1024 et 1440×1024 : lire toute la navigation, vérifier Interventions
    active sur liste et détail filtrés, Plus par toucher/Tab/Entrée, Échap, bouton Fermer,
    clic extérieur et départ vers une page. Sur PC, comparer aussi la navigation Responsable.
-3. Accueil : vérifier carte sous 1200 px, absence à 1200 inclus et au-delà, aller-retour
+3. Accueil : vérifier le libellé Scanner, la carte et les liens Scanner sous 1200 px,
+   leur absence à 1200 inclus et au-delà, aller-retour
    1199/1200/1201 sans recharge. Nom de Camille, aperçu et lien complet restent présents.
    Ouvrir la carte au clavier et dans un autre onglet ; aucune demande caméra avant Démarrer.
-4. Sur Pixel en HTTPS, démarrer explicitement. Vérifier coins, consigne et lisibilité en
+4. Dans Plus Agent et la navigation Responsable, ouvrir Scanner au clavier/toucher, vérifier
+   l’état actif et le retour dans le bon espace. Saisir une référence connue : la fiche doit
+   rester dans cet espace. Tester aussi accès direct et changement d’espace.
+   Sur Pixel en HTTPS, démarrer explicitement. Vérifier coins, consigne et lisibilité en
    portrait/paysage ; scanner un QR connu au centre puis hors cadre. Tester inconnu, refus
    caméra, saisie manuelle, arrêt/reprise, départ pendant permission puis acceptation tardive.
    La caméra et le cadre doivent disparaître au départ/résultat/erreur.
 5. Contrôler les contours de focus, textes longs, marges cliquables, hauteur des cibles,
    dégagement de la barre fixe et absence de débordement. Parcourir les créations partagées
    Responsable/Agent et les photos existantes. Ne pas cocher les validations sans essai réel.
+
+6. Dans chaque espace, ouvrir une déclaration, saisir titre/description et sélectionner une
+   photo. Vérifier Prendre une photo / Choisir des photos à 1199 px, puis Ajouter des photos
+   seul et aide capture masquée à 1200/1201 px. Revenir sous le seuil pendant une préparation
+   et au récapitulatif/Modifier : valeurs et médias conservés. Les associations aide/erreurs,
+   le sélecteur multiple, l’annulation et les erreurs restent utilisables au clavier.
 
 Les PNG décodés par jsQR sont réels dans Playwright ; le capteur `canvas.captureStream` et
 les permissions sont simulés. Les scènes testent ratios, bandes, orientation, QR hors cadre,
@@ -84,11 +88,11 @@ Cela ne valide pas caméra physique, lecteur d’écran ou navigateur Pixel ; ce
 La santé HTTP des parcours navigateur est simulée, distincte des tests API.
 
 Suite validée : **interventions sur fiche matériel → gestion des états → fonctionnalités prévues**
-(GPS #45, audio #46, dashboard #47, stabilisation #48). Aucun changement métier, photo PC,
-logo ou footer. Dépendances, npm/Node, workflows, protections et Firebase sont conservés.
+(GPS #45, audio #46, dashboard #47, stabilisation #48). Aucun changement métier, de traitement photo,
+de logo ou de footer. Dépendances, npm/Node, workflows, protections et Firebase sont conservés.
 
 Questions pédagogiques :
 
 1. Pourquoi garder un libellé visible avec l’icône et un lien natif plutôt qu’un clic sur un bloc ?
 2. Pourquoi le ratio vidéo change-t-il la présentation du cadre sans changer les pixels décodés ?
-3. Pourquoi le scan demande-t-il deux appuis depuis une autre page, et pourquoi conserve-t-on Démarrer ?
+3. Pourquoi garder les champs photo montés lors du changement de présentation, et pourquoi conserver Démarrer ?

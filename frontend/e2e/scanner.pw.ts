@@ -322,7 +322,12 @@ test('Le cadre décoratif suit portrait, paysage, bandes et redimensionnement sa
       { width, height },
     );
     await expect
-      .poll(() => page.locator('video').evaluate((element) => { const video = element as HTMLVideoElement; return video.videoWidth / video.videoHeight; }))
+      .poll(() =>
+        page.locator('video').evaluate((element) => {
+          const video = element as HTMLVideoElement;
+          return video.videoWidth / video.videoHeight;
+        }),
+      )
       .toBeCloseTo(width / height, 4);
     await expect
       .poll(async () => {
@@ -343,7 +348,9 @@ test('Le cadre décoratif suit portrait, paysage, bandes et redimensionnement sa
       const outer = (await page.locator('.camera-preview').boundingBox())!;
       expect(outer.width - image.width).toBeGreaterThan(1);
     }
-    await page.locator('.camera-preview').evaluate(element => element.scrollIntoView({ block: 'start' }));
+    await page
+      .locator('.camera-preview')
+      .evaluate((element) => element.scrollIntoView({ block: 'start' }));
     await page.evaluate(() => scrollBy(0, -16));
     const preview = (await page.locator('.camera-preview').boundingBox())!;
     const navigation = (await page.getByRole('navigation', { name: 'Navigation Agent' }).boundingBox())!;
@@ -403,9 +410,9 @@ test('La carte de scan est un lien natif sans demande de caméra avant activatio
   ).toBeVisible();
   expect((await stats(page)).requests).toBe(0);
   if (page.viewportSize()!.width >= 1200) await page.setViewportSize({ width: 1199, height: 1024 });
-  const card = page.getByRole('link', { name: 'Scanner un matériel', exact: true });
+  const card = page.getByRole('main').getByRole('link', { name: 'Scanner', exact: true });
   await expect(card).toHaveAttribute('href', '/agent/scanner');
-  await expect(card).toHaveAccessibleName('Scanner un matériel');
+  await expect(card).toHaveAccessibleName('Scanner');
   await expect(card.locator('img')).toHaveAttribute('alt', '');
   await expect(card.locator('a, button, [tabindex]')).toHaveCount(0);
   const bounds = (await card.boundingBox())!;
@@ -436,3 +443,72 @@ test('La carte de scan est un lien natif sans demande de caméra avant activatio
   await expect(page.getByRole('button', { name: 'Démarrer la caméra', exact: true })).toBeVisible();
   expect((await stats(page)).requests).toBe(0);
 });
+
+for (const space of ['agent', 'responsable'] as const) {
+  test(`Accès Scanner permanent, seuil et fiche dans le bon espace — ${space}`, async ({
+    page,
+  }, info) => {
+    await installCamera(page);
+    await page.goto(`/${space}`);
+    const initialWidth = page.viewportSize()!.width;
+    if (initialWidth >= 1200) await page.setViewportSize({ width: 1199, height: 1024 });
+    const navigation = page.getByRole('navigation', {
+      name: `Navigation ${space === 'agent' ? 'Agent' : 'Responsable'}`,
+    });
+    if (initialWidth <= 760) {
+      if (space === 'agent') {
+        await expect(navigation.locator(':scope > a')).toHaveText([
+          'Accueil',
+          'Matériel',
+          'Interventions',
+        ]);
+        const plus = navigation.getByRole('button', { name: /^Plus/ });
+        await plus.click();
+        await page.keyboard.press('Escape');
+        await expect(plus).toBeFocused();
+        await expect(plus).toHaveAttribute('aria-expanded', 'false');
+        await plus.click();
+      } else await page.getByRole('button', { name: 'Ouvrir la navigation', exact: true }).click();
+    }
+    const link = navigation.getByRole('link', { name: 'Scanner', exact: true });
+    await link.focus();
+    await page.keyboard.press('Enter');
+    await expect(page).toHaveURL(`/${space}/scanner`);
+    await expect(page.getByRole('main')).toBeFocused();
+    if (space === 'agent' && initialWidth <= 760) {
+      await expect(
+        navigation.getByRole('button', { name: 'Plus — Scanner actif', exact: true }),
+      ).toHaveAttribute('aria-expanded', 'false');
+    }
+    expect((await stats(page)).requests).toBe(0);
+    await expect(page.locator(`nav a[href="/${space}/scanner"]`)).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
+    const main = page.getByRole('main');
+    await expect(main.locator('.back-link')).toHaveAttribute('href', `/${space}`);
+    await main.getByRole('button', { name: 'Démarrer la caméra', exact: true }).click();
+    await expect(page).toHaveURL(`/${space}/equipements/EQ-OUT-0001`);
+    expect((await stats(page)).stops).toBe(1);
+
+    await page.goto(`/${space}/scanner`);
+    for (const width of [1199, 1200, 1201, 1199]) {
+      await page.setViewportSize({ width, height: 1024 });
+      await expect(link).toBeVisible({ visible: width < 1200 });
+      await expect(main.getByLabel('Référence du matériel', { exact: true })).toBeVisible();
+      expect((await stats(page)).requests).toBe(0);
+      await noOverflow(page);
+    }
+    await page.setViewportSize({ width: initialWidth, height: info.project.use.viewport!.height });
+    await main.getByLabel('Référence du matériel', { exact: true }).fill('eq-veh-0042');
+    await info.attach(`scanner-${space}-acces`, {
+      body: await page.screenshot({ fullPage: true }),
+      contentType: 'image/png',
+    });
+    await main.getByRole('button', { name: 'Ouvrir la fiche matériel', exact: true }).click();
+    await expect(page).toHaveURL(`/${space}/equipements/EQ-VEH-0042`);
+    await expect(
+      main.getByRole('link', { name: 'Déclarer un incident', exact: true }),
+    ).toHaveAttribute('href', `/${space}/incidents/nouveau/EQ-VEH-0042`);
+  });
+}

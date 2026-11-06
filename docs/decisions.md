@@ -1,6 +1,32 @@
 # Décisions techniques et métier
 
-## 2026-11-06 — Navigation et scan contextuel Agent (#72, en revue)
+## 2026-11-06 — Accès Scanner dans les deux espaces et photos grand écran (#76, en revue)
+
+Base distante vérifiée : `b6c322d3e49738f36c5434965aa09e21ff1a5f8d`, avec #73 et #75
+fusionnées. Arthur conserve les quatre destinations principales Agent sur petit mobile et
+ajoute Scanner dans Plus ; au-delà de 760 px les destinations secondaires s’affichent
+à côté des principales. La carte d’accueil conserve son lien natif, son icône et son style,
+avec le libellé visible « Scanner ». Responsable obtient aussi Scanner et sa route dédiée.
+Le composant partagé lit l’espace de la route pour le retour et la fiche reconnue ; aucun
+moteur caméra/décodeur dupliqué, aucun passage implicite de Responsable vers Agent.
+
+Carte et liens Scanner restent masqués dès 1200 px inclus. Les deux routes directes
+restent utilisables à toute largeur, avec saisie manuelle et Démarrer explicite. Le seuil
+est une convention de présentation, sans détection de caméra ni autorisation métier.
+Les espaces restent publics. Cadre QR, image entière, erreurs et nettoyage sont conservés.
+
+Photos : sous 1200 px, Prendre une photo et Choisir des photos ; dès 1200 inclus,
+Ajouter des photos ouvre le même sélecteur multiple, sans action ni aide de prise de vue.
+Des éléments texte réels sont alternés par CSS, sans recréer formulaire ou champs : saisie,
+photos, préparation et récapitulatif survivent au redimensionnement. Aucune limite,
+compression, propriété des URL ou mémoire partagée ne change. Voir les guides
+[Scanner](scanner-qr.md), [PC/Pixel](agent-scan-ux.md) et [photos](photos-demo.md).
+
+Les tests locaux ciblés et la CI complète suivent #75. Capteur/permissions simulés et vrai
+PNG décodé ne prouvent pas la caméra physique Pixel. Dépendances, Node/npm, workflows,
+sharding, permissions/ruleset et Firebase sont conservés. Validation humaine et fusion : Arthur.
+
+## 2026-11-06 — Navigation et scan contextuel Agent (#72, intégrée par #73)
 
 Adaptation explicite validée par Arthur, base `7967098…` après fusion de #71. La navigation
 permanente sert les rubriques : Accueil, Matériel, Interventions, Plus (Incidents/Profil)

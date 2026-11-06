@@ -147,3 +147,17 @@ input[type='file'] {
 input[type='file'][hidden] {
   display: none;
 }
+
+.photo-label-large {
+  display: none;
+}
+@media (min-width: 1200px) {
+  #take-photo,
+  #capture-help,
+  .photo-label-small {
+    display: none;
+  }
+  .photo-label-large {
+    display: inline;
+  }
+}

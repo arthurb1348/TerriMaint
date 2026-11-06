@@ -1,13 +1,17 @@
-# Scanner Agent — issue #44 intégrée par la PR #56
+# Scanner Agent et Responsable — #44 intégrée, #76 en revue
 
-## Adaptation UX #72 — en revue
+## Accès et adaptation UX actuels
 
-#71 est fusionnée. Le [guide UX](agent-scan-ux.md) décrit la carte Scanner sur l’accueil
-sous 1200 px, le retrait de Scanner de la navbar et le cadre décoratif uniquement pendant
-le scan. Son ratio suit l’image réellement visible, y compris portrait/paysage et bandes.
-Le QR hors cadre reste reconnu : `QrCamera` et `QrDecoder` ne sont pas modifiés.
-Les sections datées ci-dessous décrivent les incréments initiaux ; ce guide UX précise
-la navigation et le viseur qui les remplacent. Les garanties de permission/nettoyage restent valables.
+#72 est intégrée par #73 : cadre décoratif suivant le ratio vidéo, image entière analysée,
+carte d’accueil sous 1200 px. #76 en revue ajoute Scanner dans Plus Agent et la navigation
+Responsable, avec les routes `/agent/scanner` et `/responsable/scanner`. Liens et carte sont
+masqués dès 1200 px, routes directes et saisie disponibles à toute largeur. Le composant
+partagé conserve l’espace de la route pour le retour et la fiche reconnue. Aucun contrôle
+d’autorisation serveur n’est ajouté. Voir le [guide PC/Pixel](agent-scan-ux.md).
+
+Les sections datées ci-dessous décrivent les incréments initiaux. Le cadre reste décoratif,
+le QR hors cadre reconnu, `QrCamera` et `QrDecoder` inchangés ; permissions et nettoyage
+restent ceux décrits ici. L’ouverture de la page ne demande pas la caméra.
 
 ## Point de départ et choix
 
@@ -29,7 +33,8 @@ n’avait pas été ajouté dans #56 ; #72 l’introduit sans modifier le décod
 L’indicateur Synchronisé n’est pas ajouté. Aucune fidélité
 pixel par pixel n’est revendiquée pour ce parcours adapté aux critères validés.
 L’accès d’accueil reste masqué à partir de 1200 px inclus ; l’URL directe reste utilisable.
-Depuis #72 en revue, Scanner quitte entièrement la navbar.
+Depuis #76 en revue, Scanner est une destination secondaire Agent et une entrée Responsable,
+présentées sous 1200 px ; cette règle remplace le retrait complet de #72.
 
 ## Format et données non fiables
 
@@ -41,7 +46,8 @@ variantes Unicode, chemins, URL et HTML sont invalides. Aucun rapprochement appr
 Un format valide absent de la source produit Référence inconnue.
 
 Le résolveur retourne l’objet existant, sans copie ni équipement inventé.
-Seul son `id` construit `['/agent/equipements', id]`. Aucun contenu brut du QR
+Seul son `id` construit la route interne `/${space}/equipements/:id`,
+avec l’espace fourni par la route Scanner. Aucun contenu brut du QR
 n’est rendu comme HTML, évalué, journalisé ou passé à une ouverture d’URL.
 Une erreur rend le focus au champ ; la correction et la reprise restent disponibles.
 Dans #58, le bloc encadré au-dessus de la saisie distingue Référence invalide et

@@ -56,9 +56,13 @@ La branche `feat/57-prepare-report-photos` part de `origin/main`
 Ordre : #58 et #57 intégrées → #59 mémoire partagée en revue → #45 GPS → #46 audio
 → #47 dashboard → #48 stabilisation. Django/DRF/PostgreSQL reste la cible backend.
 
-Deux boutons natifs du formulaire partagé Agent/Responsable ouvrent deux `input file` :
-**Prendre une photo** (`capture="environment"`, une image) et **Choisir dans la galerie**
-(sélection multiple, sans `capture`). Le navigateur décide de la proposition effective :
+Dans #76 en revue, sous 1200 px, deux boutons natifs du formulaire partagé Agent/Responsable
+ouvrent les deux `input file` existants : **Prendre une photo** (`capture="environment"`,
+une image) et **Choisir des photos** (sélection multiple, sans `capture`). Dès 1200 px inclus,
+seul **Ajouter des photos** est visible et ouvre ce même sélecteur multiple ; l’action capture
+et son aide sont masquées. Les libellés sont de vrais textes accessibles, alternés en CSS.
+Formulaire, champs et médias restent montés : redimensionner ne perd ni saisie, photos,
+préparation en cours ni récapitulatif. Les aides/erreurs restent associées au bon bouton. Le navigateur décide de la proposition effective :
 ni caméra arrière garantie, ni lecteur caméra personnalisé, ni nouvelle bibliothèque.
 Annuler un sélecteur produit une sélection vide et ne modifie ni saisie, ni photos, ni erreurs.
 Le champ est vidé après sélection pour pouvoir reprendre le même fichier.
@@ -195,7 +199,7 @@ Utiliser le lien HTTPS du résumé **Firebase Hosting de cette exécution**, com
 1. Saisir un intitulé et une priorité. Prendre une photo : vérifier proposition de la caméra
    arrière, orientation portrait/paysage, détail d’un défaut et aperçu. Noter Pixel/Android,
    navigateur/version, durée ressentie et qualité ; `capture` reste une indication.
-2. Choisir dans la galerie, puis annuler chacun des deux sélecteurs : saisies/photos intactes.
+2. Choisir des photos (Ajouter des photos dès 1200 px), puis annuler les sélecteurs disponibles : saisies/photos intactes.
    Ajouter une photo > 5 Mio mais ≤ 24 Mio/24 MP ; vérifier préparation puis détail visible.
    Une photo trop grande ou illisible doit laisser les autres et les champs en place.
 3. Essayer quatre photos et une sélection mixte. Supprimer pendant une préparation ;

@@ -28,6 +28,7 @@ export class MainNavigation {
   protected readonly expanded = signal(false);
   protected readonly moreOpen = signal(false);
   protected readonly secondaryDestinations = [
+    { path: '/agent/scanner', label: 'Scanner', icon: 'scan' },
     { path: '/agent/incidents', label: 'Incidents', icon: 'incident' },
     { path: '/agent/profil', label: 'Profil', icon: 'profile' },
   ];
@@ -101,6 +102,7 @@ export class MainNavigation {
           { path: '/responsable/incidents', label: 'Incidents', icon: 'warning' },
           { path: '/responsable/interventions', label: 'Interventions', icon: 'intervention' },
           { path: '/responsable/equipements', label: 'Matériel', icon: 'truck' },
+          { path: '/responsable/scanner', label: 'Scanner', icon: 'scan' },
           { path: '/responsable/agents', label: 'Agents', icon: 'agents' },
         ],
   );

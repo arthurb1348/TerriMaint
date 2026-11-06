@@ -16,7 +16,7 @@ import { RouterLink } from '@angular/router';
       <p>Pour {{ presentedAgent.name }}</p>
       <a class="scanner-card" routerLink="/agent/scanner">
         <img src="/icons/scan.svg" alt="" aria-hidden="true" width="56" height="56" />
-        <span>Scanner un matériel</span>
+        <span>Scanner</span>
       </a>
       <section class="intervention-preview" aria-labelledby="active-interventions-title">
         <h2 id="active-interventions-title">Interventions actives</h2>

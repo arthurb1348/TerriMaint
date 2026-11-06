@@ -25,7 +25,7 @@ for (const space of ['agent', 'responsable']) {
     await main.getByLabel('Intitulé', { exact: true }).fill('Photo de démonstration');
     await main.getByRole('radio', { name: /Basse/ }).check();
     const chooser = main.locator('#gallery-file');
-    const galleryButton = main.getByRole('button', { name: 'Choisir dans la galerie', exact: true });
+    const galleryButton = main.getByRole('button', { name: page.viewportSize()!.width < 1200 ? 'Choisir des photos' : 'Ajouter des photos', exact: true });
     await expect(main.locator('#camera-file')).toHaveAttribute('capture', 'environment');
     await expect(chooser).not.toHaveAttribute('capture');
     await expect(chooser).toBeHidden();

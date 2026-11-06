@@ -229,11 +229,13 @@ for (const space of ['agent', 'responsable']) {
     await page.locator('#gallery-file').setInputFiles(file);
     await expect(page.locator('.photo-gallery img')).toHaveCount(1);
     const src = await page.locator('.photo-gallery img').getAttribute('src');
-    for (const name of ['Prendre une photo', 'Choisir dans la galerie']) {
+    for (const name of page.viewportSize()!.width < 1200
+      ? ['Prendre une photo', 'Choisir des photos']
+      : ['Ajouter des photos']) {
       const chooserEvent = page.waitForEvent('filechooser');
       await page.getByRole('button', { name, exact: true }).click();
       const chooser = await chooserEvent;
-      expect(chooser.isMultiple()).toBe(name === 'Choisir dans la galerie');
+      expect(chooser.isMultiple()).toBe(name !== 'Prendre une photo');
       await chooser.setFiles([]);
       await expect(page.locator('.photo-gallery img')).toHaveAttribute('src', src!);
       await expect(page.getByLabel('Intitulé', { exact: true })).toHaveValue('Fissure à examiner');
