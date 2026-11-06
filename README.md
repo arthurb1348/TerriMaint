@@ -137,7 +137,7 @@ arrêter Django puis cliquer sur le bouton pour voir « API indisponible ». Rel
 et vérifier à nouveau. Tester à 375 px et au clavier : contenu sans débordement,
 focus visible et libellé de statut lisible sans dépendre de la couleur.
 
-## Scanner Agent (issue #44 intégrée)
+## Scanner Agent et Responsable (#44 intégrée, #76 en revue)
 
 `/agent/scanner` propose une lecture QR après clic et une
 saisie manuelle toujours disponible. Le QR contient seulement une référence connue
@@ -148,10 +148,12 @@ décodage testé et les limites. Sur téléphone, la caméra exige HTTPS avec ce
 reconnu ; une adresse LAN HTTP ne remplace pas le `localhost` de l’ordinateur.
 #43/PR #55 et #44/PR #56 sont intégrées.
 
-L’UX [#72](https://github.com/arthurb1348/terrimaint/issues/72) est **en revue** :
-navbar Agent Accueil/Matériel/Interventions/Plus, carte Scanner sur l’accueil sous 1200 px,
-aperçu conservé et cadre décoratif ajusté à l’image vidéo, sans recadrer le décodage.
-Depuis une autre page : Accueil → Scanner. Voir le [guide PC/Pixel](docs/agent-scan-ux.md).
+L’UX #72 est intégrée par #73. Dans #76 **en revue**, la carte d’accueil porte le libellé
+Scanner ; Plus Agent ajoute Scanner sans changer les quatre destinations principales.
+Responsable obtient `/responsable/scanner`, avec le même scanner et des fiches ouvertes
+sans changer d’espace. Carte et liens restent visibles sous 1200 px, masqués dès 1200 inclus ;
+les deux routes directes restent utilisables à toute largeur, avec saisie manuelle.
+Le cadre reste décoratif et l’image entière analysée. Voir le [guide PC/Pixel](docs/agent-scan-ux.md).
 
 ## Limites des parcours métier et revue Pixel
 
@@ -170,7 +172,8 @@ Les ajustements Pixel [#58](https://github.com/arthurb1348/terrimaint/issues/58)
 liens natifs, accueil Responsable simplifié, messages métier et erreurs QR identifiables.
 Le [guide de revue](docs/pixel-ux.md) précise les choix et la procédure Pixel.
 
-Les photos **#57 sont intégrées par la PR #63** : deux actions Prendre une photo / Choisir dans la galerie,
+Les photos **#57 sont intégrées par la PR #63** : sous 1200 px, Prendre une photo / Choisir des photos ;
+dans #76 en revue, dès 1200 px, Ajouter des photos seul ouvre le sélecteur multiple existant,
 préparation locale séquentielle, 3 photos facultatives, entrées JPEG/PNG/WebP jusqu’à
 24 Mio / 24 MP / 8 192 px par axe, JPEG préparés jusqu’à 1 920 px et 1,5 Mio réellement
 contrôlés. Aperçu, récapitulatif et Modifier partagent la version préparée, puis #59

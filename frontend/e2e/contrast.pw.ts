@@ -126,7 +126,7 @@ for (const space of ['agent', 'responsable']) {
       await expect(field).toHaveValue('');
       await states(page, field, info, 'declaration-champ-vide', true);
     }
-    for (const action of await main.locator('.photo-actions button').all()) await states(page, action, info, 'photo-action');
+    for (const action of await main.locator('.photo-actions button:visible').all()) await states(page, action, info, 'photo-action');
     await main.getByRole('button', { name: 'Vérifier le signalement', exact: true }).click();
     const invalid = main.locator('#incident-title');
     await expect(invalid).toBeFocused();
@@ -207,7 +207,7 @@ test('Contrastes rendus : Scanner, saisie et erreur', async ({ page }, info) => 
 test('Contrastes rendus : aperçu et consultation des interventions Agent', async ({ page }, info) => {
   const main = page.getByRole('main');
   await page.goto('/agent');
-  const scannerCard = main.getByRole('link', { name: 'Scanner un matériel', exact: true });
+  const scannerCard = main.getByRole('link', { name: 'Scanner', exact: true });
   if (page.viewportSize()!.width < 1200) await states(page, scannerCard, info, 'carte-scanner');
   else await expect(scannerCard).toBeHidden();
   const preview = main.locator('.preview-link').first();

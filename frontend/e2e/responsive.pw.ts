@@ -23,6 +23,7 @@ const routes = [
   '/agent/incidents/nouveau/EQ-OUT-0003',
   '/agent/incidents/nouveau/inconnu',
   '/agent/scanner',
+  '/responsable/scanner',
   '/agent/profil',
   '/responsable',
   '/responsable/equipements',
@@ -775,7 +776,7 @@ test('La navigation Agent conserve ses destinations selon la taille', async ({ p
 
   if ((page.viewportSize()?.width ?? 0) > 760) {
     await expect(plus).toBeHidden();
-    const names = ['Accueil', 'Matériel', 'Interventions', 'Incidents', 'Profil'];
+    const names = ['Accueil', 'Matériel', 'Interventions', ...(page.viewportSize()!.width < 1200 ? ['Scanner'] : []), 'Incidents', 'Profil'];
     await expect(navigation.getByRole('link')).toHaveText(names);
     await expect(incidents).toBeVisible();
     await expect(profile).toBeVisible();
@@ -829,11 +830,11 @@ test('La navigation Agent conserve ses destinations selon la taille', async ({ p
 test('La carte Scanner suit la présentation et la route reste accessible', async ({ page }, info) => {
   await page.goto('/agent');
   const main = page.getByRole('main');
-  const card = main.getByRole('link', { name: 'Scanner un matériel', exact: true });
+  const card = main.getByRole('link', { name: 'Scanner', exact: true });
   const navigation = page.getByRole('navigation', { name: 'Navigation Agent' });
   const scannerVisible = page.viewportSize()!.width < 1200;
   await expect(card).toBeVisible({ visible: scannerVisible });
-  await expect(navigation.locator('a[href="/agent/scanner"]')).toHaveCount(0);
+  await expect(navigation.locator('a[href="/agent/scanner"]')).toHaveCount(1);
   await expect(main.locator('.page-shortcuts')).toHaveCount(0);
   await expect(main.getByRole('link', { name: /^(Matériel|Incidents|Mes interventions)$/ })).toHaveCount(0);
   await expect(main.locator('.preview-link')).toHaveCount(2);
@@ -872,14 +873,14 @@ test('Redimensionner conserve la carte Scanner sous 1200 px et répartit la navi
   await page.goto('/agent');
   const main = page.getByRole('main');
   const navigation = page.getByRole('navigation', { name: 'Navigation Agent' });
-  const card = main.getByRole('link', { name: 'Scanner un matériel', exact: true });
+  const card = main.getByRole('link', { name: 'Scanner', exact: true });
   for (const width of [1024, 1199, 1200, 1201, 1440, 1200, 1199, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 1024 });
     await expect(card).toBeVisible({ visible: width < 1200 });
-    await expect(navigation.locator('a[href="/agent/scanner"]')).toHaveCount(0);
+    await expect(navigation.locator('a[href="/agent/scanner"]')).toHaveCount(1);
     await expect(navigation.getByRole('link', { name: 'Interventions', exact: true })).toBeVisible();
     if (width > 760) {
-      await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Interventions', 'Incidents', 'Profil']);
+      await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Interventions', ...(width < 1200 ? ['Scanner'] : []), 'Incidents', 'Profil']);
       await expectEvenAgentNavigation(navigation);
     } else {
       await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Interventions']);
@@ -908,7 +909,7 @@ test('La navigation Responsable garde le contexte après un changement de page',
     await expect(toggle).toBeHidden();
   }
   await expect(navigation).toBeVisible();
-  await expect(navigation.getByRole('link')).toHaveCount(5);
+  await expect(navigation.getByRole('link')).toHaveCount(page.viewportSize()!.width < 1200 ? 6 : 5);
   await expectNoHorizontalOverflow(page);
   await capture(page, info, 'navigation-responsable');
   await navigation.getByRole('link', { name: 'Matériel', exact: true }).click();

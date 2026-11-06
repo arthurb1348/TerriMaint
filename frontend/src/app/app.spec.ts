@@ -66,22 +66,26 @@ describe('Shell et routage', () => {
     ['/responsable/incidents', 'Incidents', 'Incidents'],
     ['/responsable/interventions', 'Interventions', 'Interventions'],
     ['/agent/scanner', 'Scanner', 'Scanner'],
+    ['/responsable/scanner', 'Scanner', 'Scanner'],
     ['/agent/profil', 'Profil', 'Profil'],
     ['/responsable/agents', 'Agents', 'Agents'],
-  ])('ouvre directement %s avec son titre et son contexte de navigation', async (url, heading, title) => {
-    await navigate(url);
-    expect(element.querySelector('main h1')?.textContent).toBe(heading);
-    expect(TestBed.inject(Title).getTitle()).toBe(`${title} — TerriMaint`);
-    const current = element.querySelectorAll('nav a[aria-current="page"]');
-    if (url === '/agent/scanner') {
-      expect(current).toHaveLength(0);
-      expect(element.querySelector('main .back-link')?.getAttribute('href')).toBe('/agent');
-    } else {
+  ])(
+    'ouvre directement %s avec son titre et son contexte de navigation',
+    async (url, heading, title) => {
+      await navigate(url);
+      expect(element.querySelector('main h1')?.textContent).toBe(heading);
+      expect(TestBed.inject(Title).getTitle()).toBe(`${title} — TerriMaint`);
+      const current = element.querySelectorAll('nav a[aria-current="page"]');
       expect(current).toHaveLength(1);
       expect(current[0]?.getAttribute('href')).toBe(url);
-    }
-    http.expectNone('/api/v1/health');
-  });
+      if (url.endsWith('/scanner')) {
+        expect(element.querySelector('main .back-link')?.getAttribute('href')).toBe(
+          url.startsWith('/agent') ? '/agent' : '/responsable',
+        );
+      }
+      http.expectNone('/api/v1/health');
+    },
+  );
 
   it('conserve les accès métier Responsable et change d’espace par le shell', async () => {
     await navigate('/responsable');
@@ -328,6 +332,7 @@ describe('Shell et routage', () => {
     const menu = element.querySelector('#agent-secondary-navigation')!;
     expect(toggle.getAttribute('aria-controls')).toBe(menu.id);
     expect(Array.from(menu.querySelectorAll('a'), (link) => link.getAttribute('href'))).toEqual([
+      '/agent/scanner',
       '/agent/incidents',
       '/agent/profil',
     ]);
@@ -336,6 +341,7 @@ describe('Shell et routage', () => {
   it.each([
     ['/agent/incidents', 'Incidents'],
     ['/agent/profil', 'Profil'],
+    ['/agent/scanner', 'Scanner'],
   ])('signale dans Plus la rubrique active en accès direct : %s', async (url, label) => {
     await navigate(url);
     const toggle = element.querySelector<HTMLButtonElement>('.more-toggle')!;
@@ -422,6 +428,6 @@ describe('Shell et routage', () => {
     expect(active).toHaveLength(1);
     expect(active[0].getAttribute('href')).toBe('/agent/interventions');
     expect(element.querySelector('.more-toggle')?.classList.contains('active')).toBe(false);
-    expect(element.querySelector('nav a[href="/agent/scanner"]')).toBeNull();
+    expect(element.querySelector('.secondary-links a[href="/agent/scanner"]')).not.toBeNull();
   });
 });

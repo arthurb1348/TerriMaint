@@ -1,6 +1,14 @@
 # Guide des fichiers et configurations
 
-## Accueil/navigation/guide QR #72 — en revue
+## Accès Scanner et photos grand écran #76 — en revue
+
+Le [guide PC/Pixel](agent-scan-ux.md) décrit Scanner dans Plus Agent et Responsable.
+`app.routes.ts` fournit `scannerSpace` aux deux routes ; `scanner.ts` en déduit retour et
+fiche reconnue. `main-navigation` masque les liens dès 1200 px. Les spans de libellé photo
+et le bouton/aide capture sont alternés par CSS dans `incident-declaration`, sans remonter
+le formulaire ni changer `IncidentPhotos`. Les moteurs et la mémoire partagée sont conservés.
+
+## Accueil/navigation/guide QR #72 — intégrée par #73
 
 Le [guide UX](agent-scan-ux.md) décrit les adaptations demandées par Arthur :
 `main-navigation.ts/.html/.css` remplace Scanner par Interventions, `agent.ts/.css` porte
@@ -1068,9 +1076,9 @@ Le menu Responsable annonce son état avec `aria-expanded` et ferme après un cl
 rejoint le contenu lorsque le lien mobile disparaît. Le lien d'évitement mène au seul `main`.
 Le contrôle de santé et son service restent inchangés et accessibles depuis l'accueil général.
 
-## Accès Scanner et seuil de présentation (#21 intégré, adaptation #72 en revue)
+## Accès Scanner et seuil de présentation
 
-L’accueil Agent propose la carte native « Scanner un matériel », visible sous **1200 px**,
+L’accueil Agent propose la carte native « Scanner », visible sous **1200 px**,
 masquée dès **1200 px inclus** par `agent.css`. Les anciens raccourcis sont retirés.
 Le lien masqué ne prend plus de place et sort de la tabulation/arbre accessible.
 La route `/agent/scanner` reste utilisable à toute largeur, avec Démarrer explicite.
@@ -1078,21 +1086,24 @@ Le seuil est une media query CSS, réévaluée sans rechargement, sans détectio
 
 | Largeur CSS | Navigation Agent |
 | --- | --- |
-| Jusqu’à 760 px | Accueil, Matériel, Interventions et Plus ; Incidents et Profil dans Plus |
-| Dès 761 px | Accueil, Matériel, Interventions, Incidents et Profil directement |
+| Jusqu’à 760 px | Accueil, Matériel, Interventions et Plus ; Scanner, Incidents et Profil dans Plus |
+| De 761 à 1199 px | Accueil, Matériel, Interventions, Scanner, Incidents et Profil directement |
+| Dès 1200 px | Les cinq destinations sans Scanner |
 
-Scanner n’est plus dans la navbar. Depuis une autre page : Accueil → Scanner (deux appuis).
+Scanner est dans Plus Agent ou directement affiché de 761 à 1199 px ; Responsable
+possède aussi une entrée sous 1200 px. Le composant partagé suit l’espace de la route.
 Interventions utilise `RouterLinkActive` sans exactitude stricte pour conserver son état
 sur les fiches et les URL filtrées. Le seuil de Plus (760/761) est indépendant du seuil
 Scanner. Le lien Interventions reçoit un peu plus de largeur sur mobile, sans réduire
-la police ; les cinq liens se répartissent également au-delà. Responsable est conservé.
+la police ; les liens visibles se répartissent également au-delà. Responsable ajoute Scanner
+sous 1200 px en conservant les autres destinations.
 
 | Endroit à modifier | Rôle |
 | --- | --- |
 | `features/agent/agent.ts/.css` | Carte verte, icône locale blanche et texte visible, seuil 1200 px ; aperçu partagé. |
 | `shared/main-navigation/main-navigation.ts/.html/.css` | Destinations, état actif, Plus, répartition des liens. |
 | `features/scanner/scanner.ts/.html/.css` | Ratio intrinsèque, surface vidéo, coins décoratifs et consigne. |
-| `app.routes.ts` | Route Scanner conservée ; le CSS ne conditionne pas son accès. |
+| `app.routes.ts` | Deux routes Scanner avec `scannerSpace` ; le CSS ne conditionne pas leur accès. |
 | `e2e/responsive.pw.ts`, `e2e/scanner.pw.ts`, `e2e/agent-interventions.pw.ts` | Seuils, clavier, liens, caméra simulée/décodage réel et régressions. |
 
 Le [guide de revue](agent-scan-ux.md) détaille pixels décodés inchangés, bandes, procédures
@@ -1125,7 +1136,7 @@ le retour du focus et le maintien de l'URL et du lien actif dans chaque espace. 
 le débordement après saisie, y compris une recherche très longue, et après effacement.
 
 Deux scénarios dans chacun des quatre projets contrôlent la carte Scanner et son seuil :
-visibilité de l’accueil, absence de Scanner dans la navbar, URL directe à toute largeur,
+visibilité de l’accueil, accès Scanner secondaire sous 1200 px, URL directe à toute largeur,
 tabulation et accès aux rubriques. Le redimensionnement couvre 1024, 1199, 1200, 1201 et
 1440 px puis revient jusqu’à 320 px sans recharge. Les liens se répartissent également
 au-delà de 760 px ; sur mobile, Interventions reçoit la place nécessaire à son libellé.

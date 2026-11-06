@@ -253,3 +253,10 @@ img {
     display: flex;
   }
 }
+
+/* Convention de présentation : les routes restent accessibles à toute largeur. */
+@media (min-width: 1200px) {
+  nav a.scanner-link {
+    display: none;
+  }
+}

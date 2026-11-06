@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
   Component,
+  computed,
   DestroyRef,
   ElementRef,
   HostListener,
@@ -10,8 +11,8 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { NavigationStart, Router, RouterLink } from '@angular/router';
+import { toSignal, takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, NavigationStart, Router, RouterLink } from '@angular/router';
 import { resolveEquipmentReference } from './equipment-reference';
 import { QrCamera } from './qr-camera';
 
@@ -24,6 +25,13 @@ import { QrCamera } from './qr-camera';
   styleUrl: './scanner.css',
 })
 export class Scanner {
+  private readonly route = inject(ActivatedRoute);
+  private readonly routeData = toSignal(this.route.data, {
+    initialValue: this.route.snapshot.data,
+  });
+  protected readonly space = computed(() =>
+    this.routeData()['scannerSpace'] === 'responsable' ? 'responsable' : 'agent',
+  );
   private readonly injector = inject(Injector);
   private readonly camera = inject(QrCamera);
   private readonly router = inject(Router);
@@ -44,6 +52,7 @@ export class Scanner {
   }
 
   constructor() {
+    afterNextRender(() => this.document.getElementById('main-content')?.focus());
     this.router.events.pipe(takeUntilDestroyed()).subscribe((event) => {
       if (event instanceof NavigationStart) this.stop();
     });
@@ -126,7 +135,7 @@ export class Scanner {
     this.message.set('Matériel reconnu. Ouverture de la fiche.');
     // Seul l’identifiant issu de la source typée construit une route interne.
     void this.router
-      .navigate(['/agent/equipements', result.equipment.id])
+      .navigate([`/${this.space()}/equipements`, result.equipment.id])
       .then((success) => {
         if (!success) this.navigationFailed();
       })

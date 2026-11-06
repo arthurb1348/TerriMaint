@@ -96,12 +96,12 @@ export const routes: Routes = [
       },
     },
   ]),
-  {
-    path: 'agent/scanner',
+  ...(['agent', 'responsable'] as const).map((space) => ({
+    path: `${space}/scanner`,
     loadComponent: () => import('./features/scanner/scanner').then((m) => m.Scanner),
     title: 'Scanner — TerriMaint',
-    data: { label: 'Scanner' },
-  },
+    data: { label: 'Scanner', scannerSpace: space },
+  })),
   ...[
     {
       path: 'agent/profil',

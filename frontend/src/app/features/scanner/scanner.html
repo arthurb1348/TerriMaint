@@ -1,6 +1,11 @@
 <section class="feature-page" aria-labelledby="scanner-title">
-  <a class="page-action secondary back-link" routerLink="/agent"
-    ><span aria-hidden="true">←</span><span>Retour à l’accueil Agent</span></a
+  <a
+    class="page-action secondary back-link"
+    [routerLink]="space() === 'agent' ? '/agent' : '/responsable'"
+    ><span aria-hidden="true">←</span
+    ><span>{{
+      space() === 'agent' ? 'Retour à l’accueil Agent' : 'Retour au tableau de bord'
+    }}</span></a
   >
   <h1 id="scanner-title">Scanner</h1>
   <h2>Scanner un QR code</h2>

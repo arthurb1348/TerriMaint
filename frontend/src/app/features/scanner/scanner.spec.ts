@@ -6,7 +6,7 @@ import { routes } from '../../app.routes';
 import { QrCamera } from './qr-camera';
 import { Scanner } from './scanner';
 
-describe('Scanner Agent', () => {
+describe.each(['agent', 'responsable'] as const)('Scanner %s', (space) => {
   let harness: RouterTestingHarness;
   const camera = { start: vi.fn(), stop: vi.fn() };
   let onValue: (value: string) => void;
@@ -23,7 +23,7 @@ describe('Scanner Agent', () => {
     TestBed.overrideComponent(Scanner, {
       set: { providers: [{ provide: QrCamera, useValue: camera }] },
     });
-    harness = await RouterTestingHarness.create('/agent/scanner');
+    harness = await RouterTestingHarness.create(`/${space}/scanner`);
     harness.detectChanges();
   });
   afterEach(() => {
@@ -45,6 +45,7 @@ describe('Scanner Agent', () => {
 
   it('garde la saisie disponible sans demander de permission', () => {
     expect(camera.start).not.toHaveBeenCalled();
+    expect(content().querySelector('.back-link')?.getAttribute('href')).toBe(`/${space}`);
     expect(content().querySelector<HTMLElement>('.camera-preview')!.hidden).toBe(true);
     expect(content().querySelector('label')!.textContent).toContain('Référence du matériel');
     expect(content().querySelector('input')!.getAttribute('aria-describedby')).toContain(
@@ -54,10 +55,10 @@ describe('Scanner Agent', () => {
   it('ouvre la fiche et conserve le parcours de déclaration', async () => {
     submit('  eq-veh-0042  ');
     await harness.fixture.whenStable();
-    expect(TestBed.inject(Router).url).toBe('/agent/equipements/EQ-VEH-0042');
+    expect(TestBed.inject(Router).url).toBe(`/${space}/equipements/EQ-VEH-0042`);
     expect(content().textContent).toContain('Fourgon de voirie');
     expect(content().querySelector('.declaration-link')!.getAttribute('href')).toBe(
-      '/agent/incidents/nouveau/EQ-VEH-0042',
+      `/${space}/incidents/nouveau/EQ-VEH-0042`,
     );
     expect(camera.stop).toHaveBeenCalled();
   });
@@ -68,9 +69,11 @@ describe('Scanner Agent', () => {
       expect(content().querySelector('[role=alert]')!.textContent).toMatch(/inconnue|invalide/);
       expect(content().querySelector('input')!.getAttribute('aria-invalid')).toBe('true');
       expect(content().querySelector('script')).toBeNull();
-      expect(TestBed.inject(Router).url).toBe('/agent/scanner');
+      expect(TestBed.inject(Router).url).toBe(`/${space}/scanner`);
       expect(content().querySelectorAll('[role=alert]')).toHaveLength(1);
-      expect(content().querySelector('input')!.getAttribute('aria-describedby')).toContain('reference-error');
+      expect(content().querySelector('input')!.getAttribute('aria-describedby')).toContain(
+        'reference-error',
+      );
     },
   );
   it('ne navigue qu’une fois malgré les reconnaissances répétées et la saisie concurrente', () => {
@@ -79,7 +82,7 @@ describe('Scanner Agent', () => {
     onValue('EQ-OUT-0001');
     onValue('EQ-OUT-0001');
     submit('EQ-VEH-0042');
-    expect(navigate).toHaveBeenCalledExactlyOnceWith(['/agent/equipements', 'EQ-OUT-0001']);
+    expect(navigate).toHaveBeenCalledExactlyOnceWith([`/${space}/equipements`, 'EQ-OUT-0001']);
   });
   it.each(['EQ-OUT-9999', 'https://evil.example', '<img src=x onerror=alert(1)>', 'incorrect'])(
     'refuse le contenu QR non reconnu : %s',
@@ -111,7 +114,7 @@ describe('Scanner Agent', () => {
   it('nettoie au départ et ignore les résultats après destruction', async () => {
     action();
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate');
-    await harness.navigateByUrl('/agent/equipements');
+    await harness.navigateByUrl(`/${space}/equipements`);
     expect(camera.stop.mock.calls.length).toBeGreaterThanOrEqual(2);
     onValue('EQ-OUT-0001');
     expect(navigate).not.toHaveBeenCalled();
@@ -151,14 +154,30 @@ describe('Scanner Agent', () => {
     const video = content().querySelector('video')!;
     const image = content().querySelector<HTMLElement>('.camera-image')!;
     action();
-    for (const [width, height, event] of [[1280, 720, 'loadedmetadata'], [720, 1280, 'resize'], [0, 0, 'resize']] as const) {
+    for (const [width, height, event] of [
+      [1280, 720, 'loadedmetadata'],
+      [720, 1280, 'resize'],
+      [0, 0, 'resize'],
+    ] as const) {
       Object.defineProperty(video, 'videoWidth', { configurable: true, value: width });
       Object.defineProperty(video, 'videoHeight', { configurable: true, value: height });
       video.dispatchEvent(new Event(event));
       harness.detectChanges();
-      expect(Number(image.style.getPropertyValue('--preview-ratio'))).toBe(width ? width / height : 720 / 1280);
+      expect(Number(image.style.getPropertyValue('--preview-ratio'))).toBe(
+        width ? width / height : 720 / 1280,
+      );
     }
     expect(camera.start).toHaveBeenCalledOnce();
   });
 
+  it('actualise les liens et la destination après un changement d’espace', async () => {
+    const otherSpace = space === 'agent' ? 'responsable' : 'agent';
+    await harness.navigateByUrl(`/${otherSpace}/scanner`);
+    expect(camera.start).not.toHaveBeenCalled();
+    expect(content().querySelector('.back-link')?.getAttribute('href')).toBe(`/${otherSpace}`);
+    const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
+    action();
+    onValue('EQ-OUT-0001');
+    expect(navigate).toHaveBeenCalledExactlyOnceWith([`/${otherSpace}/equipements`, 'EQ-OUT-0001']);
+  });
 });
