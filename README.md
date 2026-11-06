@@ -140,6 +140,11 @@ décodage testé et les limites. Sur téléphone, la caméra exige HTTPS avec ce
 reconnu ; une adresse LAN HTTP ne remplace pas le `localhost` de l’ordinateur.
 #43/PR #55 et #44/PR #56 sont intégrées.
 
+L’UX [#72](https://github.com/arthurb1348/terrimaint/issues/72) est **en revue** :
+navbar Agent Accueil/Matériel/Interventions/Plus, carte Scanner sur l’accueil sous 1200 px,
+aperçu conservé et cadre décoratif ajusté à l’image vidéo, sans recadrer le décodage.
+Depuis une autre page : Accueil → Scanner. Voir le [guide PC/Pixel](docs/agent-scan-ux.md).
+
 ## Limites des parcours métier et revue Pixel
 
 Matériel et agents restent des références locales fixes. Les signalements et interventions
@@ -164,10 +169,10 @@ contrôlés. Aperçu, récapitulatif et Modifier partagent la version préparée
 transfère ses URL au signalement confirmé ; aucun téléversement. Le [guide photos](docs/photos-demo.md) détaille les bornes,
 mesures et limites ; caméra/galerie natives et qualité sur Pixel restent à Arthur.
 Le [guide de mémoire partagée #59](docs/shared-memory.md) précise le fonctionnement intégré,
-la propriété des photos et la revue PC/Pixel. Suite validée : Mes interventions (#70, en revue) → interventions sur la fiche matériel → gestion des états → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
+la propriété des photos et la revue PC/Pixel. Suite validée : interventions sur la fiche matériel → gestion des états → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
 Django/DRF/PostgreSQL reste la cible backend ; aucune nouvelle configuration Firebase.
 
-La consultation Agent [#70](https://github.com/arthurb1348/terrimaint/issues/70) est **en revue** :
+La consultation Agent [#70](https://github.com/arthurb1348/terrimaint/issues/70) est **intégrée par #71** :
 accès Mes interventions, aperçu de trois affectations actives au maximum, liste et détail
 partagés avec Responsable. Camille Durand est l’identité de présentation ; ce filtrage
 frontend ne constitue pas une autorisation serveur. Voir le [guide de revue PC/Pixel](docs/agent-interventions.md).

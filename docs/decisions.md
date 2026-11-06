@@ -1,6 +1,27 @@
 # Décisions techniques et métier
 
-## 2026-11-06 — Consultation des affectations Agent (#70, en revue)
+## 2026-11-06 — Navigation et scan contextuel Agent (#72, en revue)
+
+Adaptation explicite validée par Arthur, base `7967098…` après fusion de #71. La navigation
+permanente sert les rubriques : Accueil, Matériel, Interventions, Plus (Incidents/Profil)
+sur mobile ; cinq liens directs au-delà de 760 px. Scanner quitte la navbar. L’accueil
+retire ses raccourcis au profit d’une carte native « Scanner un matériel » et garde l’aperçu
+partagé. Depuis une autre page, le scan coûte deux appuis : Accueil → Scanner, compromis
+retenu pour une barre mobile lisible. Navigation Responsable conservée.
+
+La carte garde le seuil 1200 px, une grande icône locale blanche décorative et un libellé
+visible fournissant le nom accessible. La route directe et Démarrer restent indépendants
+de ce seuil. Les coins du cadre suivent le ratio réel du lecteur, hors des bandes éventuelles.
+Cadre et consigne visuelle sont décoratifs, sans interaction ni animation permanente, visibles
+seulement pendant le scan ; le statut accessible reste présent. Aucun recadrage du canvas
+ni restriction des QR hors du cadre : décodeur et cycle de vie caméra conservés.
+Voir le [guide et les limites des preuves](agent-scan-ux.md).
+
+Suite : interventions sur fiche matériel → gestion des états → fonctionnalités prévues.
+Aucune action métier, affectation ou donnée ajoutée. Cette décision remplace les anciens
+choix de raccourcis/navbar Scanner décrits historiquement plus bas.
+
+## 2026-11-06 — Consultation des affectations Agent (#70, intégrée par #71)
 
 Base `8415eb7…`, #69 fusionnée. À la demande d’Arthur, Camille Durand est l’identité
 locale de présentation, référencée une fois dans `core/presented-agent.ts`. Cela précise

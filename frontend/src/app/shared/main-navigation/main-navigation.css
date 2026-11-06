@@ -144,15 +144,11 @@ img {
     border-radius: 12px 12px 0 0;
   }
 }
-/* Seuil distinct du menu Plus : la tablette conserve Scanner.
-   display: none retire aussi la cible du parcours clavier ; flex répartit l'espace restant.
-   Garder ce seuil aligné sur features/agent/agent.css, sans conditionner la route. */
-@media (min-width: 1200px) {
-  nav a.scanner-link {
-    display: none;
-  }
-}
 @media (max-width: 760px) {
+  /* Réserver la place du libellé long sans réduire la taille du texte. */
+  .navigation:not(.sidebar) nav > a.interventions-link {
+    flex-grow: 1.35;
+  }
   .navigation:not(.sidebar) nav > a,
   .more-toggle {
     white-space: nowrap;

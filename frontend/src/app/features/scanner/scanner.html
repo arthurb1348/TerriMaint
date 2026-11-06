@@ -5,13 +5,23 @@
   <h1 id="scanner-title">Scanner</h1>
   <h2>Scanner un QR code</h2>
   <p>Cadrez le QR code du matériel pour ouvrir sa fiche.</p>
-  <video
-    #preview
-    muted
-    playsinline
-    aria-label="Aperçu de la caméra"
-    [hidden]="state() !== 'scanning'"
-  ></video>
+  <div class="camera-preview" [hidden]="state() !== 'scanning'">
+    <div class="camera-image" [style.--preview-ratio]="previewAspectRatio()">
+      <video
+        #preview
+        muted
+        playsinline
+        aria-label="Aperçu de la caméra"
+        (loadedmetadata)="updatePreviewAspectRatio(preview)"
+        (resize)="updatePreviewAspectRatio(preview)"
+      ></video>
+      <div class="scan-frame" aria-hidden="true">
+        <span class="top-left"></span><span class="top-right"></span>
+        <span class="bottom-left"></span><span class="bottom-right"></span>
+      </div>
+    </div>
+    <p class="scan-instruction" aria-hidden="true">Placez le QR code dans le cadre</p>
+  </div>
   <p role="status" aria-live="polite" aria-atomic="true">{{ message() }}</p>
   <div class="actions">
     <button

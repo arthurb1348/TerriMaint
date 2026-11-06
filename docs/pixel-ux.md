@@ -1,5 +1,12 @@
 # Revue Pixel — issue #58 intégrée par #60
 
+## Adaptation Agent #72 — en revue
+
+#71 est fusionnée ; le [guide UX actuel](agent-scan-ux.md) décrit navigation Interventions,
+carte Scanner et cadre décoratif. Sa procédure PC/Pixel complète les contrôles historiques
+ci-dessous. #57/#63 et #59/#69 sont intégrées ; les anciens passages sur listes fixes et
+formulaires sans création décrivent seulement l’état à la fusion de #60.
+
 ## Périmètre et ordre
 
 #58 est intégrée par la PR #60 fusionnée le 1er novembre 2026 (`73889125a5683af04d7360423d53e16802e73be7`).

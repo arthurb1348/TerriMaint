@@ -1,8 +1,10 @@
-# Mes interventions — issue #70, en revue
+# Mes interventions — issue #70 intégrée par #71
 
 Base vérifiée le 6 novembre 2026 : `8415eb7f467fd53cd9b6920252a75608e8038618`,
 avec [#69](https://github.com/arthurb1348/terrimaint/pull/69) fusionnée (mémoire partagée #59).
-Cet incrément ajoute la consultation Agent ; il reste en revue jusqu’à fusion.
+Cet incrément a intégré la consultation Agent au commit `7967098…`.
+L’[adaptation UX #72](agent-scan-ux.md), en revue, remplace les raccourcis d’accueil et
+ajoute Interventions dans la navigation ; les règles de données ci-dessous sont conservées.
 
 ## Données et présentation
 
@@ -45,9 +47,9 @@ navigateur et les espaces restent publics. Le futur backend devra déterminer l�
 authentifiée et contrôler chaque accès, y compris par identifiant direct et collectivité.
 Cette présentation locale n’est pas une protection serveur.
 
-L’accueil conserve Matériel, Incidents et Scanner (masqué à partir de 1200 px), ajoute
-Mes interventions et l’aperçu. Barre basse, menu Plus et navigation principale restent
-inchangés ; accéder à Mes interventions se fait depuis l’accueil ou par URL.
+Depuis #72 (en revue), l’accueil conserve Camille et l’aperçu avec son lien complet ;
+la carte Scanner remplace les raccourcis, tandis qu’Interventions rejoint la navbar.
+Plus garde Incidents et Profil ; voir le [guide UX](agent-scan-ux.md).
 Les règles existantes restent partagées : cartes sous 960 px disponibles, tableau au-delà,
 statuts textuels et focus. Le shell Agent garde sa largeur de lecture maximale de 768 px ;
 sa liste reste donc en cartes aux quatre formats actuels, tandis que Responsable utilise
@@ -84,7 +86,7 @@ les mesures de contraste utilisent les couleurs effectivement rendues. Les parco
 Responsable, mémoire/photos et Scanner préexistants restent exécutés.
 La santé HTTP est simulée dans Playwright ; ce n’est pas une intégration backend métier.
 
-Ordre validé : **Mes interventions → interventions sur la fiche matériel → gestion des états
+Ordre validé : **interventions sur la fiche matériel → gestion des états
 → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation**.
 La décision de fin/clôture dans [decisions.md](decisions.md) est conservée : l’agent termine
 directement ; le responsable résout le signalement ou programme une nouvelle intervention,

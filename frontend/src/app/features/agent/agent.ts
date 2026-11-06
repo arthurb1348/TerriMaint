@@ -14,16 +14,10 @@ import { RouterLink } from '@angular/router';
     <section class="feature-page" aria-labelledby="agent-title">
       <h1 id="agent-title">Accueil</h1>
       <p>Pour {{ presentedAgent.name }}</p>
-      <ul class="page-shortcuts">
-        <li><a class="page-action secondary" routerLink="/agent/equipements">Matériel</a></li>
-        <li><a class="page-action secondary" routerLink="/agent/incidents">Incidents</a></li>
-        <li>
-          <a class="page-action secondary" routerLink="/agent/interventions">Mes interventions</a>
-        </li>
-        <li class="scanner-shortcut">
-          <a class="page-action" routerLink="/agent/scanner">Scanner un QR code</a>
-        </li>
-      </ul>
+      <a class="scanner-card" routerLink="/agent/scanner">
+        <img src="/icons/scan.svg" alt="" aria-hidden="true" width="56" height="56" />
+        <span>Scanner un matériel</span>
+      </a>
       <section class="intervention-preview" aria-labelledby="active-interventions-title">
         <h2 id="active-interventions-title">Interventions actives</h2>
         @if (preview().length) {

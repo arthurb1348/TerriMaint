@@ -94,7 +94,7 @@ export class MainNavigation {
       ? [
           { path: this.landing() ? '/' : '/agent', label: 'Accueil', icon: 'building' },
           { path: '/agent/equipements', label: 'Matériel', icon: 'equipment' },
-          { path: '/agent/scanner', label: 'Scanner', icon: 'scan' },
+          { path: '/agent/interventions', label: 'Interventions', icon: 'intervention' },
         ]
       : [
           { path: '/responsable', label: 'Tableau de bord', icon: 'building' },

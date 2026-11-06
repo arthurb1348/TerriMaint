@@ -32,7 +32,8 @@ Les contrastes #53/PR #54 sont intégrés. Les images/photos #43 sont intégrée
 L’identification QR et la saisie manuelle #44 sont intégrées par la PR #56, fusionnée le
 1er novembre 2026 (`5d1867a17a993f1005c87276665b29004787eab6`).
 Les ajustements Pixel #58 sont intégrés par la PR #60 (`7388912…`). Les photos #57 sont intégrées par #63. La mémoire partagée #59 est intégrée par #69.
-Suite : Mes interventions #70 (en revue) → interventions sur fiche matériel → gestion des états
+Mes interventions #70 est intégrée par #71 ; UX accueil/navigation/guide QR #72 en revue.
+Suite : interventions sur fiche matériel → gestion des états
 → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
 Le [guide Agent](agent-interventions.md) décrit cet incrément de consultation. Le
 [guide #59](shared-memory.md) précise les données locales et leur perte au rechargement.
