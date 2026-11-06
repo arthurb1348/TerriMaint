@@ -10,10 +10,12 @@ describe('Scanner Agent', () => {
   let harness: RouterTestingHarness;
   const camera = { start: vi.fn(), stop: vi.fn() };
   let onValue: (value: string) => void;
+  let onError: (message: string) => void;
   beforeEach(async () => {
     vi.resetAllMocks();
-    camera.start.mockImplementation((_video, ready, value) => {
+    camera.start.mockImplementation((_video, ready, value, error) => {
       onValue = value;
+      onError = error;
       ready();
       return Promise.resolve();
     });
@@ -43,6 +45,7 @@ describe('Scanner Agent', () => {
 
   it('garde la saisie disponible sans demander de permission', () => {
     expect(camera.start).not.toHaveBeenCalled();
+    expect(content().querySelector<HTMLElement>('.camera-preview')!.hidden).toBe(true);
     expect(content().querySelector('label')!.textContent).toContain('Référence du matériel');
     expect(content().querySelector('input')!.getAttribute('aria-describedby')).toContain(
       'reference-help',
@@ -97,6 +100,7 @@ describe('Scanner Agent', () => {
     expect(content().querySelector('button')!.textContent).toContain('Arrêter');
     action();
     expect(content().querySelector('button')!.textContent).toContain('Reprendre');
+    expect(content().querySelector<HTMLElement>('.camera-preview')!.hidden).toBe(true);
     action();
     onValue('EQ-OUT-9999');
     harness.detectChanges();
@@ -128,4 +132,33 @@ describe('Scanner Agent', () => {
     submit('EQ-VEH-0042');
     expect(navigate).toHaveBeenCalledTimes(2);
   });
+  it('affiche le guide décoratif uniquement pendant le scan, puis le masque en erreur caméra', () => {
+    const preview = content().querySelector<HTMLElement>('.camera-preview')!;
+    const frame = preview.querySelector('.scan-frame')!;
+    expect(frame.getAttribute('aria-hidden')).toBe('true');
+    expect(frame.querySelectorAll('span')).toHaveLength(4);
+    expect(frame.querySelector('a, button, [tabindex]')).toBeNull();
+    action();
+    expect(preview.hidden).toBe(false);
+    expect(preview.textContent).toContain('Placez le QR code dans le cadre');
+    onError('La caméra a été déconnectée.');
+    harness.detectChanges();
+    expect(preview.hidden).toBe(true);
+    expect(content().querySelector('[role=status]')!.textContent).toContain('déconnectée');
+  });
+
+  it('suit les dimensions intrinsèques et leurs changements sans redémarrer la caméra', () => {
+    const video = content().querySelector('video')!;
+    const image = content().querySelector<HTMLElement>('.camera-image')!;
+    action();
+    for (const [width, height, event] of [[1280, 720, 'loadedmetadata'], [720, 1280, 'resize'], [0, 0, 'resize']] as const) {
+      Object.defineProperty(video, 'videoWidth', { configurable: true, value: width });
+      Object.defineProperty(video, 'videoHeight', { configurable: true, value: height });
+      video.dispatchEvent(new Event(event));
+      harness.detectChanges();
+      expect(Number(image.style.getPropertyValue('--preview-ratio'))).toBe(width ? width / height : 720 / 1280);
+    }
+    expect(camera.start).toHaveBeenCalledOnce();
+  });
+
 });

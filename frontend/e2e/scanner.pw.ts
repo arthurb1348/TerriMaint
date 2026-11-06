@@ -1,10 +1,23 @@
 import { expect, test, type Page } from '@playwright/test';
 
 // Permissions et capteur simulés. Le PNG et le décodeur jsQR sont réels.
-async function installCamera(page: Page, mode = 'image', reference = 'EQ-OUT-0001') {
+async function installCamera(
+  page: Page,
+  mode = 'image',
+  reference = 'EQ-OUT-0001',
+  dimensions = { width: 300, height: 300 },
+) {
   await page.addInitScript(
-    ({ mode, reference }) => {
-      const state = { requests: 0, stops: 0, release: () => undefined as void };
+    ({ mode, reference, dimensions }) => {
+      const state = {
+        requests: 0,
+        stops: 0,
+        release: () => undefined as void,
+        resize: undefined as ((width: number, height: number) => void) | undefined,
+        showQR: async () => {
+          /* La scène change seulement après les vérifications du guide. */
+        },
+      };
       Object.assign(window, { cameraTest: state });
       Object.defineProperty(navigator.mediaDevices, 'getUserMedia', {
         configurable: true,
@@ -20,16 +33,29 @@ async function installCamera(page: Page, mode = 'image', reference = 'EQ-OUT-000
                   : 'NotFoundError',
             );
           const canvas = document.createElement('canvas');
-          canvas.width = canvas.height = 300;
+          canvas.width = dimensions.width;
+          canvas.height = dimensions.height;
           const context = canvas.getContext('2d')!;
           context.fillStyle = 'white';
-          context.fillRect(0, 0, 300, 300);
+          context.fillRect(0, 0, canvas.width, canvas.height);
           if (mode === 'image') {
             const image = new Image();
             image.src = `/qr-demo/${reference}.png`;
             await image.decode();
             context.drawImage(image, 0, 0, 300, 300);
           }
+          state.resize = (width, height) => {
+            canvas.width = width;
+            canvas.height = height;
+            context.fillStyle = 'white';
+            context.fillRect(0, 0, width, height);
+          };
+          state.showQR = async () => {
+            const image = new Image();
+            image.src = `/qr-demo/${reference}.png`;
+            await image.decode();
+            context.drawImage(image, 0, 0, 120, 120);
+          };
           const stream = canvas.captureStream(5);
           stream.getTracks().forEach((track) => {
             const stop = track.stop.bind(track);
@@ -46,7 +72,7 @@ async function installCamera(page: Page, mode = 'image', reference = 'EQ-OUT-000
         },
       });
     },
-    { mode, reference },
+    { mode, reference, dimensions },
   );
 }
 async function stats(page: Page) {
@@ -130,6 +156,7 @@ for (const [reference, title] of [
       expect(navigations).toBe(0);
     }
     expect((await stats(page)).stops).toBe(1);
+    await expect(page.locator('.scan-frame')).not.toBeVisible();
     await info.attach(`decode-${reference}`, {
       body: await page.screenshot({ fullPage: true }),
       contentType: 'image/png',
@@ -156,7 +183,9 @@ test('Arrêt, reprise et nettoyage au départ (flux simulé sans QR)', async ({ 
   await page.getByRole('button', { name: 'Démarrer la caméra', exact: true }).click();
   const stop = page.getByRole('button', { name: 'Arrêter la caméra', exact: true });
   await expect(stop).toBeFocused();
+  await expect(page.locator('.scan-frame')).toBeVisible();
   await page.keyboard.press('Enter');
+  await expect(page.locator('.scan-frame')).toBeHidden();
   expect((await stats(page)).stops).toBe(1);
   await expect(
     page.getByRole('button', { name: 'Reprendre la caméra', exact: true }),
@@ -187,6 +216,7 @@ for (const action of ['cancel', 'leave', 'manual']) {
       await page.getByRole('button', { name: 'Ouvrir la fiche matériel', exact: true }).click();
       await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fourgon de voirie');
     }
+    await expect(page.locator('.scan-frame')).not.toBeVisible();
     await page.evaluate(() =>
       (window as unknown as { cameraTest: { release: () => void } }).cameraTest.release(),
     );
@@ -215,12 +245,16 @@ test('Contexte non sécurisé simulé : aucune permission, saisie disponible', a
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tondeuse autoportée');
 });
 
-
-test('Erreurs distinctes près du scan, association et correction sans navigation', async ({ page }, info) => {
+test('Erreurs distinctes près du scan, association et correction sans navigation', async ({
+  page,
+}, info) => {
   await page.goto('/agent/scanner');
   const input = page.getByLabel('Référence du matériel', { exact: true });
   const error = page.getByRole('alert');
-  for (const [value, expected] of [['https://example.org', 'Référence invalide.'], ['EQ-OUT-9999', 'Référence inconnue.']]) {
+  for (const [value, expected] of [
+    ['https://example.org', 'Référence invalide.'],
+    ['EQ-OUT-9999', 'Référence inconnue.'],
+  ]) {
     await input.fill(value);
     await input.press('Enter');
     await expect(error).toContainText(expected);
@@ -233,9 +267,12 @@ test('Erreurs distinctes près du scan, association et correction sans navigatio
     const inputBounds = await input.boundingBox();
     expect(inputBounds!.y + inputBounds!.height).toBeLessThanOrEqual(nav!.y);
     await expect(page.locator('[role=alert]')).toHaveCount(1);
-    const position = await error.evaluate(el => ({
+    const position = await error.evaluate((el) => ({
       insideIdentification: Boolean(el.closest('form')),
-      beforeInput: Boolean(el.compareDocumentPosition(document.querySelector('#equipment-reference')!) & Node.DOCUMENT_POSITION_FOLLOWING),
+      beforeInput: Boolean(
+        el.compareDocumentPosition(document.querySelector('#equipment-reference')!) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+      ),
     }));
     expect(position).toEqual({ insideIdentification: true, beforeInput: true });
     const open = page.getByRole('button', { name: 'Ouvrir la fiche matériel', exact: true });
@@ -250,4 +287,148 @@ test('Erreurs distinctes près du scan, association et correction sans navigatio
   await input.fill('EQ-OUT-0001');
   await input.press('Enter');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tondeuse autoportée');
+});
+
+test('Le cadre décoratif suit portrait, paysage, bandes et redimensionnement sans déborder', async ({
+  page,
+}, info) => {
+  await installCamera(page, 'blank', 'EQ-OUT-0001', { width: 1280, height: 720 });
+  await page.goto('/agent/scanner');
+  const frame = page.locator('.scan-frame');
+  await expect(frame).toBeHidden();
+  expect((await stats(page)).requests).toBe(0);
+  await page.getByRole('button', { name: 'Démarrer la caméra', exact: true }).click();
+  await expect(frame).toBeVisible();
+  await expect(frame).toHaveAttribute('aria-hidden', 'true');
+  await expect(frame).toHaveCSS('pointer-events', 'none');
+  await expect(frame.locator('span')).toHaveCount(4);
+  await expect(frame.locator('a, button, [tabindex]')).toHaveCount(0);
+  await expect(page.locator('.scan-instruction')).toHaveText('Placez le QR code dans le cadre');
+  for (const [width, height] of [
+    [1280, 720],
+    [720, 1280],
+    [1600, 400],
+  ]) {
+    await page.evaluate(
+      ({ width, height }) => {
+        (
+          window as unknown as { cameraTest: { resize: (width: number, height: number) => void } }
+        ).cameraTest.resize(width, height);
+      },
+      { width, height },
+    );
+    await expect
+      .poll(() => page.locator('video').evaluate((element) => { const video = element as HTMLVideoElement; return video.videoWidth / video.videoHeight; }))
+      .toBeCloseTo(width / height, 4);
+    await expect
+      .poll(async () => {
+        const image = (await page.locator('video').boundingBox())!;
+        const guide = (await frame.boundingBox())!;
+        return (
+          Math.abs(image.width / image.height - width / height) < 0.01 &&
+          guide.x >= image.x &&
+          guide.y >= image.y &&
+          guide.x + guide.width <= image.x + image.width &&
+          guide.y + guide.height <= image.y + image.height &&
+          Math.abs(guide.width - guide.height) < 1
+        );
+      })
+      .toBe(true);
+    if (width < height) {
+      const image = (await page.locator('video').boundingBox())!;
+      const outer = (await page.locator('.camera-preview').boundingBox())!;
+      expect(outer.width - image.width).toBeGreaterThan(1);
+    }
+    await page.locator('.camera-preview').evaluate(element => element.scrollIntoView({ block: 'start' }));
+    await page.evaluate(() => scrollBy(0, -16));
+    const preview = (await page.locator('.camera-preview').boundingBox())!;
+    const navigation = (await page.getByRole('navigation', { name: 'Navigation Agent' }).boundingBox())!;
+    expect(preview.y + preview.height).toBeLessThanOrEqual(navigation.y);
+    await noOverflow(page);
+    await info.attach(`cadre-${width}-${height}`, {
+      body: await page.screenshot(),
+      contentType: 'image/png',
+    });
+  }
+  const viewport = page.viewportSize()!;
+  await page.setViewportSize({ width: viewport.height, height: viewport.width });
+  await expect(frame).toBeVisible();
+  await noOverflow(page);
+  await page.setViewportSize(viewport);
+  const stop = page.getByRole('button', { name: 'Arrêter la caméra', exact: true });
+  await stop.focus();
+  await page.keyboard.press('Tab');
+  await expect(page.getByLabel('Référence du matériel', { exact: true })).toBeFocused();
+  await page.keyboard.press('Shift+Tab');
+  await expect(stop).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(frame).toBeHidden();
+  expect((await stats(page)).stops).toBe(1);
+});
+
+test('Un QR reconnu hors du cadre ouvre encore la fiche avec le décodeur réel', async ({
+  page,
+}) => {
+  await installCamera(page, 'blank', 'EQ-OUT-0001', { width: 640, height: 480 });
+  await page.goto('/agent/scanner');
+  await page.getByRole('button', { name: 'Démarrer la caméra', exact: true }).click();
+  const frame = page.locator('.scan-frame');
+  await expect(frame).toBeVisible();
+  const video = (await page.locator('video').boundingBox())!;
+  const guide = (await frame.boundingBox())!;
+  expect(((guide.x - video.x) / video.width) * 640).toBeGreaterThan(120);
+  await page.evaluate(() =>
+    (window as unknown as { cameraTest: { showQR: () => Promise<void> } }).cameraTest.showQR(),
+  );
+  await expect(page).toHaveURL(/\/agent\/equipements\/EQ-OUT-0001$/);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tondeuse autoportée');
+  await expect(frame).toHaveCount(0);
+  expect((await stats(page)).stops).toBe(1);
+});
+
+test('La carte de scan est un lien natif sans demande de caméra avant activation explicite', async ({
+  page,
+  context,
+}, info) => {
+  await installCamera(page, 'blank');
+  await page.goto('/agent');
+  await expect(page.getByRole('main')).toContainText('Pour Camille Durand');
+  await expect(page.locator('.preview-link')).toHaveCount(2);
+  await expect(
+    page.getByRole('link', { name: 'Voir toutes mes interventions', exact: true }),
+  ).toBeVisible();
+  expect((await stats(page)).requests).toBe(0);
+  if (page.viewportSize()!.width >= 1200) await page.setViewportSize({ width: 1199, height: 1024 });
+  const card = page.getByRole('link', { name: 'Scanner un matériel', exact: true });
+  await expect(card).toHaveAttribute('href', '/agent/scanner');
+  await expect(card).toHaveAccessibleName('Scanner un matériel');
+  await expect(card.locator('img')).toHaveAttribute('alt', '');
+  await expect(card.locator('a, button, [tabindex]')).toHaveCount(0);
+  const bounds = (await card.boundingBox())!;
+  expect(bounds.height).toBeGreaterThanOrEqual(96);
+  expect(bounds.height).toBeLessThanOrEqual(128);
+  await card.focus();
+  await expect(card).toBeFocused();
+  await expect(card).toHaveCSS('outline-width', '3px');
+  await info.attach('carte-scanner-focus', {
+    body: await page.screenshot(),
+    contentType: 'image/png',
+  });
+  const popupPromise = context.waitForEvent('page');
+  await card.click({ position: { x: 8, y: 8 }, modifiers: ['ControlOrMeta'] });
+  const popup = await popupPromise;
+  await expect(popup).toHaveURL(/\/agent\/scanner$/);
+  await expect(
+    popup.getByRole('button', { name: 'Démarrer la caméra', exact: true }),
+  ).toBeVisible();
+  // Si une requête était lancée au chargement, le statut initial serait remplacé.
+  await expect(popup.getByRole('status')).toContainText('Caméra arrêtée');
+  await popup.close();
+  await expect(page).toHaveURL(/\/agent$/);
+  expect((await stats(page)).requests).toBe(0);
+  await card.focus();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/\/agent\/scanner$/);
+  await expect(page.getByRole('button', { name: 'Démarrer la caméra', exact: true })).toBeVisible();
+  expect((await stats(page)).requests).toBe(0);
 });

@@ -207,6 +207,9 @@ test('Contrastes rendus : Scanner, saisie et erreur', async ({ page }, info) => 
 test('Contrastes rendus : aperçu et consultation des interventions Agent', async ({ page }, info) => {
   const main = page.getByRole('main');
   await page.goto('/agent');
+  const scannerCard = main.getByRole('link', { name: 'Scanner un matériel', exact: true });
+  if (page.viewportSize()!.width < 1200) await states(page, scannerCard, info, 'carte-scanner');
+  else await expect(scannerCard).toBeHidden();
   const preview = main.locator('.preview-link').first();
   await states(page, preview, info, 'apercu-agent');
   await measure(preview.locator('.reference'), info, 'reference-apercu');

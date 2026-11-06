@@ -1,19 +1,57 @@
-/* Garder le scan sur tablette, y compris à 1024 px en paysage.
-   Ce seuil de présentation reste aligné sur celui de main-navigation.css. */
+h1 {
+  margin-top: 0;
+}
+.feature-page .scanner-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  min-height: 112px;
+  padding: 16px;
+  border: 1px solid var(--green);
+  border-radius: 12px;
+  background: var(--green);
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.5;
+  text-decoration: none;
+}
+.scanner-card img {
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
+}
+.scanner-card span {
+  min-width: 0;
+}
+.feature-page .scanner-card:hover {
+  background: #1b4033;
+}
+.scanner-card:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+h2 {
+  margin: 0 0 16px;
+  font-size: 1.125rem;
+  line-height: 1.5;
+}
+/* Le seuil de présentation ne détermine ni la présence de caméra ni l’accès à la route. */
 @media (min-width: 1200px) {
-  .scanner-shortcut {
+  .feature-page .scanner-card {
     display: none;
   }
 }
 
 .intervention-preview {
-  margin-top: 32px;
+  margin-top: 24px;
 }
 .preview-list {
   display: grid;
   gap: 16px;
   padding: 0;
   list-style: none;
+  margin: 0 0 16px;
 }
 .preview-link {
   display: flex;

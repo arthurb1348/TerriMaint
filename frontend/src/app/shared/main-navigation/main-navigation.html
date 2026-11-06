@@ -25,7 +25,7 @@
     @for (destination of destinations(); track destination.path) {
       <!-- Les fiches et formulaires gardent leur domaine actif, même avec les filtres de retour. -->
       <a
-        [class.scanner-link]="destination.path === '/agent/scanner'"
+        [class.interventions-link]="destination.path === '/agent/interventions'"
         [routerLink]="destination.path"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{

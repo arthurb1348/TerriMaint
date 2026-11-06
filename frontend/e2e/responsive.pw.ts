@@ -773,8 +773,7 @@ test('La navigation Agent conserve ses destinations selon la taille', async ({ p
 
   if ((page.viewportSize()?.width ?? 0) > 760) {
     await expect(plus).toBeHidden();
-    const names = ['Accueil', 'Matériel', 'Incidents', 'Profil'];
-    if ((page.viewportSize()?.width ?? 0) < 1200) names.splice(2, 0, 'Scanner');
+    const names = ['Accueil', 'Matériel', 'Interventions', 'Incidents', 'Profil'];
     await expect(navigation.getByRole('link')).toHaveText(names);
     await expect(incidents).toBeVisible();
     await expect(profile).toBeVisible();
@@ -785,7 +784,7 @@ test('La navigation Agent conserve ses destinations selon la taille', async ({ p
 
   await expect(incidents).toBeHidden();
   await expect(profile).toBeHidden();
-  for (const name of ['Accueil', 'Matériel', 'Scanner']) {
+  for (const name of ['Accueil', 'Matériel', 'Interventions']) {
     await expectSingleLineLabel(navigation.getByRole('link', { name, exact: true }));
   }
   await expectSingleLineLabel(plus);
@@ -825,96 +824,65 @@ test('La navigation Agent conserve ses destinations selon la taille', async ({ p
   await expectNoHorizontalOverflow(page);
 });
 
-test('Les accès Scanner suivent la présentation et la route reste accessible', async ({
-  page,
-}, info) => {
+test('La carte Scanner suit la présentation et la route reste accessible', async ({ page }, info) => {
   await page.goto('/agent');
   const main = page.getByRole('main');
-  const shortcut = main.getByRole('link', { name: 'Scanner un QR code', exact: true });
+  const card = main.getByRole('link', { name: 'Scanner un matériel', exact: true });
   const navigation = page.getByRole('navigation', { name: 'Navigation Agent' });
-  const scanner = navigation.getByRole('link', { name: 'Scanner', exact: true });
-  const scannerVisible = (page.viewportSize()?.width ?? 0) < 1200;
-
-  await expect(shortcut).toBeVisible({ visible: scannerVisible });
-  await expect(scanner).toBeVisible({ visible: scannerVisible });
-  // Le masquage du li doit aussi retirer sa puce et son espace dans la liste.
-  await expect(main.locator('.page-shortcuts').getByRole('listitem')).toHaveCount(
-    scannerVisible ? 4 : 3,
-  );
-  await capture(page, info, 'acces-scanner');
-
+  const scannerVisible = page.viewportSize()!.width < 1200;
+  await expect(card).toBeVisible({ visible: scannerVisible });
+  await expect(navigation.locator('a[href="/agent/scanner"]')).toHaveCount(0);
+  await expect(main.locator('.page-shortcuts')).toHaveCount(0);
+  await expect(main.getByRole('link', { name: /^(Matériel|Incidents|Mes interventions)$/ })).toHaveCount(0);
+  await expect(main.locator('.preview-link')).toHaveCount(2);
+  await capture(page, info, 'carte-scanner-accueil');
   await main.focus();
   await page.keyboard.press('Tab');
-  await expect(main.getByRole('link', { name: 'Matériel', exact: true })).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(main.getByRole('link', { name: 'Incidents', exact: true })).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(main.getByRole('link', { name: 'Mes interventions', exact: true })).toBeFocused();
-  await page.keyboard.press('Tab');
   if (scannerVisible) {
-    await expect(shortcut).toBeFocused();
+    await expect(card).toBeFocused();
+    await expectFocusedControlVisible(page, card, 'agent');
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(/\/agent\/scanner$/);
-    await page.goto('/agent');
-    await scanner.click();
-    await expect(page).toHaveURL(/\/agent\/scanner$/);
   } else {
-    // Le lien masqué reste dans le DOM, mais getByRole ne l'expose plus.
+    await expect(main.locator('.preview-link').first()).toBeFocused();
     await expect(main.locator('a[href="/agent/scanner"]')).not.toBeFocused();
   }
-
   await page.goto('/agent/scanner');
   await expect(page).toHaveURL(/\/agent\/scanner$/);
   await expect(main.getByRole('heading', { name: 'Scanner', exact: true })).toBeVisible();
   await expect(main.getByRole('button', { name: 'Démarrer la caméra', exact: true })).toBeVisible();
   await expect(main.getByLabel('Référence du matériel', { exact: true })).toBeVisible();
   await expect(main.getByRole('button', { name: 'Ouvrir la fiche matériel', exact: true })).toBeVisible();
-  // Matériel reste le premier accès après Accueil ; Tab ignore Scanner sur grand écran.
   await navigation.getByRole('link', { name: 'Accueil', exact: true }).focus();
   await page.keyboard.press('Tab');
   const equipment = navigation.getByRole('link', { name: 'Matériel', exact: true });
   await expect(equipment).toBeFocused();
-  if ((page.viewportSize()?.width ?? 0) > 760) {
-    await page.keyboard.press('Tab');
-    await expect(
-      navigation.getByRole('link', { name: scannerVisible ? 'Scanner' : 'Incidents', exact: true }),
-    ).toBeFocused();
-    await equipment.focus();
-  }
+  await page.keyboard.press('Tab');
+  await expect(navigation.getByRole('link', { name: 'Interventions', exact: true })).toBeFocused();
+  await equipment.focus();
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(/\/agent\/equipements$/);
-  await expect(
-    main.getByRole('searchbox', { name: 'Rechercher par nom ou identifiant' }),
-  ).toBeVisible();
+  await expect(main.getByRole('searchbox', { name: 'Rechercher par nom ou identifiant' })).toBeVisible();
   await expectNoHorizontalOverflow(page);
 });
 
-test('Redimensionner conserve les accès Scanner sous 1200 px et répartit la navigation', async ({
-  page,
-}, info) => {
+test('Redimensionner conserve la carte Scanner sous 1200 px et répartit la navigation', async ({ page }, info) => {
   await page.goto('/agent');
   const main = page.getByRole('main');
   const navigation = page.getByRole('navigation', { name: 'Navigation Agent' });
-  const shortcut = main.getByRole('link', { name: 'Scanner un QR code', exact: true });
-  const scanner = navigation.getByRole('link', { name: 'Scanner', exact: true });
-
-  // Les allers-retours sans rechargement couvrent les limites et la tablette en paysage.
+  const card = main.getByRole('link', { name: 'Scanner un matériel', exact: true });
   for (const width of [1024, 1199, 1200, 1201, 1440, 1200, 1199, 768, 390, 320]) {
     await page.setViewportSize({ width, height: 1024 });
-    const scannerVisible = width < 1200;
-    await expect(shortcut).toBeVisible({ visible: scannerVisible });
-    await expect(scanner).toBeVisible({ visible: scannerVisible });
-    await expect(main.locator('.page-shortcuts').getByRole('listitem')).toHaveCount(
-      scannerVisible ? 4 : 3,
-    );
+    await expect(card).toBeVisible({ visible: width < 1200 });
+    await expect(navigation.locator('a[href="/agent/scanner"]')).toHaveCount(0);
+    await expect(navigation.getByRole('link', { name: 'Interventions', exact: true })).toBeVisible();
     if (width > 760) {
-      const names = ['Accueil', 'Matériel', 'Incidents', 'Profil'];
-      if (scannerVisible) names.splice(2, 0, 'Scanner');
-      await expect(navigation.getByRole('link')).toHaveText(names);
+      await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Interventions', 'Incidents', 'Profil']);
       await expectEvenAgentNavigation(navigation);
     } else {
-      await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Scanner']);
+      await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Interventions']);
       await expect(navigation.getByRole('button', { name: 'Plus', exact: true })).toBeVisible();
+      await expectSingleLineLabel(navigation.getByRole('link', { name: 'Interventions', exact: true }));
     }
     await expectNoHorizontalOverflow(page);
     if ([1024, 1199, 1200, 1201].includes(width)) await capture(page, info, `seuil-${width}`);
@@ -1213,7 +1181,7 @@ test('La consultation Agent conserve ses liens sans programmation', async ({ pag
   await expect(main.getByRole('heading', { level: 1 })).toContainText('Du terrain');
   await expect(main.getByRole('status')).toContainText('API disponible');
   await expect(main.locator('form')).toHaveCount(0);
-  await expect(page.locator('nav a[href*="/interventions"]')).toHaveCount(0);
+  await expect(page.locator('nav a[href="/agent/interventions"]')).toHaveCount(1);
   for (const path of ['/agent/interventions', '/agent/interventions/INT-2026-032']) {
     await page.goto(path);
     await expect(page).toHaveURL(path);
@@ -1223,7 +1191,7 @@ test('La consultation Agent conserve ses liens sans programmation', async ({ pag
         : 'Mes interventions',
     );
     await expect(main.locator('form')).toHaveCount(0);
-    await expect(page.locator('nav a[href*="/interventions"]')).toHaveCount(0);
+    await expect(page.locator('nav a[href="/agent/interventions"]')).toHaveCount(1);
   }
 });
 
@@ -1544,12 +1512,11 @@ for (const space of ['agent', 'responsable']) {
     const main = page.getByRole('main');
     await page.goto(`/${space}`);
     await expect(main.locator('.back-link')).toHaveCount(0);
-    await expectPageAction(
-      page,
-      main.getByRole('link', { name: 'Matériel', exact: true }),
-      'secondary',
-      space,
-    );
+    if (space === 'responsable') {
+      await expectPageAction(page, main.getByRole('link', { name: 'Matériel', exact: true }), 'secondary', space);
+    } else {
+      await expect(main.getByRole('link', { name: 'Voir toutes mes interventions', exact: true })).toBeVisible();
+    }
     const q = '  EQ-OUT-0003  ';
     const base = `/${space}/equipements`;
     const detail = `${base}/EQ-OUT-0003`;

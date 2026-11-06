@@ -16,6 +16,9 @@ describe('Accueil Agent', () => {
     fixture.detectChanges();
     const content: HTMLElement = fixture.nativeElement;
     expect(content.textContent).toContain('Camille Durand');
+    expect(content.querySelector('.page-shortcuts')).toBeNull();
+    expect(content.querySelector('.scanner-card')?.getAttribute('href')).toBe('/agent/scanner');
+    expect(content.querySelector('.scanner-card')?.textContent).toContain('Scanner un matériel');
     expect(
       Array.from(content.querySelectorAll('.preview-link .reference'), (node) => node.textContent),
     ).toEqual(['INT-2026-035', 'INT-2026-032']);

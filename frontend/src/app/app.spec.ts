@@ -68,13 +68,18 @@ describe('Shell et routage', () => {
     ['/agent/scanner', 'Scanner', 'Scanner'],
     ['/agent/profil', 'Profil', 'Profil'],
     ['/responsable/agents', 'Agents', 'Agents'],
-  ])('ouvre directement %s avec son titre et son lien actif', async (url, heading, title) => {
+  ])('ouvre directement %s avec son titre et son contexte de navigation', async (url, heading, title) => {
     await navigate(url);
     expect(element.querySelector('main h1')?.textContent).toBe(heading);
     expect(TestBed.inject(Title).getTitle()).toBe(`${title} — TerriMaint`);
     const current = element.querySelectorAll('nav a[aria-current="page"]');
-    expect(current).toHaveLength(1);
-    expect(current[0]?.getAttribute('href')).toBe(url);
+    if (url === '/agent/scanner') {
+      expect(current).toHaveLength(0);
+      expect(element.querySelector('main .back-link')?.getAttribute('href')).toBe('/agent');
+    } else {
+      expect(current).toHaveLength(1);
+      expect(current[0]?.getAttribute('href')).toBe(url);
+    }
     http.expectNone('/api/v1/health');
   });
 
@@ -91,7 +96,7 @@ describe('Shell et routage', () => {
     await fixture.whenStable();
     expect(router.url).toBe('/agent');
     expect(element.querySelector('h1')?.textContent).toBe('Accueil');
-    element.querySelector<HTMLAnchorElement>('main a[href="/agent/incidents"]')?.click();
+    element.querySelector<HTMLAnchorElement>('nav a[href="/agent/incidents"]')?.click();
     await fixture.whenStable();
     expect(router.url).toBe('/agent/incidents');
     expect(element.querySelector('h1')?.textContent).toBe('Incidents');
@@ -309,11 +314,11 @@ describe('Shell et routage', () => {
     expect(element.textContent).not.toMatch(/Synchronisé|Sophie Martin|Ville de Montfaucon/);
     http.expectNone('/api/v1/health');
   });
-  it('limite les destinations principales Agent à Accueil, Matériel, Scanner et Plus', async () => {
+  it('limite les destinations principales Agent à Accueil, Matériel, Interventions et Plus', async () => {
     await navigate('/agent');
     expect(
       Array.from(element.querySelectorAll('nav > a'), (link) => link.textContent?.trim()),
-    ).toEqual(['Accueil', 'Matériel', 'Scanner']);
+    ).toEqual(['Accueil', 'Matériel', 'Interventions']);
     const toggle = element.querySelector<HTMLButtonElement>('.more-toggle')!;
     expect(toggle.textContent?.trim()).toBe('Plus');
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
@@ -405,5 +410,18 @@ describe('Shell et routage', () => {
     expect(toggle.classList.contains('active')).toBe(true);
     expect(document.activeElement).toBe(element.querySelector('main'));
     element.remove();
+  });
+  it.each([
+    '/agent/interventions?q=OUT',
+    '/agent/interventions/INT-2026-032?status=planned',
+    '/agent/interventions/INT-2026-033',
+    '/agent/interventions/inconnue',
+  ])('garde Interventions active sans activer Plus : %s', async (url) => {
+    await navigate(url);
+    const active = element.querySelectorAll('nav a[aria-current="page"]');
+    expect(active).toHaveLength(1);
+    expect(active[0].getAttribute('href')).toBe('/agent/interventions');
+    expect(element.querySelector('.more-toggle')?.classList.contains('active')).toBe(false);
+    expect(element.querySelector('nav a[href="/agent/scanner"]')).toBeNull();
   });
 });

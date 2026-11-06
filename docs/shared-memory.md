@@ -4,7 +4,7 @@ Base historique de préparation vérifiée le 6 novembre 2026 : `0567919…`, in
 [#63](https://github.com/arthurb1348/terrimaint/pull/63) et le sharding Responsive
 [#68](https://github.com/arthurb1348/terrimaint/pull/68), tous deux fusionnés.
 [#59](https://github.com/arthurb1348/terrimaint/issues/59) est intégrée par la PR #69
-(`8415eb7…`). La consultation Agent #70 est en revue ; son [guide](agent-interventions.md)
+(`8415eb7…`). La consultation Agent #70 est intégrée par #71 ; son [guide](agent-interventions.md)
 explique la sélection des affectations dans ce même état partagé. Django/DRF/PostgreSQL reste la cible backend. Hosting sert le frontend.
 
 ## Un état commun, des composants qui gardent leur rôle

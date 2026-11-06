@@ -1,5 +1,14 @@
 # Scanner Agent — issue #44 intégrée par la PR #56
 
+## Adaptation UX #72 — en revue
+
+#71 est fusionnée. Le [guide UX](agent-scan-ux.md) décrit la carte Scanner sur l’accueil
+sous 1200 px, le retrait de Scanner de la navbar et le cadre décoratif uniquement pendant
+le scan. Son ratio suit l’image réellement visible, y compris portrait/paysage et bandes.
+Le QR hors cadre reste reconnu : `QrCamera` et `QrDecoder` ne sont pas modifiés.
+Les sections datées ci-dessous décrivent les incréments initiaux ; ce guide UX précise
+la navigation et le viseur qui les remplacent. Les garanties de permission/nettoyage restent valables.
+
 ## Point de départ et choix
 
 Branche dédiée depuis le dernier `origin/main` vérifié le 31 octobre 2026 :
@@ -16,9 +25,11 @@ capture et contexte détaillé. Adaptations explicites : activation après clic,
 saisie visible en permanence et ouverture directe de la fiche reconnue plutôt
 qu’un écran intermédiaire de succès. Le shell, ses icônes locales, la charte,
 les retours et les jetons de contraste existants sont conservés. Le viseur décoratif
-et l’indicateur Synchronisé du prototype ne sont pas ajoutés. Aucune fidélité
+n’avait pas été ajouté dans #56 ; #72 l’introduit sans modifier le décodeur.
+L’indicateur Synchronisé n’est pas ajouté. Aucune fidélité
 pixel par pixel n’est revendiquée pour ce parcours adapté aux critères validés.
-Les accès restent masqués à partir de 1200 px inclus ; l’URL directe reste utilisable.
+L’accès d’accueil reste masqué à partir de 1200 px inclus ; l’URL directe reste utilisable.
+Depuis #72 en revue, Scanner quitte entièrement la navbar.
 
 ## Format et données non fiables
 

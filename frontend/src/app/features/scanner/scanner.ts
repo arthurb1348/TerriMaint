@@ -36,6 +36,12 @@ export class Scanner {
   protected readonly state = signal<'idle' | 'starting' | 'scanning' | 'stopped' | 'error'>('idle');
   protected readonly message = signal('Caméra arrêtée. Démarrez-la ou saisissez la référence.');
   protected readonly referenceError = signal('');
+  protected readonly previewAspectRatio = signal(4 / 3);
+
+  protected updatePreviewAspectRatio(video: HTMLVideoElement): void {
+    if (video.videoWidth > 0 && video.videoHeight > 0)
+      this.previewAspectRatio.set(video.videoWidth / video.videoHeight);
+  }
 
   constructor() {
     this.router.events.pipe(takeUntilDestroyed()).subscribe((event) => {

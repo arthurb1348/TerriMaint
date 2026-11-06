@@ -2,16 +2,14 @@
 
 ## Référence et usage
 
-Vérification ciblée du 6 novembre 2026 pour [#70](https://github.com/arthurb1348/terrimaint/issues/70) :
-`origin/main` distant vérifié à `8415eb7f467fd53cd9b6920252a75608e8038618`,
-avec mémoire partagée #59/#69 fusionnée, photos #63 et Responsive #68 intégrés.
-**En revue :** Mes interventions Agent, identité présentée Camille Durand, aperçu limité
-aux trois premières affectations actives, liste/détail partagés et créations visibles entre
-espaces sans recharge. Aucun changement d’état, persistance ou contrôle serveur ajouté.
-Le [guide Agent](agent-interventions.md) détaille fonctionnement, limites et revue PC/Pixel ;
-le [guide mémoire](shared-memory.md) décrit l’état intégré et les photos.
-Les preuves du dernier commit proposé sont dans la PR. Les passages datés gardent leur
-contexte historique ; les anciennes simulations sans ajout ont été remplacées par #69.
+Vérification ciblée du 6 novembre 2026 pour [#72](https://github.com/arthurb1348/terrimaint/issues/72) :
+`origin/main` distant vérifié à `7967098b62114412bc69e6142399af5eead3b22f`,
+avec Mes interventions #70/#71 fusionnée, mémoire partagée #59/#69, photos #63 et Responsive #68.
+**En revue :** navigation Agent avec Interventions, accueil simplifié (carte Scanner et aperçu),
+cadre de scan décoratif adapté au ratio réel. Aucun changement métier/données, moteur caméra/décodeur,
+stockage, dépendance, workflow ou Firebase. Le [guide UX](agent-scan-ux.md) précise le compromis
+de deux appuis vers le scan, les preuves et la procédure PC/Pixel. Les résultats du dernier
+commit proposé sont dans la PR. Les passages datés gardent leur contexte historique.
 
 - Date de vérification ciblée : 2026-11-01 (Europe/Paris), fusion #58/#60 et #61/#62, préparation photos #57. Les autres preuves conservent leur date.
 - Dépôt source : [arthurb1348/terrimaint](https://github.com/arthurb1348/terrimaint).
@@ -49,7 +47,7 @@ fusionnée le 31 octobre 2026 : incrément **4/10**. La correction de contraste
 [#53](https://github.com/arthurb1348/terrimaint/issues/53) est intégrée par la PR #54 fusionnée. #43 est intégrée par la [PR #55](https://github.com/arthurb1348/terrimaint/pull/55), incrément 5/10.
 Le Scanner QR #44 est intégré par la PR #56 fusionnée. Les ajustements Pixel #58 sont
 intégrés par #60 ; les photos #57 sont intégrées par #63. #59 est intégrée par #69 ;
-Mes interventions #70 est en revue, puis interventions sur fiche matériel, gestion des états,
+Mes interventions #70 est intégrée par #71 ; l’UX #72 est en revue, puis interventions sur fiche matériel, gestion des états,
 #45 GPS, #46 audio, #47 dashboard et #48 stabilisation restent prévus.
 PostgreSQL ([#38](https://github.com/arthurb1348/terrimaint/issues/38)) est **différé** et ne
 bloque pas cet incrément. La cible Django/DRF/PostgreSQL reste prévue ; la démonstration
@@ -68,13 +66,12 @@ reste sur l'accueil général ; aucun statut de synchronisation n'est simulé.
 Les nouvelles URL sous `/agent/…` et `/responsable/…` partagent les composants équipement et
 incident. Les anciennes URL redirigent. Scanner ouvre le lecteur QR intégré ; profil et agents restent indisponibles. Les décisions validées sur l'immobilisation réservée
 au Responsable et le retrait du type d'incident sont dans [decisions.md](decisions.md).
-Sur mobile jusqu'à 760 px, la navigation Agent affiche **Accueil, Matériel, Scanner et Plus**.
-Plus ouvre Incidents et Profil, indique leur état actif et gère fermeture et focus. De 761 à
-moins de 1200 px, les cinq destinations sont visibles directement. Depuis la
-[PR #29 fusionnée](https://github.com/arthurb1348/terrimaint/pull/29), les deux accès Scanner
-sont masqués à partir de 1200 px inclus, avec répartition de la navigation entre les quatre
-autres destinations. La route `/agent/scanner` reste accessible par URL directe à toute largeur.
-La [décision](decisions.md) décrit ce seuil de présentation, sans détection de caméra ni permission.
+Dans #72 en revue, la navigation mobile Agent affiche **Accueil, Matériel, Interventions et Plus**.
+Plus conserve Incidents/Profil, fermeture et focus ; au-delà de 760 px les cinq liens restent
+visibles directement. Scanner est retiré de la navbar ; sa carte d’accueil est visible sous
+1200 px et masquée dès 1200 inclus, avec route directe accessible à toute largeur.
+L’accueil conserve les affectations partagées de Camille ; le cadre suit l’image vidéo sans
+modifier les pixels décodés. La [décision et le guide](agent-scan-ux.md) expliquent ce choix.
 
 ## Architecture Angular intégrée
 
@@ -429,7 +426,7 @@ les constantes, mesures réellement obtenues et leurs limites. Revue physique Pi
 
 #57 est intégrée par #63 (`d9ad574…`). #59 est intégrée par #69 : les créations complètent
 les listes en mémoire dans cette branche, avec photos conservées jusqu’au rechargement.
-Aucune persistance ou backend métier. Ensuite Mes interventions #70 (en revue) → interventions sur fiche matériel → gestion des états → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
+Aucune persistance ou backend métier. Ensuite interventions sur fiche matériel → gestion des états → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
 Aucune configuration Hosting, permission, secret ou dépendance modifiée par #57.
 Les résultats CI/Responsive et URL Hosting du commit proposé sont à lire dans la PR.
 
@@ -675,7 +672,7 @@ SQLAlchemy/Alembic sont une ancienne orientation remplacée. PWA et hors connexi
 restent futurs. Tests et sécurité sont à définir dès la conception de chaque incrément,
 selon le [workflow](workflow.md), puis à vérifier en CI et en relecture humaine.
 
-1. #58/#60, photos #57/#63 et Responsive #67/#68 sont intégrés ; la mémoire partagée #59/#69 est intégrée ; relire Mes interventions #70 **en revue**.
+1. #58/#60, photos #57/#63 et Responsive #67/#68 sont intégrés ; la mémoire partagée #59/#69 est intégrée ; Mes interventions #70/#71 est intégrée ; relire l’UX Agent #72 **en revue**.
 2. Ensuite interventions sur fiche matériel → gestion des états (fin/clôture déjà validées) → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
 3. Reprendre ultérieurement PostgreSQL #38, le modèle métier et les migrations Django,
    avec validation serveur, envoi et règles d'accès entre collectivités.

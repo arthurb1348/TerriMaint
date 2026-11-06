@@ -26,7 +26,7 @@ test('Mes interventions : aperçu, URL, filtres, détail et retour au clavier', 
     body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',
   });
-  const access = main.getByRole('link', { name: 'Mes interventions', exact: true });
+  const access = page.getByRole('navigation', { name: 'Navigation Agent' }).getByRole('link', { name: 'Interventions', exact: true });
   await access.focus();
   await expect(access).toBeFocused();
   await page.keyboard.press('Enter');
@@ -34,7 +34,7 @@ test('Mes interventions : aperçu, URL, filtres, détail et retour au clavier', 
   await expect(main).toBeFocused();
   await expect(main.locator('tbody tr')).toHaveCount(2);
   await expect(main.getByRole('combobox', { name: 'Agent affecté', exact: true })).toHaveCount(0);
-  await expect(page.locator('nav a[href*="/interventions"]')).toHaveCount(0);
+  await expect(page.locator('nav a[aria-current="page"]')).toHaveAttribute('href', '/agent/interventions');
   await main.getByRole('searchbox').fill('Tondeuse');
   await main.getByLabel('Statut de l’intervention', { exact: true }).selectOption('in-progress');
   await expect(page).toHaveURL(
@@ -60,6 +60,7 @@ test('Mes interventions : aperçu, URL, filtres, détail et retour au clavier', 
     'Vérification du plateau de coupe',
   );
   await expect(main).toContainText('Non renseignées');
+  await expect(page.locator('nav a[aria-current="page"]')).toHaveAttribute('href', '/agent/interventions');
   await expect(main.getByRole('link', { name: 'Voir le matériel', exact: true })).toHaveAttribute(
     'href',
     '/agent/equipements/EQ-OUT-0001',

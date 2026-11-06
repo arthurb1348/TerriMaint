@@ -1,6 +1,14 @@
 # Guide des fichiers et configurations
 
-## Consultation Agent #70 — en revue
+## Accueil/navigation/guide QR #72 — en revue
+
+Le [guide UX](agent-scan-ux.md) décrit les adaptations demandées par Arthur :
+`main-navigation.ts/.html/.css` remplace Scanner par Interventions, `agent.ts/.css` porte
+le lien natif Scanner et son seuil, `scanner.ts/.html/.css` adapte le cadre au ratio vidéo.
+Le signal de ratio suit `loadedmetadata`/`resize` ; caméra et décodeur restent inchangés.
+Les scènes de `e2e/scanner.pw.ts` vérifient aussi un QR réellement décodé hors du cadre.
+
+## Consultation Agent #70 — intégrée par #71
 
 Le [guide Agent](agent-interventions.md) décrit `core/presented-agent.ts` (identité locale),
 `assigned-interventions.ts` (sélection/aperçu stable), `agent.ts/.css` (accueil) et les
@@ -22,7 +30,7 @@ Les passages historiques datés gardent le contexte de leurs incréments.
 
 #56/Scanner est intégrée à `main` (`5d1867a17a993f1005c87276665b29004787eab6`).
 #58 est intégrée au commit `73889125a5683af04d7360423d53e16802e73be7`.
-#57 photos est intégrée par #63 ; #59 mémoire partagée est intégrée par #69. Suite : Mes interventions #70 (en revue) → interventions sur fiche matériel → gestion des états → #45 GPS, #46 audio, #47 dashboard, #48 stabilisation.
+#57 photos est intégrée par #63 ; #59 mémoire partagée est intégrée par #69. Suite : Mes interventions #70/#71 intégrée → interventions sur fiche matériel → gestion des états → #45 GPS, #46 audio, #47 dashboard, #48 stabilisation.
 
 - `equipements.html/.css` : le lien natif englobe image, titre et textes ; `aria-labelledby`
   nomme la fiche par le titre sans annoncer toute la carte comme nom de lien.
@@ -525,7 +533,7 @@ Questions de compréhension :
 
 La [PR #49](https://github.com/arthurb1348/terrimaint/pull/49), fusionnée le 31 octobre 2026,
 a intégré ce parcours après la consultation des signalements de #40. Il utilise les mêmes
-références ; #59 en revue ajoute les créations à l’état commun en mémoire. La [décision](decisions.md) explique l'adaptation des
+références ; #59 intégrée par #69 ajoute les créations à l’état commun en mémoire. La [décision](decisions.md) explique l'adaptation des
 références Figma : un formulaire regroupé, un récapitulatif modifiable, puis la confirmation.
 PostgreSQL #38 reste différé ; la consultation #42/PR #50 est désormais intégrée,
 sans enregistrement depuis ce formulaire.
@@ -665,7 +673,7 @@ Questions de compréhension :
 La programmation #41/PR #49 est intégrée. La consultation Responsable est intégrée par la
 [PR #50](https://github.com/arthurb1348/terrimaint/pull/50), fusionnée le 31 octobre 2026 ;
 PostgreSQL #38 demeure différé. La liste de consultation
-lit désormais l’état de `DemoData` dans #59 en revue : programmer ajoute une intervention
+lit désormais l’état de `DemoData` depuis #59/#69 : programmer ajoute une intervention
 consultable, reliée au même signalement et au matériel par leurs identifiants.
 
 ### Relations et filtres
@@ -826,7 +834,7 @@ la cause rétrospective de l'échec reste limitée par l'absence de reproduction
 | Templates `features/equipements`, `incidents`, `interventions` | Classes sur les éléments natifs et flèches décoratives ; destinations/paramètres inchangés. |
 | CSS de ces fonctionnalités | Disposition, champs et repères spécifiques ; les anciens styles de boutons/cartes dupliqués sont retirés. |
 | `features/incidents/incident.ts`, `incident-declaration.ts`, `.html` | Libellés de priorité et message d'aide/erreur ; valeurs techniques conservées. |
-| `features/agent/agent.ts`, `features/responsable/responsable.ts` | Raccourcis de page avec liens stylés ; le seuil Scanner existant reste dans `agent.css`. |
+| `features/agent/agent.ts`, `features/responsable/responsable.ts` | Accueil Agent : carte Scanner, aperçu et seuil dans `agent.css` ; Responsable : raccourcis métier conservés. |
 | `e2e/responsive.pw.ts` | Attente du lien exact et parcours UX dans les deux espaces, survol/focus, retours, cartes et autre onglet. |
 
 1. Dans chacun des deux espaces, ouvrir Matériel, saisir `  tONDeUSE  ` puis ouvrir la fiche
@@ -1060,54 +1068,36 @@ Le menu Responsable annonce son état avec `aria-expanded` et ferme après un cl
 rejoint le contenu lorsque le lien mobile disparaît. Le lien d'évitement mène au seul `main`.
 Le contrôle de santé et son service restent inchangés et accessibles depuis l'accueil général.
 
-## Accès Scanner et seuil de présentation (issue #21)
+## Accès Scanner et seuil de présentation (#21 intégré, adaptation #72 en revue)
 
-L'accueil Agent propose un lien « Scanner un QR code » ; la navigation commune à l'espace
-Agent propose « Scanner ». Les deux restent visibles sous **1200 px de largeur de fenêtre**
-et disparaissent à partir de **1200 px inclus**. Ce choix conserve l'accès à 768 px et à
-1024 px en paysage, tout en simplifiant le grand écran à 1440 px. La largeur est exprimée
-en pixels CSS : elle décrit l'espace disponible, sans déduire le type d'appareil, la présence
-d'une caméra ou les droits de l'utilisateur.
+L’accueil Agent propose la carte native « Scanner un matériel », visible sous **1200 px**,
+masquée dès **1200 px inclus** par `agent.css`. Les anciens raccourcis sont retirés.
+Le lien masqué ne prend plus de place et sort de la tabulation/arbre accessible.
+La route `/agent/scanner` reste utilisable à toute largeur, avec Démarrer explicite.
+Le seuil est une media query CSS, réévaluée sans rechargement, sans détection de caméra.
 
 | Largeur CSS | Navigation Agent |
 | --- | --- |
-| Jusqu'à 760 px | Accueil, Matériel, Scanner et Plus ; Incidents et Profil dans Plus |
-| De 761 à moins de 1200 px | Accueil, Matériel, Scanner, Incidents et Profil directement |
-| À partir de 1200 px | Accueil, Matériel, Incidents et Profil directement |
+| Jusqu’à 760 px | Accueil, Matériel, Interventions et Plus ; Incidents et Profil dans Plus |
+| Dès 761 px | Accueil, Matériel, Interventions, Incidents et Profil directement |
 
-Une **media query** applique des règles CSS seulement lorsque sa condition est vraie.
-`@media (min-width: 1200px)` signifie « si la fenêtre mesure au moins 1200 px » ; le navigateur
-réévalue cette condition lors d'un redimensionnement, sans recharger la page ni exécuter de
-logique Angular supplémentaire. Le seuil de Plus (760/761 px) répond à un autre besoin :
-éviter des libellés trop serrés sur petit écran.
-
-Les règles ajoutées utilisent `display: none`. L'élément ne prend alors plus de place et
-son lien sort de la tabulation et de l'arbre d'accessibilité. Sur l'accueil, la classe est
-portée par le **`li` entier**, afin de retirer aussi la puce et l'espace de la ligne. Dans
-la navigation, les autres liens gardent `flex: 1 1 0` : ils partagent la largeur restante à
-parts égales, sans colonne réservée à Scanner. Un simple masquage visuel avec conservation
-de l'espace laisserait au contraire un trou.
+Scanner n’est plus dans la navbar. Depuis une autre page : Accueil → Scanner (deux appuis).
+Interventions utilise `RouterLinkActive` sans exactitude stricte pour conserver son état
+sur les fiches et les URL filtrées. Le seuil de Plus (760/761) est indépendant du seuil
+Scanner. Le lien Interventions reçoit un peu plus de largeur sur mobile, sans réduire
+la police ; les cinq liens se répartissent également au-delà. Responsable est conservé.
 
 | Endroit à modifier | Rôle |
 | --- | --- |
-| `src/app/features/agent/agent.ts` | Le `li.scanner-shortcut` contient le raccourci ; `styleUrl` charge ses styles. |
-| `src/app/features/agent/agent.css` | Masque le `li` à partir de 1200 px. |
-| `src/app/shared/main-navigation/main-navigation.html` | `[class.scanner-link]` ajoute la classe uniquement à la destination `/agent/scanner`. |
-| `src/app/shared/main-navigation/main-navigation.css` | `nav a.scanner-link` masque ce lien au même seuil et garde la disposition flexible existante. |
-| `src/app/app.routes.ts` | Conserve la route Scanner ; aucun masquage CSS ne doit en conditionner l'accès. |
-| `e2e/responsive.pw.ts` | Vérifie visibilité, nombre et répartition des destinations, limites, redimensionnement, URL directe et clavier. |
+| `features/agent/agent.ts/.css` | Carte verte, icône locale blanche et texte visible, seuil 1200 px ; aperçu partagé. |
+| `shared/main-navigation/main-navigation.ts/.html/.css` | Destinations, état actif, Plus, répartition des liens. |
+| `features/scanner/scanner.ts/.html/.css` | Ratio intrinsèque, surface vidéo, coins décoratifs et consigne. |
+| `app.routes.ts` | Route Scanner conservée ; le CSS ne conditionne pas son accès. |
+| `e2e/responsive.pw.ts`, `e2e/scanner.pw.ts`, `e2e/agent-interventions.pw.ts` | Seuils, clavier, liens, caméra simulée/décodage réel et régressions. |
 
-Pour changer le seuil, modifier **les deux fichiers CSS**, les attentes Playwright et la
-[décision UX](decisions.md). Il n'y a pas de nouvelle donnée ni de requête HTTP : Angular
-produit les liens, CSS choisit leur présentation, et le routeur garde l'URL accessible.
-Le scanner réel et la nouvelle saisie de code restent à développer dans un autre incrément.
-
-Essai manuel : ouvrir `/agent` à 320, 390, 768 et 1440 px ; vérifier les deux accès, puis
-redimensionner entre 1199, 1200 et 1201 px dans les deux sens, sans recharger. Parcourir au
-clavier les liens d'accueil et de navigation : Scanner doit être ignoré à partir de 1200 px,
-les quatre autres destinations doivent rester accessibles et réparties sans trou. Ouvrir
-`/agent/scanner` directement à chaque largeur, puis vérifier Matériel/recherche et changer
-vers l'espace Responsable pour contrôler sa navigation.
+Le [guide de revue](agent-scan-ux.md) détaille pixels décodés inchangés, bandes, procédures
+PC/Pixel, limites et points pédagogiques. Pour changer le seuil, modifier `agent.css`, les
+attentes Playwright et la décision UX. Aucun appel métier ni stockage ajouté.
 
 ## Tests navigateur responsive
 
@@ -1134,13 +1124,12 @@ nom et identifiant, la casse et les espaces, le message vide, l'effacement par T
 le retour du focus et le maintien de l'URL et du lien actif dans chaque espace. Ils contrôlent
 le débordement après saisie, y compris une recherche très longue, et après effacement.
 
-Deux scénarios supplémentaires dans chacun des quatre projets contrôlent les accès Scanner
-et leur seuil de présentation : visibilité sur l'accueil et dans la navigation, activation
-des deux liens quand ils sont visibles, URL directe à toute largeur, tabulation, et accès
-à Matériel. Le redimensionnement couvre 1024, 1199, 1200, 1201 et 1440 px puis revient jusqu'à
-320 px sans rechargement. Les liens directs visibles doivent avoir des largeurs égales et
-occuper tout l'espace intérieur de navigation, sans intervalle vide. La PR #29 a intégré
-**72 scénarios** (64 intégrés par la PR #20, plus huit).
+Deux scénarios dans chacun des quatre projets contrôlent la carte Scanner et son seuil :
+visibilité de l’accueil, absence de Scanner dans la navbar, URL directe à toute largeur,
+tabulation et accès aux rubriques. Le redimensionnement couvre 1024, 1199, 1200, 1201 et
+1440 px puis revient jusqu’à 320 px sans recharge. Les liens se répartissent également
+au-delà de 760 px ; sur mobile, Interventions reçoit la place nécessaire à son libellé.
+Historiquement, la PR #29 avait intégré **72 scénarios** (64 de #20, plus huit).
 
 La PR #32 a intégré **104 scénarios**, soit 32 de plus : quatre URL de fiche aux quatre
 formats et deux parcours supplémentaires par espace dans chaque format. Ils vérifient les
