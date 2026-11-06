@@ -1,8 +1,17 @@
 <a class="skip-link" href="#main-content">Aller au contenu</a>
 <div class="shell" [class.responsable]="space() === 'responsable'">
   <header class="app-bar">
-    <a class="brand-link" routerLink="/" aria-label="TerriMaint — Accueil général">TerriMaint</a>
-    <p class="screen-title">{{ label() }}</p>
+    <a class="brand-link" routerLink="/" aria-label="TerriMaint — Accueil général">
+      <img class="brand-symbol" src="/brand/terrimaint-symbol.svg" alt="" width="28" height="28" />
+      <img
+        class="brand-horizontal"
+        src="/brand/terrimaint-logo-horizontal.svg"
+        alt=""
+        width="581"
+        height="128"
+      />
+    </a>
+    <p class="screen-title">{{ landing() ? 'Accueil général' : label() }}</p>
     <details class="space-menu" #spaceMenu>
       <summary>
         <img src="/icons/menu.svg" alt="" width="24" height="24" />

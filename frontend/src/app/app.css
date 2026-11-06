@@ -6,6 +6,7 @@
   padding-bottom: calc(88px + env(safe-area-inset-bottom));
 }
 .app-bar {
+  container-type: inline-size;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -15,11 +16,25 @@
   border-bottom: 1px solid var(--surface);
 }
 .brand-link {
-  color: var(--green);
-  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 44px;
+  min-height: 44px;
   text-decoration: none;
 }
+.brand-symbol {
+  display: block;
+}
+.brand-horizontal {
+  display: none;
+  width: auto;
+  height: 38px;
+}
 .screen-title {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   font-weight: 600;
   overflow-wrap: anywhere;
@@ -104,7 +119,7 @@ footer {
 .responsable {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
-  grid-template-rows: 72px 1fr auto;
+  grid-template-rows: minmax(72px, auto) 1fr auto;
   padding-bottom: 0;
 }
 .responsable app-main-navigation {
@@ -135,10 +150,10 @@ footer {
   .app-bar {
     gap: 8px;
     padding: 8px 16px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
   }
-  .brand-link {
-    display: none;
+  .responsable .brand-link {
+    display: flex;
   }
   main {
     padding: 24px;
@@ -157,5 +172,24 @@ footer {
   .responsable .screen-title {
     font-size: 1rem;
     line-height: 1.5rem;
+  }
+}
+
+/* La largeur du bandeau tient compte de la place occupée par la sidebar. */
+@container (min-width: 640px) {
+  .brand-symbol {
+    display: none;
+  }
+  .brand-horizontal {
+    display: block;
+  }
+}
+@container (max-width: 639px) {
+  .space-menu-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
   }
 }

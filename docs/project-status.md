@@ -2,14 +2,15 @@
 
 ## Référence et usage
 
-Vérification ciblée du 6 novembre 2026 pour [#76](https://github.com/arthurb1348/terrimaint/issues/76) :
-base `origin/main` distante `b6c322d3e49738f36c5434965aa09e21ff1a5f8d`, vérifiée par API
-puis Git distant. #73 (UX Agent/cadre QR) et #75 (validation ciblée) sont fusionnées.
-**En revue :** carte Scanner abrégée, accès secondaire Agent, Scanner Responsable et
-routage dans l’espace courant ; actions photo adaptées à 1200 px, sans perte au
-redimensionnement. Moteur caméra/décodeur, règles photo/mémoire, dépendances, workflows,
-permissions et Firebase conservés. Voir [la procédure PC/Pixel](agent-scan-ux.md).
-Les résultats réels et leurs limites sont dans la PR ; les passages datés restent historiques.
+Vérification ciblée du 6 novembre 2026 pour [#78](https://github.com/arthurb1348/terrimaint/issues/78) :
+base distante `origin/main` **`73da92ecc26e4236f68b8b9e60f3c061197ab00e`**,
+vérifiée par Git distant et GitHub. [#77](https://github.com/arthurb1348/terrimaint/pull/77)
+est fusionnée et présente dans cette base : accès Scanner et actions photo #76 intégrés.
+**En revue :** intégration du logo validé dans l’en-tête et la sidebar Responsable,
+favicon SVG/ICO fourni, provenance et licence Inter conservées. Aucun comportement
+métier, stockage, dépendance, workflow, permission ou réglage Firebase modifié.
+Voir [les usages et la revue du logo](brand.md). Les résultats réels et limites sont
+dans la PR ; les passages datés ci-dessous restent historiques.
 
 - Date de vérification ciblée : 2026-11-01 (Europe/Paris), fusion #58/#60 et #61/#62, préparation photos #57. Les autres preuves conservent leur date.
 - Dépôt source : [arthurb1348/terrimaint](https://github.com/arthurb1348/terrimaint).
@@ -47,7 +48,7 @@ fusionnée le 31 octobre 2026 : incrément **4/10**. La correction de contraste
 [#53](https://github.com/arthurb1348/terrimaint/issues/53) est intégrée par la PR #54 fusionnée. #43 est intégrée par la [PR #55](https://github.com/arthurb1348/terrimaint/pull/55), incrément 5/10.
 Le Scanner QR #44 est intégré par la PR #56 fusionnée. Les ajustements Pixel #58 sont
 intégrés par #60 ; les photos #57 sont intégrées par #63. #59 est intégrée par #69 ;
-Mes interventions #70 est intégrée par #71 ; l’UX #72 est intégrée par #73 ; #76 est en revue, puis interventions sur fiche matériel, gestion des états,
+Mes interventions #70 est intégrée par #71 ; l’UX #72 est intégrée par #73 ; #76 est intégrée par #77, puis interventions sur fiche matériel, gestion des états,
 #45 GPS, #46 audio, #47 dashboard et #48 stabilisation restent prévus.
 PostgreSQL ([#38](https://github.com/arthurb1348/terrimaint/issues/38)) est **différé** et ne
 bloque pas cet incrément. La cible Django/DRF/PostgreSQL reste prévue ; la démonstration
@@ -67,8 +68,9 @@ Les nouvelles URL sous `/agent/…` et `/responsable/…` partagent les composan
 incident. Les anciennes URL redirigent. Scanner ouvre le lecteur QR intégré ; profil et agents restent indisponibles. Les décisions validées sur l'immobilisation réservée
 au Responsable et le retrait du type d'incident sont dans [decisions.md](decisions.md).
 Depuis #73, la navigation mobile Agent affiche **Accueil, Matériel, Interventions et Plus**.
-Plus conserve Incidents/Profil, fermeture et focus ; au-delà de 760 px les cinq liens restent
-visibles directement. Dans #76 en revue, Plus ajoute Scanner ; la navigation Responsable obtient son entrée.
+Plus conserve Incidents/Profil, fermeture et focus. Depuis #77, Plus ajoute Scanner ;
+au-delà de 760 px, les destinations sont directes (Scanner masqué dès 1200 px).
+La navigation Responsable possède également son entrée Scanner.
 Les liens Scanner et la carte d’accueil sont visibles sous
 1200 px et masqués dès 1200 inclus, avec les deux routes directes accessibles à toute largeur.
 L’accueil conserve les affectations partagées de Camille ; le cadre suit l’image vidéo sans

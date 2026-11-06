@@ -89,11 +89,9 @@ img {
 .organization small {
   font-weight: 400;
 }
-.organization .icon-circle {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: white;
+.organization-mark {
+  flex-shrink: 0;
+  margin: 8px;
 }
 .sidebar nav {
   position: static;
