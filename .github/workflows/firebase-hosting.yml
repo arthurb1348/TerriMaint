@@ -51,7 +51,7 @@ jobs:
         run: npm install --prefix "$RUNNER_TEMP/firebase-tools" --no-audit --no-fund firebase-tools@15.34.2
       - name: Refuser une source périmée ou une PR externe/fermée
         id: current
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           SOURCE_SHA: ${{ inputs.source-sha }}
           PR_NUMBER: ${{ inputs.pr-number }}
