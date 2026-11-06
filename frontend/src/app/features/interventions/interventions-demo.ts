@@ -1,6 +1,6 @@
 import { Intervention } from './intervention';
 
-// Jeu fixe de consultation, indépendant des simulations de déclaration et de programmation.
+// Amorçage immuable de DemoData : les créations en mémoire restent séparées de ces exemples.
 // Les informations d'origine restent dans leurs sources, reliées par identifiant.
 export const DEMO_INTERVENTIONS: readonly Intervention[] = [
   {

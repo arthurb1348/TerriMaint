@@ -1,3 +1,4 @@
+import { DemoData } from '../../core/demo-data';
 import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -20,6 +21,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { IncidentPhotos } from './incident-photos';
+import { Incident } from './incident';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 
 const nonBlank: ValidatorFn = (control) =>
@@ -33,6 +35,7 @@ const nonBlank: ValidatorFn = (control) =>
   styleUrl: './incident-declaration.css',
 })
 export class IncidentDeclaration {
+  private readonly data = inject(DemoData);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -51,6 +54,7 @@ export class IncidentDeclaration {
   protected readonly step = signal<'form' | 'review' | 'complete'>('form');
   protected readonly media = new IncidentPhotos();
   protected readonly submitted = signal(false);
+  protected readonly createdIncident = signal<Incident | undefined>(undefined);
   protected readonly priorities = [
     { value: 'low', label: 'Basse', explanation: 'intervention à planifier' },
     { value: 'high', label: 'Haute', explanation: 'intervention rapide' },
@@ -92,6 +96,7 @@ export class IncidentDeclaration {
       this.equipmentId();
       this.media.clear();
       this.form.reset();
+      this.createdIncident.set(undefined);
       this.submitted.set(false);
       this.step.set('form');
       afterNextRender(() => this.document.getElementById('main-content')?.focus(), {
@@ -120,7 +125,8 @@ export class IncidentDeclaration {
   }
 
   protected review(): void {
-    if (this.media.busy() || !this.equipment() || this.step() !== 'form') return;
+    if (this.createdIncident() || this.media.busy() || !this.equipment() || this.step() !== 'form')
+      return;
     this.submitted.set(true);
     this.form.markAllAsTouched();
     if (this.form.invalid) {
@@ -135,14 +141,28 @@ export class IncidentDeclaration {
   }
 
   protected edit(): void {
+    if (this.createdIncident() || this.step() !== 'review') return;
     this.step.set('form');
     this.focusAfterRender('#incident-title');
   }
 
   protected complete(): void {
-    if (!this.equipment() || this.step() !== 'review' || this.form.invalid) return;
-    // Cette étape ne transmet rien et n'attribue aucun numéro d'incident.
-    this.media.clear();
+    if (
+      this.createdIncident() ||
+      this.media.busy() ||
+      !this.equipment() ||
+      this.step() !== 'review' ||
+      this.form.invalid
+    )
+      return;
+    const incident = this.data.createIncident({
+      ...this.form.getRawValue(),
+      equipmentId: this.equipment()!.id,
+      photos: this.media.photos(),
+    });
+    if (!incident) return;
+    this.createdIncident.set(incident);
+    this.media.transfer();
     this.step.set('complete');
     this.focusAfterRender('#incident-title-heading');
   }

@@ -1,3 +1,4 @@
+import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
@@ -8,6 +9,7 @@ import {
   inject,
   Injector,
   signal,
+  untracked,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,9 +17,9 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 import { INCIDENT_PRIORITIES } from '../incidents/incident';
 import { incidentQueryParams, readIncidentFilters } from '../incidents/incident-filters';
-import { DEMO_INCIDENTS } from '../incidents/incidents-demo';
 import { DEMO_AGENTS } from './agents-demo';
 import { localToday, plannedDateValidator } from './planning-date';
+import { Intervention } from './intervention';
 
 @Component({
   selector: 'app-intervention-planning',
@@ -27,6 +29,7 @@ import { localToday, plannedDateValidator } from './planning-date';
   styleUrls: ['../incidents/incident-presentation.css', './intervention-planning.css'],
 })
 export class InterventionPlanning {
+  private readonly data = inject(DemoData);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
@@ -38,9 +41,7 @@ export class InterventionPlanning {
     initialValue: this.route.snapshot.queryParamMap,
   });
   private readonly incidentId = computed(() => this.params().get('incidentId'));
-  protected readonly incident = computed(() =>
-    DEMO_INCIDENTS.find((item) => item.id === this.incidentId()),
-  );
+  protected readonly incident = computed(() => this.data.getIncident(this.incidentId()));
   protected readonly equipment = computed(() =>
     DEMO_EQUIPMENT.find((item) => item.id === this.incident()?.equipmentId),
   );
@@ -56,6 +57,7 @@ export class InterventionPlanning {
   protected readonly instructionsLimit = 2000;
   protected readonly step = signal<'form' | 'review' | 'complete'>('form');
   protected readonly submitted = signal(false);
+  protected readonly createdIntervention = signal<Intervention | undefined>(undefined);
   protected readonly form = new FormGroup({
     title: new FormControl('', {
       nonNullable: true,
@@ -90,12 +92,13 @@ export class InterventionPlanning {
       // Les seuls filtres de retour n'interviennent pas dans cet effet.
       this.incidentId();
       this.form.reset({
-        title: this.incident()?.title ?? '',
+        title: untracked(() => this.incident()?.title ?? ''),
         instructions: '',
         agentId: '',
         plannedOn: '',
       });
       this.submitted.set(false);
+      this.createdIntervention.set(undefined);
       this.step.set('form');
       afterNextRender(() => this.document.getElementById('main-content')?.focus(), {
         injector: this.injector,
@@ -113,21 +116,27 @@ export class InterventionPlanning {
   }
 
   protected review(): void {
-    if (!this.canPlan() || this.step() !== 'form') return;
+    if (this.createdIntervention() || !this.canPlan() || this.step() !== 'form') return;
     if (!this.validate()) return;
     this.step.set('review');
     this.focusAfterRender('#planning-heading');
   }
 
   protected edit(): void {
+    if (this.createdIntervention() || this.step() !== 'review') return;
     this.step.set('form');
     this.focusAfterRender('#planning-title');
   }
 
   protected complete(): void {
-    if (!this.canPlan() || this.step() !== 'review') return;
+    if (this.createdIntervention() || !this.canPlan() || this.step() !== 'review') return;
     if (!this.validate()) return;
-    // Simulation en mémoire : aucune création, notification ou modification des sources.
+    const intervention = this.data.createIntervention({
+      ...this.form.getRawValue(),
+      incidentId: this.incident()!.id,
+    });
+    if (!intervention) return;
+    this.createdIntervention.set(intervention);
     this.step.set('complete');
     this.focusAfterRender('#planning-heading');
   }

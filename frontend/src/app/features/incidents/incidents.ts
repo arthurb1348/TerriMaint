@@ -1,3 +1,4 @@
+import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import { afterNextRender, Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -5,7 +6,6 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 import { INCIDENT_PRIORITIES, INCIDENT_STATUSES } from './incident';
 import { incidentQueryParams, readIncidentFilters } from './incident-filters';
-import { DEMO_INCIDENTS } from './incidents-demo';
 
 @Component({
   selector: 'app-incidents',
@@ -15,6 +15,7 @@ import { DEMO_INCIDENTS } from './incidents-demo';
   styleUrls: ['./incident-presentation.css', './incidents.css'],
 })
 export class Incidents {
+  private readonly data = inject(DemoData);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
@@ -27,14 +28,16 @@ export class Incidents {
   protected readonly statuses = INCIDENT_STATUSES;
   protected readonly priorityOptions = Object.entries(INCIDENT_PRIORITIES);
   protected readonly statusOptions = Object.entries(INCIDENT_STATUSES);
-  private readonly rows = DEMO_INCIDENTS.map((incident) => ({
-    incident,
-    equipment: DEMO_EQUIPMENT.find((equipment) => equipment.id === incident.equipmentId),
-  }));
+  private readonly rows = computed(() =>
+    this.data.incidents().map((incident) => ({
+      incident,
+      equipment: DEMO_EQUIPMENT.find((equipment) => equipment.id === incident.equipmentId),
+    })),
+  );
   protected readonly filteredIncidents = computed(() => {
     const { q, priority, status } = this.filters();
     const search = q.trim().toLowerCase();
-    return this.rows.filter(
+    return this.rows().filter(
       ({ incident, equipment }) =>
         (!priority || incident.priority === priority) &&
         (!status || incident.status === status) &&

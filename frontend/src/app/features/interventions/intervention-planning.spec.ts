@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { DemoData } from '../../core/demo-data';
 import { routes } from '../../app.routes';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 import { DEMO_INCIDENTS } from '../incidents/incidents-demo';
@@ -236,7 +237,20 @@ describe('Programmation locale d’une intervention', () => {
     expect(content().querySelector('dd')?.textContent).toBe('Contrôle du moteur');
     await click('Programmer l’intervention');
     expect(heading()).toBe('Programmation terminée');
-    expect(content().querySelectorAll('a')).toHaveLength(1);
+    expect(content().querySelectorAll('a')).toHaveLength(2);
+    const component = harness.routeDebugElement!.componentInstance as {
+      complete(): void;
+      edit(): void;
+    };
+    component.complete();
+    component.edit();
+    component.complete();
+    expect(TestBed.inject(DemoData).interventions()).toHaveLength(DEMO_INTERVENTIONS.length + 1);
+    const created = TestBed.inject(DemoData).interventions().at(-1)!;
+    expect(created.title).toBe('Contrôle du moteur');
+    expect(
+      content().querySelector(`a[href="/responsable/interventions/${created.id}"]`),
+    ).not.toBeNull();
     expect(content().textContent).not.toMatch(/notifié|synchronisé/i);
     expect(content().querySelector('form')).toBeNull();
     expect(content().textContent).not.toMatch(/INT-2026|Succès/);
@@ -306,6 +320,7 @@ describe('Programmation locale d’une intervention', () => {
       await fillValid();
       if (step === 'review') await submit();
       await click('Annuler');
+      expect(TestBed.inject(DemoData).interventions()).toHaveLength(DEMO_INTERVENTIONS.length);
       await click('Retour aux signalements');
       expect(TestBed.inject(Router).parseUrl(TestBed.inject(Router).url).queryParams).toEqual(
         query,

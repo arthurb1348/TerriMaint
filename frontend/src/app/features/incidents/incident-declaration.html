@@ -259,6 +259,10 @@
         </div>
       }
       @case ('complete') {
+        <p>Le signalement est disponible dans cet onglet jusqu’au rechargement.</p>
+        <a class="page-action secondary" [routerLink]="['../../', createdIncident()!.id]"
+          >Voir le signalement</a
+        >
         <a
           class="return-link page-action back-link"
           [routerLink]="['../../../equipements', item.id]"

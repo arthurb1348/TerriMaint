@@ -24,15 +24,16 @@ l'[issue #41](https://github.com/arthurb1348/terrimaint/issues/41) est intégré
 [PR #49](https://github.com/arthurb1348/terrimaint/pull/49), fusionnée le 31 octobre 2026.
 La consultation d'un jeu fixe d'interventions de l'[issue #42](https://github.com/arthurb1348/terrimaint/issues/42)
 est intégrée par la [PR #50](https://github.com/arthurb1348/terrimaint/pull/50), fusionnée le
-31 octobre 2026. Les simulations n'alimentent pas ce jeu. L'[issue #51](https://github.com/arthurb1348/terrimaint/issues/51)
+31 octobre 2026. Les créations en mémoire de #59 (en revue) complètent ce jeu dans cette branche. L'[issue #51](https://github.com/arthurb1348/terrimaint/issues/51)
 porte l’harmonisation UX intégrée par la PR #52 : Basse/Haute/
 Urgente, actions hiérarchisées sans soulignement, retours fléchés avec libellé et cartes légèrement
 teintées. C'est l'incrément **4/10**, après ajout de ce retour utilisateur au programme initial.
 Les contrastes #53/PR #54 sont intégrés. Les images/photos #43 sont intégrées par la [PR #55](https://github.com/arthurb1348/terrimaint/pull/55).
 L’identification QR et la saisie manuelle #44 sont intégrées par la PR #56, fusionnée le
 1er novembre 2026 (`5d1867a17a993f1005c87276665b29004787eab6`).
-Les ajustements Pixel #58 sont intégrés par la PR #60 (`7388912…`). Les photos #57
-sont en revue avant #59 mémoire partagée, #45 GPS, #46 audio, #47 dashboard et #48 stabilisation.
+Les ajustements Pixel #58 sont intégrés par la PR #60 (`7388912…`). Les photos #57 sont intégrées par #63. La mémoire partagée #59 est en revue ;
+#45 GPS, #46 audio, #47 dashboard et #48 stabilisation restent prévus. Le
+[guide #59](shared-memory.md) précise les données locales et leur perte au rechargement.
 Ces parcours restent locaux et fictifs ; leurs limites sont documentées dans le README et les guides.
 PostgreSQL ([#38](https://github.com/arthurb1348/terrimaint/issues/38)) est **différé** et ne
 bloque pas ces écrans. La cible Django/DRF/PostgreSQL est conservée ; cette priorité ne

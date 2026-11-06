@@ -2,14 +2,16 @@
 
 ## Référence et usage
 
-Vérification ciblée du 6 novembre 2026 pour [#67](https://github.com/arthurb1348/terrimaint/issues/67) :
-`origin/main` distant à `8b9318beb27267c078a336c7ff487f3783b047ce`, #63 et Dependabot
-#64/#65/#66 fusionnés. La suite intégrée comprend **376 scénarios** aux quatre formats,
-avec deux workers CI et `fullyParallel: true`. L'optimisation en deux lots est **en revue**
-dans cette branche jusqu'à fusion ; elle n'implémente aucune fonctionnalité de #59.
-Le [guide Responsive CI](responsive-ci.md) et la PR liée à #67 portent l'inventaire,
-les résultats et les limites mesurées. Les constats historiques ci-dessous gardent leur date.
-
+Vérification ciblée du 6 novembre 2026 pour [#59](https://github.com/arthurb1348/terrimaint/issues/59) :
+`origin/main` distant à `0567919d3392589b558e0a36147ec57b73d2ec92`, photos #63 et
+Responsive #68 fusionnés. La mémoire partagée #59 est **en revue** dans cette branche :
+créations consultables entre écrans/espaces du même onglet, photos confirmées conservées,
+remise au jeu initial au rechargement. Aucun backend métier ni stockage persistant.
+Le [guide #59](shared-memory.md) décrit propriété des ressources, tests et revue PC/Pixel.
+Le sharding et le contrôle final de #68 restent inchangés ; l’inventaire courant et les
+preuves du dernier commit proposé sont dans la PR. Les constats historiques ci-dessous
+conservent leur date ; les anciennes simulations sans ajout sont remplacées par #59
+uniquement dans cette branche en revue.
 
 - Date de vérification ciblée : 2026-11-01 (Europe/Paris), fusion #58/#60 et #61/#62, préparation photos #57. Les autres preuves conservent leur date.
 - Dépôt source : [arthurb1348/terrimaint](https://github.com/arthurb1348/terrimaint).
@@ -40,12 +42,14 @@ L'[issue #41](https://github.com/arthurb1348/terrimaint/issues/41) est intégré
 [PR #49](https://github.com/arthurb1348/terrimaint/pull/49), fusionnée le 31 octobre 2026 :
 programmation simulée depuis un signalement Responsable. La consultation d'un jeu fixe
 d'interventions #42 est intégrée par la [PR #50](https://github.com/arthurb1348/terrimaint/pull/50),
-fusionnée le 31 octobre 2026 ; les programmations simulées ne créent aucune entrée.
+fusionnée le 31 octobre 2026 ; #59 en revue complète cette consultation par les
+créations en mémoire, sans modifier les exemples initiaux.
 L'harmonisation UX #51 est intégrée par la [PR #52](https://github.com/arthurb1348/terrimaint/pull/52),
 fusionnée le 31 octobre 2026 : incrément **4/10**. La correction de contraste
 [#53](https://github.com/arthurb1348/terrimaint/issues/53) est intégrée par la PR #54 fusionnée. #43 est intégrée par la [PR #55](https://github.com/arthurb1348/terrimaint/pull/55), incrément 5/10.
 Le Scanner QR #44 est intégré par la PR #56 fusionnée. Les ajustements Pixel #58 sont
-intégrés par #60 ; #57 photos est en revue avant #59 mémoire partagée, #45 GPS, #46 audio, #47 dashboard et #48 stabilisation.
+intégrés par #60 ; les photos #57 sont intégrées par #63. #59 est en revue,
+puis #45 GPS, #46 audio, #47 dashboard et #48 stabilisation restent prévus.
 PostgreSQL ([#38](https://github.com/arthurb1348/terrimaint/issues/38)) est **différé** et ne
 bloque pas cet incrément. La cible Django/DRF/PostgreSQL reste prévue ; la démonstration
 locale ne prétend pas fournir persistance, authentification ou permissions métier.
@@ -405,13 +409,14 @@ retrait des avertissements techniques répétés et erreurs Scanner encadrées. 
 du shell, les filtres/retours, le menu Plus, le seuil Scanner et la santé réelle sur l’accueil
 sont conservés. Aucun dashboard calculé ni permission nouvelle.
 
-Les formulaires ne créent toujours aucun objet dans les listes fixes. Aucun envoi,
+Lors de #60, les formulaires ne créaient aucun objet consultable ; #59 en revue
+les ajoute maintenant à l’état partagé de cette branche. Aucun envoi,
 notification, stockage distant ou synchronisation. Les sections historiques ci-dessus
 conservent les textes d’origine ; la décision #58 déplace les limites de
 l’interface vers le README et les guides. Voir [la procédure Pixel](pixel-ux.md) et les
 preuves du dernier commit dans la PR. Les validations humaines restent à Arthur.
 
-## Travaux en cours — Photos #57
+## Photos #57 intégrées par #63
 
 Branche `feat/57-prepare-report-photos`, depuis `7388912…`, après vérification distante de
 la fusion #60. Deux actions natives dans les deux espaces ; trois photos facultatives,
@@ -419,10 +424,11 @@ préparation séquentielle bornée, version préparée dans aperçu/récapitulat
 Entrée ≤ 24 Mio/24 MP/8 192 px par axe ; sortie JPEG ≤ 1 920 px et 1,5 Mio mesurée,
 avec refus préservant saisies et fichiers valides. Annulation, résultats tardifs, suppression,
 ressources, focus et double validation couverts. Le [guide photos](photos-demo.md) donne
-les constantes, mesures réellement obtenues et leurs limites. Revue Pixel et fusion à Arthur.
+les constantes, mesures réellement obtenues et leurs limites. Revue physique Pixel à Arthur ; #63 est fusionnée.
 
-#57 reste **en revue jusqu’à fusion** ; aucune liste enrichie, persistance ou backend métier.
-#59 mémoire partagée reste prévu, puis #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
+#57 est intégrée par #63 (`d9ad574…`). #59 est en revue : les créations proposées complètent
+les listes en mémoire dans cette branche, avec photos conservées jusqu’au rechargement.
+Aucune persistance ou backend métier. Ensuite #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
 Aucune configuration Hosting, permission, secret ou dépendance modifiée par #57.
 Les résultats CI/Responsive et URL Hosting du commit proposé sont à lire dans la PR.
 
@@ -668,8 +674,8 @@ SQLAlchemy/Alembic sont une ancienne orientation remplacée. PWA et hors connexi
 restent futurs. Tests et sécurité sont à définir dès la conception de chaque incrément,
 selon le [workflow](workflow.md), puis à vérifier en CI et en relecture humaine.
 
-1. #58/#60 est intégrée ; relire/tester les photos #57 **en revue jusqu’à fusion**.
-2. Ensuite #59 mémoire partagée → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
+1. #58/#60, photos #57/#63 et Responsive #67/#68 sont intégrés ; relire la mémoire partagée #59 **en revue**.
+2. Ensuite #45 GPS → #46 audio → #47 dashboard → #48 stabilisation ; les transitions de fin/clôture validées restent une prochaine PR.
 3. Reprendre ultérieurement PostgreSQL #38, le modèle métier et les migrations Django,
    avec validation serveur, envoi et règles d'accès entre collectivités.
 4. Prévoir la validation des entrées, l'authentification, les autorisations, les tests d'accès
@@ -678,8 +684,8 @@ selon le [workflow](workflow.md), puis à vérifier en CI et en relecture humain
 
 La priorité frontend est validée pour préparer l'oral, sans annonce de déploiement métier.
 Aucune de ces protections métier n'est implémentée aujourd'hui. Le workflow responsive et ses
-360 scénarios sont intégrés par #60 ; #57 propose 376 scénarios et complète les contrôles sans modifier les jobs `Backend`/`Frontend`
-ni les protections distantes.
+360 scénarios ont été intégrés par #60, puis 376 par #63. #68 les répartit en deux lots ;
+#59 ajoute ses parcours sans modifier Backend/Frontend, les workflows ou les protections distantes.
 
 ## Règles de mise à jour du bilan
 

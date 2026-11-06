@@ -106,8 +106,8 @@ npm run test:responsive:report
 Sous Linux, `npx playwright install --with-deps chromium` installe aussi les bibliothèques
 système requises. Playwright démarre Angular automatiquement ; Django n'est pas nécessaire
 car la santé HTTP est simulée. Les tests couvrent les pages, les fiches Matériel, la consultation
-et les filtres des signalements, la déclaration locale, la programmation simulée Responsable
-(dates locales Paris/New York, sans stockage ni envoi), la consultation des interventions
+et les filtres des signalements, la déclaration locale, la programmation en mémoire Responsable
+(dates locales Paris/New York, sans persistance ni envoi métier), la consultation des interventions
 avec critères dans l’URL, l’harmonisation des actions/retours/cartes et les menus en Chromium à
 320, 390, 768 et 1440 px. Le [guide du code](docs/code-guide.md#tests-navigateur-responsive)
 explique les vérifications et leurs limites.
@@ -142,10 +142,12 @@ reconnu ; une adresse LAN HTTP ne remplace pas le `localhost` de l’ordinateur.
 
 ## Limites des parcours métier et revue Pixel
 
-Les données Matériel, signalements, interventions et agents viennent de jeux fixes locaux.
-Les formulaires ne font aucun envoi, enregistrement ou notification ; terminer ne crée pas
-une fiche consultable et ne modifie pas les listes. Les saisies et photos choisies restent
-en mémoire et disparaissent au départ ou au rechargement. Aucun stockage distant,
+Matériel et agents restent des références locales fixes. Les signalements et interventions
+sont amorcés avec les exemples, puis les confirmations ajoutent de vrais éléments **en mémoire**
+dans cette branche de #59, en revue jusqu’à fusion. Listes, fiches, recherches et relations
+partagent cet état dans le même onglet, entre Agent et Responsable. Les photos confirmées
+suivent le signalement après départ du formulaire. Recharger ou fermer perd ces créations ;
+les brouillons non confirmés restent abandonnés au départ. Aucun envoi métier ni notification. Aucun stockage distant,
 authentification, permission serveur ni synchronisation n’est fourni. Les deux espaces
 restent publics ; le contrôle réel de santé Django reste sur l’accueil général.
 Ces limites sont documentées ici plutôt que répétées dans chaque écran métier.
@@ -155,13 +157,14 @@ Les ajustements Pixel [#58](https://github.com/arthurb1348/terrimaint/issues/58)
 liens natifs, accueil Responsable simplifié, messages métier et erreurs QR identifiables.
 Le [guide de revue](docs/pixel-ux.md) précise les choix et la procédure Pixel.
 
-Les photos **#57 sont en revue** : deux actions Prendre une photo / Choisir dans la galerie,
+Les photos **#57 sont intégrées par la PR #63** : deux actions Prendre une photo / Choisir dans la galerie,
 préparation locale séquentielle, 3 photos facultatives, entrées JPEG/PNG/WebP jusqu’à
 24 Mio / 24 MP / 8 192 px par axe, JPEG préparés jusqu’à 1 920 px et 1,5 Mio réellement
-contrôlés. Aperçu, récapitulatif et Modifier partagent la version préparée ; aucun envoi
-ni enrichissement des listes. Le [guide photos](docs/photos-demo.md) détaille les bornes,
+contrôlés. Aperçu, récapitulatif et Modifier partagent la version préparée, puis #59
+transfère ses URL au signalement confirmé ; aucun téléversement. Le [guide photos](docs/photos-demo.md) détaille les bornes,
 mesures et limites ; caméra/galerie natives et qualité sur Pixel restent à Arthur.
-Suite prévue : #59 mémoire partagée → #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
+Le [guide de mémoire partagée #59](docs/shared-memory.md) précise le fonctionnement proposé,
+la propriété des photos et la revue PC/Pixel. Suite prévue : #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
 Django/DRF/PostgreSQL reste la cible backend ; aucune nouvelle configuration Firebase.
 
 ## Prévisualiser sur Pixel avec Firebase Hosting

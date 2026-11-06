@@ -1,7 +1,7 @@
 <section class="feature-page" aria-labelledby="interventions-title">
   <h1 id="interventions-title">Interventions</h1>
   <dl class="status-counts" aria-label="Effectifs des interventions">
-    @for (item of counts; track item.status) {
+    @for (item of counts(); track item.status) {
       <div>
         <dt>{{ item.label }}</dt>
         <dd>{{ item.count }}</dd>
@@ -61,7 +61,7 @@
     {{ filteredInterventions().length }} intervention{{
       filteredInterventions().length > 1 ? 's' : ''
     }}
-    trouvée{{ filteredInterventions().length > 1 ? 's' : '' }} sur {{ total }}.
+    trouvée{{ filteredInterventions().length > 1 ? 's' : '' }} sur {{ total() }}.
   </p>
   @if (filteredInterventions().length) {
     <!-- Les rôles préservent la structure accessible quand les lignes deviennent des cartes. -->
