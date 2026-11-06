@@ -101,9 +101,43 @@ réussi le 6 novembre, même code frontend et même configuration Playwright que
 La [relance réussie de #66](https://github.com/arthurb1348/terrimaint/actions/runs/42190610477/attempts/2)
 donne aussi une référence normale : npm 37 s, Chromium 17 s, étape de tests 5 min 22 s,
 job 6 min 31 s. Au contraire, la première tentative de #66 a consacré **11 min 47 s** à
-Chromium et aux paquets système Ubuntu, puis a été annulée au timeout du job : elle ne mesure
+Chromium et aux paquets système Ubuntu, puis a été annulée après plus de quinze minutes : elle ne mesure
 pas une suite complète réussie. Le sharding ne corrige pas cette lenteur de téléchargement ;
 deux installations peuvent aussi subir un incident réseau.
+
+### Première mesure de #67 : incident réseau reproduit
+
+L'[exécution sur `2bc7a42`](https://github.com/arthurb1348/terrimaint/actions/runs/42198697362)
+du 6 novembre donne les mesures suivantes, arrondies à la seconde à partir des horodatages
+Actions. Les deux jobs ont commencé à une seconde d'écart, mais leurs étapes de tests
+n'ont pas pu se chevaucher à cause de la préparation du lot 2.
+
+| Job | Préparation avant tests | Dont npm / Chromium | Étape de tests | Publication des blobs/diagnostics | Durée totale du job |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Lot 1 | 52 s | 29 s / 15 s | 2 min 30 s, 188 succès | 3 s | 3 min 27 s |
+| Lot 2 | 11 min 26 s | 50 s / **10 min 26 s** | 3 min 48 s, interrompue | ignorée après annulation | 15 min 17 s |
+| Rapport commun | 1 min 1 s avant téléchargement, dont npm 50 s | — | sans tests | fusion refusée, blob 2 absent | 1 min 7 s |
+| Responsive final | — | — | sans tests | sans rapport | 3 s, **échec** |
+
+Le runner du lot 2 a rencontré des téléchargements Ubuntu lents (`azure.archive.ubuntu.com`,
+polices `fonts-ipafont-gothic` et `fonts-wqy-zenhei` dans les logs). Il a atteint la limite
+de **15 minutes inchangée**. Le contrôle de présence a refusé le second blob absent et
+le contrôle final a réellement échoué : aucun succès global trompeur, ni HTML incomplet
+annoncé comme valide. Le blob du lot 1 reste exploitable : 188 succès et 284 captures PNG
+présentes, dont une capture photo ouverte pour vérifier la lecture.
+
+Création → contrôle final : **16 min 38 s**, contre 7 min 20 s pour la référence saine.
+Somme des durées des quatre jobs : **19 min 54 s**, contre 7 min 17 s. L'attente/provisionnement
+estimée est de 3/4 s avant les lots, 3 s après les lots avant le rapport et 4 s avant le
+contrôle final ; les différences restantes comprennent préparation et nettoyage des runners.
+**Cette première mesure ne montre aucun gain global et ne valide pas une suite complète** :
+elle documente l'incident et les garde-fous. Le lot 1 seul ne permet pas d'estimer le coût
+du lot 2. Aucun timeout, retry ou test n'est modifié pour résoudre ce problème réseau.
+
+Les mesures sont ajoutées par un commit documentaire, avec workflow et code applicatif
+inchangés ; les contrôles de ce dernier commit sont vérifiés séparément dans la
+[PR #68](https://github.com/arthurb1348/terrimaint/pull/68). Cette nouvelle vérification est
+nécessaire pour achever les deux lots et valider le rapport commun, restés incomplets ici.
 
 La description de la PR liée à #67 consigne les résultats effectivement observés, les liens
 vers l'exécution du dernier commit et la comparaison chiffrée avec cette référence. Pour la
