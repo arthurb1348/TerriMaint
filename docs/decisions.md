@@ -1,5 +1,22 @@
 # Décisions techniques et métier
 
+## 2026-11-06 — Deux lots Responsive parallèles (issue #67, en revue)
+
+Préalables #64/#65/#66 fusionnés ; base distante vérifiée `8b9318b…`.
+Répartir les 376 scénarios intégrés après #63 avec le sharding natif Playwright en deux
+lots complémentaires, deux workers chacun, `fullyParallel: true` et `retries: 0` conservés.
+La matrice désactive `fail-fast` ; les deux installations Chromium restent identiques.
+Les reporters `list,blob` sont sélectionnés seulement par le workflow ; les commandes
+locales et leur rapport HTML restent inchangés. Les actions déjà épinglées sont réutilisées.
+
+Fusionner les deux blobs avec `playwright merge-reports --reporter html`, exiger leur présence
+et conserver rapport et diagnostics sept jours. Le contrôle final `Responsive` exige à la
+fois le succès de la matrice et celui du rapport : un HTML disponible ne prouve pas que
+les tests ont réussi. Annulation, échec ou étape ignorée ne peut devenir un succès global.
+Backend/Frontend, ruleset et Hosting restent inchangés. Le gain attendu concerne le temps
+écoulé ; préparer trois environnements npm peut augmenter le calcul cumulé. Le
+[guide de mesure et de revue](responsive-ci.md) distingue aussi l'incident réseau Ubuntu de #66.
+
 ## 2026-11-01 — Photos de terrain bornées (issue #57, en revue)
 
 Préalable vérifié : #60 fusionnée, dernier `origin/main` à `73889125a5683af04d7360423d53e16802e73be7`.
