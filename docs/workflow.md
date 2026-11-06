@@ -61,6 +61,92 @@ Le socle de cette branche utilise Django/DRF ; PostgreSQL reste à raccorder. Le
 du README lancent Django. Toute évolution doit préserver ou faire évoluer explicitement
 les contrats testés, notamment la santé consommée par Angular.
 
+## Validation locale et CI
+
+Décision validée par Arthur : cibler le travail local et conserver les tests et la
+validation complète en CI avant fusion. Cette politique ne modifie aucun test ni workflow.
+
+### Pendant le développement et avant publication
+
+- Choisir les tests selon les comportements modifiés et leurs dépendances, y compris
+  les consommateurs indirects ; les seuls fichiers directement modifiés ne suffisent pas.
+  Après une correction, relancer les vérifications concernées.
+- Élargir lorsque le changement touche un service partagé, la navigation, les styles
+  globaux, les dépendances ou lorsque l'impact reste incertain.
+- Avant publication d'une modification frontend, exécuter dans `frontend/` :
+  `npm run lint`, `npm test` (unitaires) et `npm run build`. Pour une évolution
+  d'interface, exécuter aussi les parcours navigateur ciblés pertinents et effectuer
+  la revue visuelle utile, aux formats et dans les espaces concernés.
+  La suite Responsive complète locale n'est plus systématiquement exigée si la CI
+  peut fournir cette validation sur la version finale proposée.
+- Pour une modification Python, conserver `uv run --locked python scripts/check.py`
+  avant remise : Ruff, format, vérification Django et pytest. Une modification frontend
+  seule n'impose pas ce contrôle Python local ; les contrats partagés peuvent toutefois
+  demander une vérification d'intégration. La santé HTTP simulée des tests navigateur
+  ne prouve ni l'intégration Django ni le fonctionnement sur appareil physique.
+- Pour la documentation seule, vérifier faits, liens, cohérence des instructions et diff,
+  dont `git diff --check`. Ne pas ajouter ni exécuter de tests applicatifs artificiels
+  sans effet de la modification sur l'application.
+
+Exemples : une retouche CSS d'une carte appelle les parcours qui l'affichent, les formats
+affectés, le clavier/focus et une revue visuelle ; une règle globale appelle une sélection
+plus large. Avant publication frontend, lint, unitaires et build restent requis.
+Une évolution du service partagé `DemoData` appelle ses tests et ceux de ses consommateurs,
+puis les parcours de création, consultation et navigation concernés dans les deux espaces,
+y compris les dépendances indirectes. Élargir davantage si l'impact reste incertain.
+
+### Avant fusion : preuves de la version finale
+
+Vérifier les résultats réels des contrôles existants, avec liens vers les exécutions :
+`Backend`, `Frontend`, `Responsive — lot 1/2`, `Responsive — lot 2/2`,
+`Responsive — rapport commun` et le contrôle final `Responsive`.
+Un rapport produit après un échec n'est pas un succès des tests ; un lot seul ne valide
+pas toute la suite. Le [guide Responsive](responsive-ci.md) décrit rapports et garde-fous.
+
+Identifier le SHA de tête proposé, la base et les commits effectivement contrôlés.
+Dans les workflows actuels, Backend/Frontend récupèrent le SHA résolu par
+`Choisir la source` (tête de PR), tandis que Responsive utilise le checkout par défaut
+de l'événement `pull_request` (commit de fusion de test). Relever aussi la source du
+workflow lors d'un lancement manuel depuis `main`. Signaler précisément ces différences
+et vérifier que les résultats correspondent à la tête et à la base courantes ; ne pas
+présenter les contrôles comme exécutés sur un même commit si ce n'est pas le cas.
+Voir [CI](../.github/workflows/ci.yml), le
+[résolveur de source](../.github/scripts/hosting-target.cjs) et
+[Responsive](../.github/workflows/responsive.yml).
+
+Une réussite locale partielle ne remplace jamais la CI complète. Si la validation complète
+est indisponible ou incomplète, garder la PR en brouillon et préciser les contrôles manquants,
+en cours, annulés ou échoués, ainsi que les sources non vérifiées. La validation humaine,
+le passage en prêt pour revue et la fusion restent à Arthur ; ne pas cocher ses cases.
+
+### Éviter les répétitions et consulter les résultats sobrement
+
+- Après réussite, ne pas relancer un contrôle sans modification susceptible de l'affecter,
+  nouvel échec ou doute concret. Une modification uniquement documentaire ne justifie
+  pas à elle seule une nouvelle suite locale applicative. Si GitHub exige une nouvelle
+  exécution CI après actualisation de branche, la vérifier normalement.
+- Réserver les exécutions complètes locales aux besoins concrets de diagnostic,
+  d'intégration ou d'absence de CI exploitable. Elles ne dispensent pas des preuves
+  CI complètes avant fusion.
+- Conserver les journaux complets dans des fichiers temporaires ou artifacts appropriés.
+  Présenter au modèle un résumé court et fidèle : commande, code de sortie, résultats
+  et avertissements pertinents. En cas d'échec, extraire les erreurs et le contexte
+  nécessaire en conservant l'accès au journal complet.
+- Une redirection ou un filtre ne doit jamais masquer l'échec : conserver et rapporter
+  le code de sortie de la commande contrôlée, y compris dans un pipeline.
+- Éviter les interrogations CI répétées sans information nouvelle ; attendre selon la
+  durée habituelle des jobs, puis consulter leur état. Ouvrir les logs détaillés pour
+  une erreur, un avertissement pertinent ou un doute concret.
+- Limiter les relectures de fichiers déjà connus et inchangés, tout en respectant les
+  consignes applicables ; relire ce qui change ou devient nécessaire à la décision.
+
+Aucun test n'est supprimé, ignoré ou déplacé par cette politique ; aucun changement de
+couverture, assertion, retry, timeout, workflow, sharding, dépendance, permission, ruleset
+ou Firebase n'est introduit. Aucune réduction automatique des tests CI par chemins modifiés.
+Ne pas annoncer de gain chiffré de tokens sans mesure : temps de calcul, attente et contexte
+consommé par l'agent sont des grandeurs distinctes. Cette décision n'appelle ni réorganisation
+globale de la documentation ni audit de redondance des tests.
+
 ## Une tâche
 
 1. Créer une issue avec un résultat observable, des critères d'acceptation et un périmètre.

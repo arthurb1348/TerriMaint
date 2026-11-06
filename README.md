@@ -81,7 +81,7 @@ Ce statut ne prouve pas qu'une base de données fonctionne.
 
 ## Vérifier le frontend
 
-Depuis `frontend/` :
+Avant publication d'une modification frontend, depuis `frontend/` :
 
 ```sh
 npm run lint
@@ -95,7 +95,15 @@ La CI exécute les jobs `Backend` et `Frontend` sur les PR et sur `main`.
 Les deux contrôles sont obligatoires dans le ruleset actif, vérifié sur GitHub le
 16 octobre 2026 ; voir le [bilan et ses sources](docs/project-status.md).
 
-Les tests navigateur responsive se lancent également depuis `frontend/` :
+Pendant le développement, cibler les tests par comportements et dépendances ; pour une
+évolution d'interface, ajouter les parcours navigateur pertinents et une revue visuelle.
+La CI complète reste à vérifier avant fusion. La
+[politique de validation](docs/workflow.md#validation-locale-et-ci) précise les relances,
+les changements Python et l'exception documentaire, sans suite applicative locale.
+
+Pour un besoin de suite navigateur complète locale (diagnostic, intégration ou CI
+inexploitable), les commandes restent disponibles depuis `frontend/` ; cette suite
+n'est pas systématiquement requise si la CI valide la version finale proposée :
 
 ```sh
 npx playwright install chromium

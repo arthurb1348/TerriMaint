@@ -88,7 +88,9 @@ et fiches introuvables. Les tests existants de clavier, navigation, photos et co
 présents. Les quatre formats et le workflow en deux lots de #68 sont conservés ; le nombre
 courant de scénarios vient de l’inventaire, pas d’une valeur historique fixée dans la CI.
 
-Commandes du README : `npm run lint`, `npm test`, `npm run build`, `npm run test:responsive`.
+Avant publication frontend : `npm run lint`, `npm test`, `npm run build`, avec parcours
+navigateur des consommateurs concernés et revue visuelle utiles. La suite Responsive
+complète reste vérifiée en CI avant fusion ; suivre la [politique locale et CI](workflow.md#validation-locale-et-ci).
 Les résultats réels et liens Backend/Frontend/lots/Responsive/Hosting du dernier SHA sont dans
 la PR. La santé HTTP y est simulée ; cela ne prouve ni une intégration métier Django, ni la
 caméra/galerie native ou les performances d’un appareil Pixel.

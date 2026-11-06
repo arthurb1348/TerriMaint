@@ -54,8 +54,10 @@ Une seule région `alert` annonce l’erreur QR, sans répétition par le statut
 
 ## Vérifications et limites des preuves
 
-Depuis `frontend/` : `npm run lint`, `npm test`, `npm run build`, puis `npm run test`
-et `npm run test:responsive`. Les tests navigateur couvrent 320 × 568, 390 × 844,
+Avant publication frontend : `npm run lint`, `npm test`, `npm run build`, puis les
+parcours navigateur ciblés et la revue visuelle utiles selon la
+[politique locale et CI](workflow.md#validation-locale-et-ci). La suite Responsive
+complète reste vérifiée en CI avant fusion. Les tests navigateur couvrent 320 × 568, 390 × 844,
 768 × 1024 et 1440 × 1024 dans les deux espaces, menu Plus, seuil 1200 px,
 accès direct/rechargement, filtres et retours. Les erreurs, photos, ressources caméra et
 contrastes restent testés. Le Ctrl/Cmd-clic ouvre un nouvel onglet via le navigateur.

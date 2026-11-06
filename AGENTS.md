@@ -31,12 +31,15 @@ Communiquer en français ; conserver les identifiants de code en anglais.
 4. Réaliser les modifications, contrôles et corrections nécessaires sans demander une
    autorisation à chaque étape courante. Expliquer les changements de dépendances nécessaires.
 5. Pour du Python, lancer `uv run --locked python scripts/check.py` avant remise.
-   Pour le frontend : lint, tests et build décrits dans le README. Après réussite, ne relancer
-   que si une modification ou un problème non résolu le justifie. Pour la documentation seule,
-   vérifier liens, faits et cohérence sans ajouter de tests applicatifs artificiels.
-   Pour une évolution d'interface ou de navigation, lancer aussi `npm run test:responsive`
-   dans `frontend/` et adapter ses parcours si nécessaire. Distinguer ces tests avec santé
-   HTTP simulée des essais d'intégration Django et d'une validation sur appareil réel.
+   Pendant le développement, cibler les tests par comportements modifiés et dépendances,
+   pas seulement par fichiers touchés ; après correction, relancer les contrôles concernés.
+   Élargir pour un service partagé, la navigation, les styles globaux, les dépendances
+   ou un impact incertain. Avant publication frontend : lint, tests unitaires et build
+   du README ; pour l'interface, parcours navigateur ciblés et revue visuelle utiles.
+   La suite Responsive complète locale n'est pas systématique si la CI peut valider
+   la version finale proposée. Distinguer santé HTTP simulée, intégration Django et appareil réel.
+   Pour la documentation seule, vérifier faits, liens, cohérence et diff, sans ajouter
+   ni exécuter de tests applicatifs artificiels. Voir la politique de validation du workflow.
 6. Avec un accès GitHub configuré, les commits, la publication de la branche et l'ouverture
    d'une PR en brouillon sont autorisés. Limiter les commits à la tâche, utiliser le modèle
    de PR et lier l'issue si elle existe. Garder l'identité Git existante sans réglage global.
@@ -48,6 +51,27 @@ Communiquer en français ; conserver les identifiants de code en anglais.
 Demander une précision pour une décision métier manquante, un élargissement de périmètre
 ou une action non autorisée. Les étapes courantes et réversibles ne demandent pas de pause.
 Le bootstrap initial pouvait créer le premier commit sur `main` ; il est terminé.
+
+## Validation et sobriété des sorties
+
+- Suivre la [politique locale et CI](docs/workflow.md#validation-locale-et-ci).
+  Avant fusion, vérifier les résultats réels de Backend, Frontend, des deux lots Responsive,
+  du rapport commun et du contrôle final, avec les commits contrôlés et différences de source.
+  Une réussite locale partielle ne remplace pas la CI complète ; si elle est indisponible
+  ou incomplète, garder la PR en brouillon et expliquer ce qui manque. Arthur valide et fusionne.
+- Après réussite, ne pas relancer sans modification susceptible d'affecter le contrôle,
+  nouvel échec ou doute concret. Une retouche documentaire seule ne justifie pas une suite
+  applicative locale. Vérifier normalement la nouvelle CI requise après actualisation de branche.
+  Réserver les suites complètes locales au diagnostic, à l'intégration ou à l'absence de CI exploitable.
+- Conserver les journaux complets en fichiers temporaires ou artifacts ; présenter seulement
+  commande, code de sortie, résultats et avertissements pertinents. En échec, extraire les
+  erreurs avec le contexte nécessaire et conserver l'accès au journal complet. Ne jamais
+  masquer un échec par redirection ou filtrage. Espacer les consultations CI selon la durée
+  habituelle ; limiter les relectures de fichiers connus et inchangés, en respectant les consignes.
+- Cette politique ne réduit aucun test CI selon les chemins modifiés et ne change ni tests,
+  couverture, assertions, retries, timeouts, workflows, sharding, dépendances, permissions,
+  ruleset ni Firebase. Ne pas annoncer de gain chiffré de tokens sans mesure ; distinguer
+  temps de calcul, attente et contexte consommé par l'agent.
 
 ## Politique de commentaires
 
