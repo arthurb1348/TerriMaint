@@ -767,6 +767,8 @@ for (const space of ['agent', 'responsable']) {
 test('La navigation Agent conserve ses destinations selon la taille', async ({ page }, info) => {
   await page.goto('/agent');
   const navigation = page.getByRole('navigation', { name: 'Navigation Agent' });
+  // Le shell remplace son lien d’accueil initial après la première navigation Angular.
+  await expect(navigation.getByRole('link', { name: 'Accueil', exact: true })).toHaveAttribute('href', '/agent');
   const plus = navigation.getByRole('button', { name: /^Plus/ });
   const incidents = navigation.getByRole('link', { name: 'Incidents', exact: true });
   const profile = navigation.getByRole('link', { name: 'Profil', exact: true });
