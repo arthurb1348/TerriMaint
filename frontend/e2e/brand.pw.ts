@@ -32,9 +32,10 @@ for (const route of ['/', '/agent', '/responsable']) {
     const target = await brand.boundingBox();
     expect(target!.width).toBeGreaterThanOrEqual(44);
     expect(target!.height).toBeGreaterThanOrEqual(44);
-    if (!sidebar && info.project.use.viewport!.width < 640) {
-      expect(dimensions.width).toBe(28);
-      expect(dimensions.height).toBe(28);
+    if (!sidebar && info.project.use.viewport!.width <= 760) {
+      await expect(image).toHaveAttribute('src', '/brand/terrimaint-logo-horizontal.svg');
+      expect(dimensions.width).toBeGreaterThanOrEqual(140);
+      expect(dimensions.height).toBe(32);
     }
     await info.attach('marque', { body: await page.screenshot(), contentType: 'image/png' });
 
@@ -92,7 +93,7 @@ test('marque adaptée au redimensionnement et favicon fourni', async ({ page }) 
   await page.goto('/agent');
   for (const width of [639, 671, 672, 688, 768, 1440, 320]) {
     await page.setViewportSize({ width, height: 1024 });
-    const horizontal = width - (width <= 760 ? 32 : 48) >= 640;
+    const horizontal = width <= 760 || width - 48 >= 640;
     await expect(page.locator(horizontal ? '.brand-horizontal' : '.brand-symbol')).toBeVisible();
     await expect(page.locator(horizontal ? '.brand-symbol' : '.brand-horizontal')).toBeHidden();
     await expect(page.locator('.brand-link')).toHaveAccessibleName('TerriMaint — Accueil général');
@@ -103,7 +104,7 @@ test('marque adaptée au redimensionnement et favicon fourni', async ({ page }) 
     await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(1);
     await expect(
       page.locator(
-        width > 760 ? '.organization' : width >= 672 ? '.brand-horizontal' : '.brand-symbol',
+        width > 760 ? '.organization' : '.brand-horizontal',
       ),
     ).toBeVisible();
   }

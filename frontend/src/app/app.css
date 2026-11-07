@@ -143,6 +143,13 @@ footer {
   .responsable .brand-link {
     display: flex;
   }
+  .brand-symbol {
+    display: none;
+  }
+  .brand-horizontal {
+    display: block;
+    height: 32px;
+  }
   main {
     padding: 24px;
   }
