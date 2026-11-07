@@ -1,3 +1,4 @@
+import { AudioNote } from './audio-note';
 import { LocationSummary } from './location-summary';
 import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
@@ -22,7 +23,7 @@ import { incidentQueryParams, readIncidentFilters } from './incident-filters';
 @Component({
   selector: 'app-incident-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DemoImage, LocationSummary],
+  imports: [RouterLink, DatePipe, DemoImage, LocationSummary, AudioNote],
   templateUrl: './incident-detail.html',
   styleUrls: [
     './incident-presentation.css',

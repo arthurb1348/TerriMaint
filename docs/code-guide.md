@@ -1,5 +1,41 @@
 # Guide des fichiers et configurations
 
+## Note vocale facultative #46 — en revue
+
+`incident-audio.ts` possède l’état du brouillon, le flux microphone, le `MediaRecorder`,
+les fragments et URL temporaires. La demande commence au clic, après vérification des API.
+Le format candidat doit être accepté par `MediaRecorder.isTypeSupported` et `canPlayType` :
+WebM/Opus, Ogg/Opus ou MP4, selon le navigateur. Le format réellement produit reste dans la note.
+Un chargement natif sans lecture automatique vérifie le résultat avant de le présenter.
+
+Une horloge monotone indépendante des fragments demande l’arrêt à 60 secondes ; les fragments
+ne servent pas de chronomètre. Les événements/timers peuvent être retardés par le navigateur,
+notamment écran verrouillé : le test Pixel reste nécessaire. Le cumul refuse plus de 10 Mio,
+y compris le fragment final. Erreur, suppression et sortie arrêtent les pistes et révoquent
+les URL abandonnées ; une génération et un signal d’annulation ignorent les réponses tardives.
+Le lecteur `audio-note` est natif, sans autoplay ; sa requête de vue réactive arrête et décharge le lecteur à sa suppression et à sa destruction.
+
+Le formulaire refuse le récapitulatif/confirmation pendant la demande, capture ou préparation.
+Une demande de permission peut être annulée pour continuer sans note. Après création acceptée,
+`DemoData` copie et fige les métadonnées (`src`, `mimeType`, `size`, `durationSeconds`) et devient
+propriétaire de l’URL, comme pour les photos. Rechargement/fermeture efface l’état ; aucun blob
+n’est téléversé, stocké durablement ou envoyé à un service de transcription. La suppression
+du brouillon ne révoque pas une note déjà transférée à un signalement.
+
+Validation : source sonore et horloge contrôlées dans Chromium, capture/encodage/décodage et
+lecture natifs ; aucun microphone physique testé ici. Le format constaté et la version du
+navigateur sont dans le bilan de PR. MP4 et Ogg sont des candidats détectés, pas une promesse
+de validation Safari/Firefox. HTTPS (ou localhost), permissions et matériel compatibles requis.
+Sur Pixel, tester autoriser/refuser, réécouter, Modifier, confirmer/consulter, retirer et enregistrer
+à nouveau, puis quitter pendant capture en vérifiant l’indicateur microphone du navigateur.
+
+Sources consultées le 7 novembre 2026 :
+[format pris en charge](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/isTypeSupported_static),
+[fragments et limites de cadence](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/dataavailable_event),
+[permission et contexte sécurisé](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia).
+Les prototypes Figma Agent `188:3` et Responsable `188:6` servent de repères ; adaptation au
+formulaire partagé livré : une section facultative, sans ajouter d’étape audio séparée.
+
 ## Localisation facultative #45 — en revue
 
 `incident-location.ts` contient le type des coordonnées, leur validation et l’état d’une

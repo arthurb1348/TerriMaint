@@ -1,3 +1,4 @@
+import { IncidentAudioNote, validAudioNote } from '../features/incidents/incident-audio';
 import { IncidentCoordinates, validCoordinates } from '../features/incidents/incident-location';
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { DEMO_EQUIPMENT } from '../features/equipements/equipements-demo';
@@ -11,6 +12,7 @@ import { PRESENTED_AGENT } from './presented-agent';
 import { DemoImageSource } from '../shared/demo-image/demo-image';
 
 interface IncidentDraft {
+  readonly audioNote?: IncidentAudioNote;
   readonly coordinates?: IncidentCoordinates;
   readonly equipmentId: string;
   readonly title: string;
@@ -32,6 +34,7 @@ interface InterventionDraft {
 function freezeIncident(incident: Incident): Incident {
   return Object.freeze({
     ...incident,
+    audioNote: incident.audioNote && Object.freeze({ ...incident.audioNote }),
     coordinates: incident.coordinates && Object.freeze({ ...incident.coordinates }),
     photos:
       incident.photos && Object.freeze(incident.photos.map((photo) => Object.freeze({ ...photo }))),
@@ -52,12 +55,12 @@ export class DemoData {
   private readonly sessionId = crypto.randomUUID();
   private incidentSequence = 0;
   private interventionSequence = 0;
-  private readonly photoUrls = new Set<string>();
+  private readonly mediaUrls = new Set<string>();
 
   constructor() {
     inject(DestroyRef).onDestroy(() => {
-      for (const url of this.photoUrls) URL.revokeObjectURL(url);
-      this.photoUrls.clear();
+      for (const url of this.mediaUrls) URL.revokeObjectURL(url);
+      this.mediaUrls.clear();
     });
   }
 
@@ -114,6 +117,7 @@ export class DemoData {
       (draft.description.trim() && draft.description.length > 2000) ||
       !Object.hasOwn(INCIDENT_PRIORITIES, draft.priority) ||
       (draft.coordinates !== undefined && !validCoordinates(draft.coordinates)) ||
+      (draft.audioNote !== undefined && !validAudioNote(draft.audioNote)) ||
       draft.photos.length > 3 ||
       draft.photos.some((photo) => !photo.src.startsWith('blob:') || !photo.alt.trim())
     )
@@ -129,10 +133,12 @@ export class DemoData {
       status: 'open',
       reportedOn: localToday(),
       coordinates: draft.coordinates,
+      audioNote: draft.audioNote,
       photos: draft.photos.map(({ src, alt }) => ({ src, alt })),
     });
     // La création acceptée prend possession des seules URL préparées, sans réencoder.
-    for (const photo of incident.photos ?? []) this.photoUrls.add(photo.src);
+    for (const photo of incident.photos ?? []) this.mediaUrls.add(photo.src);
+    if (incident.audioNote) this.mediaUrls.add(incident.audioNote.src);
     this.incidentState.update((items) => Object.freeze([...items, incident]));
     return incident;
   }

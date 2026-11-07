@@ -2,12 +2,12 @@
 
 ## Référence et usage
 
-Vérification ciblée du 7 novembre 2026 : base distante `origin/main` `3026e2a`, incluant #88.
-**En revue (#45) :** localisation ponctuelle facultative lors d’un signalement, uniquement
-au clic dans les deux espaces. Coordonnées typées et précision éventuelle relues,
-retirables et conservées avec le signalement dans `DemoData` pendant la session.
-Les demandes dépassées sont ignorées ; refus/erreurs ne bloquent pas l’envoi.
-Aucune carte, transmission métier, persistance ou autorisation serveur ajoutée.
+Vérification ciblée du 7 novembre 2026 : base distante `origin/main` `6d532f6`, incluant #89.
+**En revue (#46) :** note vocale facultative dans les deux espaces, déclenchée au clic,
+limitée à une note de 60 secondes / 10 Mio. Capture, arrêt, réécoute native et suppression ;
+confirmation après arrêt, transfert à `DemoData` dans le même onglet. Nettoyage des pistes,
+URL du brouillon et callbacks dépassés à la sortie/changement de matériel.
+Photos et localisation conservées ; aucun stockage persistant, transcription ou envoi serveur.
 Les vérifications et le parcours précis de preview sont dans la PR. Les passages
 ci-dessous conservent leurs dates et leur contexte historiques.
 
