@@ -44,7 +44,7 @@ describe('Fiche de matériel de démonstration', () => {
       expect(content().querySelector('a span[aria-hidden="true"]')?.textContent).toBe('←');
       expect(content().querySelector('a span:last-child')?.textContent).toBe('Retour au matériel');
       const declaration = content().querySelector<HTMLAnchorElement>('.declaration-link')!;
-      expect(declaration.textContent?.trim()).toBe('Déclarer un incident');
+      expect(declaration.textContent?.trim()).toBe('Faire un signalement');
       expect(declaration.getAttribute('href')).toBe(`/${space}/incidents/nouveau/EQ-OUT-0003`);
       expect(content().textContent).not.toMatch(/Synchronisé|Disponible/);
     },

@@ -37,8 +37,8 @@ for (const space of ['agent', 'responsable']) {
     );
     await main.getByRole('link', { name: 'Voir le matériel' }).click();
     await expect(section.getByRole('link')).toHaveCount(1);
-    await main.getByRole('link', { name: 'Déclarer un incident', exact: true }).click();
-    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Déclarer un incident');
+    await main.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Faire un signalement');
     await page.goto(`/${space}/equipements/EQ-OUT-0002`);
     if (space === 'agent') {
       await expect(section.getByRole('link')).toHaveCount(0);

@@ -17,7 +17,7 @@ for (const space of ['agent', 'responsable'] as const) {
       if (page.viewportSize()!.width <= 760) {
         if (currentSpace === 'responsable')
           await page.getByRole('button', { name: 'Ouvrir la navigation', exact: true }).click();
-        else if (name === 'Incidents') await page.getByRole('button', { name: /^Plus/ }).click();
+        else if (name === 'Signalements') await page.getByRole('button', { name: /^Plus/ }).click();
       }
       const link = page.locator('nav').getByRole('link', { name, exact: true });
       const target = await link.getAttribute('href');
@@ -34,15 +34,15 @@ for (const space of ['agent', 'responsable'] as const) {
     const interventionTitle = `Intervention partagée ${space}`;
     await page.goto(`/${space}/incidents`);
     // Le comptage doit suivre le rendu Angular, pas seulement la réponse HTML initiale.
-    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Incidents');
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Signalements');
     await expect(main.locator('tbody tr').first()).toBeVisible();
     const initialIncidents = await main.locator('tbody tr').count();
     await navigate(space, 'Matériel');
     await main.getByRole('searchbox').fill('  Débroussailleuse  ');
     await main.getByRole('link', { name: /Débroussailleuse n°3/ }).click();
-    await main.getByRole('link', { name: 'Déclarer un incident', exact: true }).click();
+    await main.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
     await main.getByRole('button', { name: 'Vérifier le signalement', exact: true }).click();
-    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Déclarer un incident');
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Faire un signalement');
     await main.getByLabel('Intitulé', { exact: true }).fill(incidentTitle);
     await main
       .getByRole('radio', { name: 'Basse — intervention à planifier', exact: true })
@@ -92,7 +92,7 @@ for (const space of ['agent', 'responsable'] as const) {
     await expect(main.getByRole('heading', { level: 1 })).toHaveText('Tableau de bord');
     await navigate('responsable', 'Interventions');
     const initialInterventions = await main.locator('tbody tr').count();
-    await navigate('responsable', 'Incidents');
+    await navigate('responsable', 'Signalements');
     await main.getByRole('searchbox').fill(incidentTitle);
     await main.getByRole('combobox', { name: 'Priorité', exact: true }).selectOption('low');
     await main

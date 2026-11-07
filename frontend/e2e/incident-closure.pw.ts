@@ -32,7 +32,7 @@ test('Clôturer après avoir terminé l’intervention conserve les statuts et b
   await page.getByRole('link', { name: 'Espace Responsable', exact: true }).click();
   if (page.viewportSize()!.width <= 760)
     await page.getByRole('button', { name: 'Ouvrir la navigation', exact: true }).click();
-  await page.locator('nav').getByRole('link', { name: 'Incidents', exact: true }).click();
+  await page.locator('nav').getByRole('link', { name: 'Signalements', exact: true }).click();
   await main.locator('tbody tr').filter({ hasText: 'INC-2026-048' }).getByRole('link').click();
   await expect(main.locator('.metadata .badge')).toHaveText(['Haute', 'En cours']);
   // Conserver une entrée de formulaire dans l’historique pour tester son accès après clôture.
@@ -79,7 +79,7 @@ test('Clôturer après avoir terminé l’intervention conserve les statuts et b
   await page.getByRole('link', { name: 'Espace Agent', exact: true }).click();
   if (page.viewportSize()!.width <= 760)
     await page.locator('nav').getByRole('button', { name: /^Plus/ }).click();
-  await page.locator('nav').getByRole('link', { name: 'Incidents', exact: true }).click();
+  await page.locator('nav').getByRole('link', { name: 'Signalements', exact: true }).click();
   await main.locator('tbody tr').filter({ hasText: 'INC-2026-048' }).getByRole('link').click();
   await expect(main.locator('.metadata .badge')).toHaveText(['Haute', 'Clôturé']);
   await expect(close).toHaveCount(0);

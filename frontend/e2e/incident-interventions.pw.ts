@@ -7,7 +7,7 @@ async function openIncidents(page: Page, space: 'Agent' | 'Responsable') {
     const name = space === 'Agent' ? /^Plus/ : /^Ouvrir la navigation$/;
     await page.locator('app-main-navigation').getByRole('button', { name }).click();
   }
-  await page.locator('nav').getByRole('link', { name: 'Incidents', exact: true }).click();
+  await page.locator('nav').getByRole('link', { name: 'Signalements', exact: true }).click();
 }
 
 test('Les interventions liées restent consultables après terminaison puis clôture du signalement', async ({
@@ -113,7 +113,7 @@ test('Un signalement sans intervention affiche un état vide adapté dans chaque
   const main = page.getByRole('main');
   const section = main.getByRole('region', { name: 'Interventions liées', exact: true });
   await page.goto('/responsable/equipements/EQ-OUT-0001');
-  await main.getByRole('link', { name: 'Déclarer un incident', exact: true }).click();
+  await main.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
   await main.getByLabel('Intitulé', { exact: true }).fill('Signalement sans intervention liée');
   await main.getByRole('radio', { name: 'Basse — intervention à planifier', exact: true }).check();
   await main.getByRole('button', { name: 'Vérifier le signalement', exact: true }).click();

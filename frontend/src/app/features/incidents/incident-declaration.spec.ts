@@ -69,7 +69,7 @@ describe('Déclaration locale d’incident', () => {
     const base = `/${space}/incidents/nouveau`;
     it(`ouvre directement le formulaire partagé dans ${space}, avec le matériel identifié et aucune priorité préchoisie`, async () => {
       await harness.navigateByUrl(`${base}/EQ-OUT-0003`, IncidentDeclaration);
-      expect(heading()).toBe('Déclarer un incident');
+      expect(heading()).toBe('Faire un signalement');
       expect(content().textContent).not.toContain('Données de démonstration');
       expect(content().textContent).not.toContain("Cette simulation n'enregistre et n'envoie rien");
       expect(content().textContent).not.toContain(
@@ -187,7 +187,7 @@ describe('Déclaration locale d’incident', () => {
         if (step === 'complete') await click('Envoyer le signalement');
         const second = await harness.navigateByUrl(`${base}/EQ-VEH-0042`, IncidentDeclaration);
         expect(second).toBe(first);
-        expect(heading()).toBe('Déclarer un incident');
+        expect(heading()).toBe('Faire un signalement');
         expect(content().textContent).toContain('Fourgon de voirie');
         expect(content().textContent).not.toContain('Débroussailleuse');
         expect(field('title').value).toBe('');
@@ -228,7 +228,7 @@ describe('Déclaration locale d’incident', () => {
       await enter('title', value);
       await enter('description', value);
       await submit();
-      expect(heading()).toBe('Déclarer un incident');
+      expect(heading()).toBe('Faire un signalement');
       expect(content().querySelectorAll('.error')).toHaveLength(2);
       expect(field('title').getAttribute('aria-invalid')).toBe('true');
       expect(field('title').getAttribute('aria-describedby')).toContain('title-error');
@@ -264,7 +264,7 @@ describe('Déclaration locale d’incident', () => {
       await fillValid();
       await enter(name, 'x'.repeat(length));
       await submit();
-      expect(heading()).toBe(valid ? 'Vérifier le signalement' : 'Déclarer un incident');
+      expect(heading()).toBe(valid ? 'Vérifier le signalement' : 'Faire un signalement');
       if (!valid) {
         expect(field(name).value).toHaveLength(length);
         expect(content().querySelector(`#${name}-error`)?.textContent).toContain(

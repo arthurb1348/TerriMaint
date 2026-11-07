@@ -125,7 +125,7 @@ test('Saisie clavier, erreur annoncée, focus visible et fiche Agent', async ({ 
   await input.fill('  eq-veh-0042  ');
   await input.press('Enter');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Fourgon de voirie');
-  await page.getByRole('link', { name: 'Déclarer un incident', exact: true }).click();
+  await page.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
   await expect(page.getByLabel('Intitulé', { exact: true })).toBeVisible();
   expect((await stats(page)).requests).toBe(0);
 });
@@ -508,7 +508,7 @@ for (const space of ['agent', 'responsable'] as const) {
     await main.getByRole('button', { name: 'Ouvrir la fiche matériel', exact: true }).click();
     await expect(page).toHaveURL(`/${space}/equipements/EQ-VEH-0042`);
     await expect(
-      main.getByRole('link', { name: 'Déclarer un incident', exact: true }),
+      main.getByRole('link', { name: 'Faire un signalement', exact: true }),
     ).toHaveAttribute('href', `/${space}/incidents/nouveau/EQ-VEH-0042`);
   });
 }

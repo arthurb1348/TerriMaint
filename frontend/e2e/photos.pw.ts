@@ -21,7 +21,7 @@ for (const space of ['agent', 'responsable']) {
     await expect(main.locator('app-demo-image img')).toHaveAttribute('alt', /Tondeuse/);
     await main.locator('app-demo-image img').evaluate((img) => img.dispatchEvent(new Event('error')));
     await expect(main).toContainText('Image indisponible');
-    await main.getByRole('link', { name: 'Déclarer un incident', exact: true }).click();
+    await main.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
     await main.getByLabel('Intitulé', { exact: true }).fill('Photo de démonstration');
     await main.getByRole('radio', { name: /Basse/ }).check();
     const chooser = main.locator('#gallery-file');
