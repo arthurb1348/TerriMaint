@@ -1,20 +1,3 @@
-:host {
-  display: block;
-  min-width: 0;
-}
-.feature-page {
-  overflow-wrap: anywhere;
-}
-.demo-label {
-  width: fit-content;
-  margin: 0;
-  padding: 4px 12px;
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--green);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
 h1 {
   margin: 24px 0;
 }
@@ -32,4 +15,31 @@ dd {
 }
 .declaration-link {
   margin-top: 24px;
+}
+
+.equipment-interventions {
+  margin-top: 32px;
+}
+.intervention-list {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.intervention-link {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  color: var(--text);
+  text-decoration: none;
+}
+.intervention-link strong {
+  flex-basis: 100%;
+  min-width: 0;
+}
+.intervention-link:hover {
+  background: var(--surface);
 }

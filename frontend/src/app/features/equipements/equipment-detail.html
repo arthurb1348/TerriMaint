@@ -26,6 +26,38 @@
       [queryParams]="{ q: search() || null }"
       >Déclarer un incident</a
     >
+    <section class="equipment-interventions" aria-labelledby="equipment-interventions-title">
+      <h2 id="equipment-interventions-title">Interventions</h2>
+      @if (interventions().length) {
+        <ul class="intervention-list">
+          @for (intervention of interventions(); track intervention.id) {
+            <li>
+              <a
+                class="business-card intervention-link"
+                [routerLink]="['../../interventions', intervention.id]"
+              >
+                <strong>{{ intervention.title }}</strong>
+                <span class="badge">{{ statuses[intervention.status] }}</span>
+                <span
+                  >Date prévue :
+                  <time [attr.datetime]="intervention.plannedOn">{{
+                    intervention.plannedOn | date: 'dd/MM/yyyy'
+                  }}</time></span
+                >
+              </a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>
+          {{
+            agentView
+              ? 'Aucune intervention ne vous est assignée pour ce matériel.'
+              : 'Aucune intervention liée à ce matériel.'
+          }}
+        </p>
+      }
+    </section>
   } @else {
     <h1 id="equipment-title">Équipement introuvable</h1>
     <p>Aucun équipement ne correspond à cet identifiant.</p>
