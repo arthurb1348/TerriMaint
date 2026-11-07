@@ -3,15 +3,13 @@
 ## Référence et usage
 
 Vérification ciblée du 7 novembre 2026 : base distante `origin/main`
-`5b2dae79a6b659655ceb9c0fb602e5eb0123ad4a` ; consultation des interventions sur la
-fiche matériel intégrée par [#81](https://github.com/arthurb1348/terrimaint/pull/81).
-**En revue :** bouton « Intervention terminée » pour l’agent présenté sur une
-intervention assignée En cours. `DemoData` revalide affectation et statut avant
-la transition vers Terminée ; les refus ne modifient pas la source partagée.
-Le statut est partagé en mémoire entre listes, fiches et espaces ; le signalement
-d’origine conserve son statut et permet toujours une nouvelle programmation si
-Ouvert ou En cours. Confirmation accessible et maintien sur la fiche ; aucune
-persistance, date de fin, clôture de signalement ou permission serveur ajoutée.
+`d2c1a57a049ebb22f96b9aaea198a7c139959c10`, incluant la terminaison Agent #82 et la présentation
+du workflow IA #83. **En revue :** clôture d’un signalement Ouvert ou En cours
+par le Responsable, après confirmation explicite et avertissement en présence
+d’interventions planifiées ou en cours. `DemoData` revalide le statut courant ;
+seul le signalement est modifié. Statut partagé dans la session, consultation
+Agent conservée et programmation bloquée pour un signalement clôturé, y compris
+sur un formulaire déjà ouvert. Aucune persistance ni permission serveur ajoutée.
 Les vérifications et le parcours précis de preview sont dans la PR. Les passages
 ci-dessous conservent leurs dates et leur contexte historiques.
 

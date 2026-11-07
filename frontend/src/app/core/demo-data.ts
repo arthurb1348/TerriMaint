@@ -65,6 +65,22 @@ export class DemoData {
     return this.interventions().find((item) => item.id === id);
   }
 
+  closeIncident(id: string | null | undefined): boolean {
+    let closed = false;
+    this.incidentState.update((items) => {
+      const incident = items.find((item) => item.id === id);
+      if (!incident || (incident.status !== 'open' && incident.status !== 'in-progress'))
+        return items;
+      closed = true;
+      return Object.freeze(
+        items.map((item) =>
+          item === incident ? Object.freeze({ ...item, status: 'closed' as const }) : item,
+        ),
+      );
+    });
+    return closed;
+  }
+
   completeAssignedIntervention(id: string | null | undefined): boolean {
     let completed = false;
     this.interventionState.update((items) => {

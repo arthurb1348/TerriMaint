@@ -2,6 +2,8 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { DemoData } from '../../core/demo-data';
+import { InterventionPlanning } from '../interventions/intervention-planning';
 import { routes } from '../../app.routes';
 import { IncidentDetail } from './incident-detail';
 import { Incidents } from './incidents';
@@ -18,6 +20,131 @@ describe('Détail local du signalement', () => {
   function content(): HTMLElement {
     return harness.routeNativeElement!;
   }
+
+  async function clickClosure(label: string): Promise<void> {
+    const button = Array.from(content().querySelectorAll<HTMLButtonElement>('button')).find(
+      (button) => button.textContent?.trim() === label,
+    )!;
+    button.click();
+    harness.detectChanges();
+    await harness.fixture.whenStable();
+  }
+
+  it.each(['INC-2026-045', 'INC-2026-048'])(
+    'demande une confirmation pour %s et annule sans mutation',
+    async (id) => {
+      await harness.navigateByUrl(`/responsable/incidents/${id}`, IncidentDetail);
+      const data = TestBed.inject(DemoData);
+      const incidents = data.incidents();
+      const interventions = data.interventions();
+      await clickClosure('Clôturer le signalement');
+      const confirmation = content().querySelector('[role="group"]')!;
+      expect(confirmation.textContent).toContain(
+        'Au moins une intervention liée est encore planifiée ou en cours',
+      );
+      expect(confirmation.querySelector('button[disabled]')).toBeNull();
+      expect(document.activeElement).toBe(content().querySelector('#incident-close-cancel'));
+      expect(
+        content().querySelector('#incident-close-cancel')?.getAttribute('aria-describedby'),
+      ).toBe('incident-close-description');
+      await clickClosure('Annuler');
+      expect(content().querySelector('[role="group"]')).toBeNull();
+      expect(document.activeElement).toBe(content().querySelector('#incident-close-action'));
+      expect(data.incidents()).toBe(incidents);
+      expect(data.interventions()).toBe(interventions);
+    },
+  );
+
+  it('clôture malgré l’avertissement si le Responsable confirme, sans changer les interventions', async () => {
+    await harness.navigateByUrl('/responsable/incidents/INC-2026-048', IncidentDetail);
+    const data = TestBed.inject(DemoData);
+    const interventions = data.interventions();
+    await clickClosure('Clôturer le signalement');
+    await clickClosure('Clôturer le signalement');
+    expect(data.getIncident('INC-2026-048')?.status).toBe('closed');
+    expect(data.interventions()).toBe(interventions);
+    expect(data.getIntervention('INT-2026-035')?.status).toBe('in-progress');
+    expect(content().querySelector('.metadata')?.textContent).toContain('Clôturé');
+    expect(content().querySelector('.planning-link')).toBeNull();
+    expect(content().querySelector('.planning-note')?.textContent).toContain('clôturé');
+    const feedback = content().querySelector('[role="status"]')!;
+    expect(feedback.textContent?.trim()).toBe('Le signalement est maintenant clôturé.');
+    expect(document.activeElement).toBe(feedback);
+    expect(TestBed.inject(Router).url).toBe('/responsable/incidents/INC-2026-048');
+    await harness.navigateByUrl('/responsable/incidents?status=closed', Incidents);
+    expect(content().querySelectorAll('tbody tr')).toHaveLength(3);
+    expect(content().querySelector('tbody')?.textContent).toContain('INC-2026-048');
+    await harness.navigateByUrl('/agent/incidents/INC-2026-048', IncidentDetail);
+    expect(content().querySelector('.metadata')?.textContent).toContain('Clôturé');
+    expect(content().querySelector('.closure-actions')).toBeNull();
+    await harness.navigateByUrl(
+      '/responsable/interventions/nouvelle/INC-2026-048',
+      InterventionPlanning,
+    );
+    expect(content().querySelector('h1')?.textContent).toBe('Signalement clôturé');
+    expect(content().querySelector('form')).toBeNull();
+  });
+
+  it('actualise l’avertissement quand la dernière intervention active est terminée', async () => {
+    await harness.navigateByUrl('/responsable/incidents/INC-2026-048', IncidentDetail);
+    await clickClosure('Clôturer le signalement');
+    expect(content().querySelector('.closure-confirmation .risk-note')).not.toBeNull();
+    expect(TestBed.inject(DemoData).completeAssignedIntervention('INT-2026-035')).toBe(true);
+    harness.detectChanges();
+    expect(content().querySelector('.closure-confirmation .risk-note')).toBeNull();
+    await clickClosure('Clôturer le signalement');
+    expect(TestBed.inject(DemoData).getIntervention('INT-2026-035')?.status).toBe('completed');
+  });
+
+  it('revalide le statut au dernier clic si une autre action a déjà clôturé le signalement', async () => {
+    await harness.navigateByUrl('/responsable/incidents/INC-2026-048', IncidentDetail);
+    await clickClosure('Clôturer le signalement');
+    const confirm = content().querySelector<HTMLButtonElement>(
+      '.confirmation-buttons button:last-child',
+    )!;
+    const data = TestBed.inject(DemoData);
+    expect(data.closeIncident('INC-2026-048')).toBe(true);
+    const after = data.incidents();
+    confirm.click();
+    harness.detectChanges();
+    await harness.fixture.whenStable();
+    expect(data.incidents()).toBe(after);
+    expect(content().querySelector('[role="status"]')?.textContent).toContain(
+      'La clôture n’a pas été effectuée',
+    );
+    expect(content().querySelector('[role="group"]')).toBeNull();
+  });
+
+  it('ne reporte ni confirmation ni message de clôture sur un autre identifiant', async () => {
+    const first = await harness.navigateByUrl(
+      '/responsable/incidents/INC-2026-045',
+      IncidentDetail,
+    );
+    await clickClosure('Clôturer le signalement');
+    expect(await harness.navigateByUrl('/responsable/incidents/INC-2026-048', IncidentDetail)).toBe(
+      first,
+    );
+    expect(content().querySelector('[role="group"]')).toBeNull();
+    await harness.navigateByUrl('/responsable/incidents/INC-2026-045', IncidentDetail);
+    expect(content().querySelector('[role="group"]')).toBeNull();
+    await clickClosure('Clôturer le signalement');
+    await clickClosure('Clôturer le signalement');
+    await harness.navigateByUrl('/responsable/incidents/INC-2026-048', IncidentDetail);
+    expect(content().querySelector('[role="status"]')?.textContent?.trim()).toBe('');
+    expect(content().querySelector('.metadata')?.textContent).toContain('En cours');
+  });
+
+  it.each([
+    '/agent/incidents/INC-2026-045',
+    '/agent/incidents/INC-2026-048',
+    '/agent/incidents/INC-2026-049',
+    '/responsable/incidents/INC-2026-049',
+    '/responsable/incidents/absent',
+  ])('ne propose pas la clôture sur %s', async (url) => {
+    await harness.navigateByUrl(url, IncidentDetail);
+    expect(content().querySelector('#incident-close-action')).toBeNull();
+    expect(content().querySelector('[role="group"]')).toBeNull();
+  });
 
   for (const space of ['agent', 'responsable']) {
     const base = `/${space}/incidents`;
