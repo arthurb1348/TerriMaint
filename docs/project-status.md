@@ -2,6 +2,16 @@
 
 ## Référence et usage
 
+Vérification ciblée du 7 novembre 2026 : base distante `origin/main`
+`2be72debe074116b6ffcb16b796effee8f260a16` ; logo #79 et simplification du bandeau
+avec logo horizontal mobile #80 intégrés. **En revue :** consultation des interventions
+sur la fiche matériel, via `intervention.incidentId` puis `incident.equipmentId` dans
+`DemoData`. Responsable voit toutes les interventions du matériel ; Agent voit celles
+de l’agent présenté, y compris les terminées. La liste suit les créations en mémoire
+et les changements de fiche ; aucune action de terminaison ni persistance ajoutée.
+Les vérifications et le parcours précis de preview sont dans la PR. Les passages
+ci-dessous conservent leurs dates et leur contexte historiques.
+
 Vérification ciblée du 6 novembre 2026 pour [#78](https://github.com/arthurb1348/terrimaint/issues/78) :
 base distante `origin/main` **`73da92ecc26e4236f68b8b9e60f3c061197ab00e`**,
 vérifiée par Git distant et GitHub. [#77](https://github.com/arthurb1348/terrimaint/pull/77)

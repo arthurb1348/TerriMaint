@@ -35,6 +35,7 @@ export const routes: Routes = [
       path: `${space}/equipements/:id`,
       loadComponent: equipmentDetailPage,
       title: 'Fiche matériel — TerriMaint',
+      data: { agentView: space === 'agent' },
     },
     {
       path: `${space}/equipements`,
