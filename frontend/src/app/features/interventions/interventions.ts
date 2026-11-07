@@ -51,10 +51,9 @@ export class Interventions {
   );
   private readonly rows = computed(() =>
     this.scopedInterventions().map((intervention) => {
-      const incident = this.data.getIncident(intervention.incidentId);
       return {
         intervention,
-        equipment: DEMO_EQUIPMENT.find((item) => item.id === incident?.equipmentId),
+        equipment: DEMO_EQUIPMENT.find((item) => item.id === intervention.equipmentId),
         agent: DEMO_AGENTS.find((item) => item.id === intervention.agentId),
       };
     }),

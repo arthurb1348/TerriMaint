@@ -41,7 +41,7 @@ export class InterventionDetail {
     this.data.getIncident(this.intervention()?.incidentId),
   );
   protected readonly equipment = computed(() =>
-    DEMO_EQUIPMENT.find((item) => item.id === this.incident()?.equipmentId),
+    DEMO_EQUIPMENT.find((item) => item.id === this.intervention()?.equipmentId),
   );
   protected readonly agent = computed(() =>
     DEMO_AGENTS.find((item) => item.id === this.intervention()?.agentId),
@@ -52,6 +52,9 @@ export class InterventionDetail {
   });
   protected readonly query = computed(() =>
     interventionQueryParams(readInterventionFilters(this.queryParams(), this.agentView)),
+  );
+  protected readonly equipmentOrigin = computed(() =>
+    this.equipment()?.id === this.queryParams().get('fromEquipment') ? this.equipment()?.id : undefined,
   );
   protected readonly statuses = INTERVENTION_STATUSES;
 

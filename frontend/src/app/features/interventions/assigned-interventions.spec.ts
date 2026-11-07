@@ -14,7 +14,8 @@ const item = (
   plannedOn,
   agentId,
   title: id,
-  incidentId: 'INC-2026-045',
+  equipmentId: 'EQ-OUT-0003',
+    incidentId: 'INC-2026-045',
 });
 
 describe('Affectations et aperçu Agent', () => {

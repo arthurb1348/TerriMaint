@@ -8,7 +8,8 @@ export interface Intervention {
   readonly id: string;
   readonly title: string;
   readonly instructions?: string;
-  readonly incidentId: string;
+  readonly equipmentId: string;
+  readonly incidentId?: string;
   readonly agentId: string;
   // Date calendaire sans heure, conservée comme telle jusqu'au rendu.
   readonly plannedOn: string;

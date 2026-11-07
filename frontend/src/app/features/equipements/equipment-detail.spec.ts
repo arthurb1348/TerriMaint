@@ -128,8 +128,8 @@ describe('Fiche de matériel de démonstration', () => {
           status,
         })),
         { ...sample, id: 'other-agent', title: 'Autre agent', agentId: 'AG-DEMO-002' },
-        { ...sample, id: 'other-equipment', incidentId: 'INC-2026-046' },
-        { ...sample, id: 'missing-incident', incidentId: 'absent' },
+        { ...sample, id: 'other-equipment', incidentId: 'INC-2026-046', equipmentId: 'EQ-VEH-0042' },
+        { ...sample, id: 'missing-equipment', equipmentId: 'absent' },
       ]);
       await harness.navigateByUrl(`/${space}/equipements/EQ-OUT-0001?q=tondeuse`, EquipmentDetail);
       const section = content().querySelector('.equipment-interventions')!;

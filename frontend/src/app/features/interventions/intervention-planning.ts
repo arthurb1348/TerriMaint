@@ -41,15 +41,20 @@ export class InterventionPlanning {
     initialValue: this.route.snapshot.queryParamMap,
   });
   private readonly incidentId = computed(() => this.params().get('incidentId'));
+  protected readonly fromEquipment = computed(() => this.params().has('equipmentId'));
+  protected readonly returnLink = computed(() => this.fromEquipment()
+    ? ['/responsable/equipements', this.params().get('equipmentId')!]
+    : this.incident() ? ['/responsable/incidents', this.incident()!.id] : ['/responsable/incidents']);
+  protected readonly returnLabel = computed(() => this.fromEquipment() ? 'Retour au matériel' : 'Retour au signalement');
   protected readonly incident = computed(() => this.data.getIncident(this.incidentId()));
   protected readonly equipment = computed(() =>
-    DEMO_EQUIPMENT.find((item) => item.id === this.incident()?.equipmentId),
+    DEMO_EQUIPMENT.find((item) => item.id === (this.fromEquipment() ? this.params().get('equipmentId') : this.incident()?.equipmentId)),
   );
   protected readonly canPlan = computed(() =>
-    Boolean(this.incident() && this.equipment() && this.incident()?.status !== 'closed'),
+    Boolean(this.equipment() && (this.fromEquipment() || (this.incident() && this.incident()?.status !== 'closed'))),
   );
   protected readonly query = computed(() =>
-    incidentQueryParams(readIncidentFilters(this.queryParams())),
+    this.fromEquipment() ? { q: this.queryParams().get('q') || null } : incidentQueryParams(readIncidentFilters(this.queryParams())),
   );
   protected readonly agents = DEMO_AGENTS;
   protected readonly priorities = INCIDENT_PRIORITIES;
@@ -91,6 +96,7 @@ export class InterventionPlanning {
       // Réutilisation de route : changer d'identifiant efface toute programmation précédente.
       // Les seuls filtres de retour n'interviennent pas dans cet effet.
       this.incidentId();
+      this.params().get('equipmentId');
       this.form.reset({
         title: untracked(() => this.incident()?.title ?? ''),
         instructions: '',
@@ -133,7 +139,8 @@ export class InterventionPlanning {
     if (!this.validate()) return;
     const intervention = this.data.createIntervention({
       ...this.form.getRawValue(),
-      incidentId: this.incident()!.id,
+      incidentId: this.incident()?.id,
+      equipmentId: this.equipment()!.id,
     });
     if (!intervention) return;
     this.createdIntervention.set(intervention);

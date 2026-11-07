@@ -2,14 +2,12 @@
 
 ## Référence et usage
 
-Vérification ciblée du 7 novembre 2026 : base distante `origin/main`
-`a778f38ffffb7b0fac538db93aed1df1220b0e03`, incluant la clôture Responsable #84 et la documentation #85.
-**En revue :** section « Interventions liées » sur la fiche signalement, avant
-les actions de programmation et de clôture. Responsable voit toutes les interventions
-du signalement ; Agent voit ses affectations via `assignedInterventions`, y compris
-les terminées. La liste suit `DemoData` et l’identifiant courant, reste consultable
-après clôture et alimente l’avertissement existant. Les cartes partagent les styles
-de la fiche matériel. Aucun renommage de rubrique, stockage ou règle métier ajouté.
+Vérification ciblée du 7 novembre 2026 : base distante `origin/main` incluant #87.
+**En revue :** programmation ponctuelle depuis une fiche matériel Responsable,
+avec le formulaire existant. Chaque intervention référence directement un matériel ;
+le signalement d’origine est facultatif. `DemoData` valide les associations et conserve
+le refus de programmer sur un signalement clôturé. Les listes et historiques suivent
+les créations en mémoire, sans persistance ni autorisation serveur ajoutée.
 Les vérifications et le parcours précis de preview sont dans la PR. Les passages
 ci-dessous conservent leurs dates et leur contexte historiques.
 

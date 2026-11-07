@@ -38,16 +38,10 @@ export class EquipmentDetail {
   protected readonly interventions = computed(() => {
     const equipment = this.equipment();
     if (!equipment) return [];
-    const incidentIds = new Set(
-      this.data
-        .incidents()
-        .filter((item) => item.equipmentId === equipment.id)
-        .map((item) => item.id),
-    );
     const items = this.agentView
       ? assignedInterventions(this.data.interventions())
       : this.data.interventions();
-    return items.filter((item) => incidentIds.has(item.incidentId));
+    return items.filter((item) => item.equipmentId === equipment.id);
   });
   protected readonly search = computed(() => this.queryParams().get('q') ?? '');
 

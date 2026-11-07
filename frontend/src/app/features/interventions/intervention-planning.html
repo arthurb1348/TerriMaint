@@ -1,6 +1,8 @@
 <section class="feature-page" aria-labelledby="planning-heading">
   @if (step() !== 'complete') {
-    @if (incident(); as item) {
+    @if (fromEquipment()) {
+      <a class="back-link page-action secondary" [routerLink]="returnLink()" [queryParams]="query()">← Retour au matériel</a>
+    } @else if (incident(); as item) {
       <a
         class="back-link page-action secondary"
         [routerLink]="['../../../incidents', item.id]"
@@ -16,13 +18,13 @@
       >
     }
   }
-  @if (!incident()) {
+  @if (!fromEquipment() && !incident()) {
     <h1 id="planning-heading" tabindex="-1">Signalement introuvable</h1>
     <p>Aucun signalement ne correspond à cet identifiant.</p>
   } @else if (!equipment()) {
     <h1 id="planning-heading" tabindex="-1">Matériel introuvable</h1>
     <p>Le matériel associé à ce signalement est introuvable. La programmation est indisponible.</p>
-  } @else if (incident()!.status === 'closed') {
+  } @else if (incident()?.status === 'closed') {
     <h1 id="planning-heading" tabindex="-1">Signalement clôturé</h1>
     <p>
       Ce signalement est clôturé. Il reste consultable, mais aucune intervention ne peut y être
@@ -43,14 +45,16 @@
       }
     </h1>
     <section class="origin-summary business-card" aria-labelledby="planning-origin-heading">
-      <h2 id="planning-origin-heading">Signalement d’origine</h2>
+      @if (incident()) {
+      <h2>Signalement d’origine</h2>
       <p>
         {{ incident()!.title }}<span class="reference">{{ incident()!.id }}</span>
       </p>
       <p>
         Priorité : <strong>{{ priorities[incident()!.priority] }}</strong>
       </p>
-      <h2>Matériel concerné</h2>
+      }
+      <h2 id="planning-origin-heading">Matériel concerné</h2>
       <p>
         {{ equipment()!.name }}
         <span class="reference">{{ equipment()!.id }} · {{ equipment()!.location }}</span>
@@ -158,7 +162,7 @@
             <button class="page-action" type="submit">Vérifier l’intervention</button>
             <a
               class="page-action secondary"
-              [routerLink]="['../../../incidents', incident()!.id]"
+              [routerLink]="returnLink()"
               [queryParams]="query()"
               >Annuler</a
             >
@@ -201,7 +205,7 @@
           </button>
           <a
             class="page-action secondary"
-            [routerLink]="['../../../incidents', incident()!.id]"
+            [routerLink]="returnLink()"
             [queryParams]="query()"
             >Annuler</a
           >
@@ -209,14 +213,14 @@
       }
       @case ('complete') {
         <p>L’intervention est disponible dans cet onglet jusqu’au rechargement.</p>
-        <a class="page-action secondary" [routerLink]="['../../', createdIntervention()!.id]"
+        <a class="page-action secondary" [routerLink]="['../../', createdIntervention()!.id]" [queryParams]="fromEquipment() ? { fromEquipment: equipment()!.id, q: query().q } : {}"
           >Voir l’intervention</a
         >
         <a
           class="return-link page-action back-link"
-          [routerLink]="['../../../incidents', incident()!.id]"
+          [routerLink]="returnLink()"
           [queryParams]="query()"
-          ><span aria-hidden="true">←</span><span>Retour au signalement</span></a
+          ><span aria-hidden="true">←</span><span>{{ returnLabel() }}</span></a
         >
       }
     }

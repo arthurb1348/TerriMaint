@@ -19,7 +19,8 @@ interface IncidentDraft {
 }
 
 interface InterventionDraft {
-  readonly incidentId: string;
+  readonly equipmentId?: string;
+  readonly incidentId?: string;
   readonly title: string;
   readonly instructions: string;
   readonly agentId: string;
@@ -133,10 +134,11 @@ export class DemoData {
 
   createIntervention(draft: InterventionDraft): Intervention | undefined {
     const incident = this.getIncident(draft.incidentId);
+    const equipmentId = incident?.equipmentId ?? draft.equipmentId;
     if (
-      !incident ||
-      incident.status === 'closed' ||
-      !DEMO_EQUIPMENT.some((item) => item.id === incident.equipmentId) ||
+      (draft.incidentId !== undefined && (!incident || incident.status === 'closed')) ||
+      (incident && draft.equipmentId !== undefined && draft.equipmentId !== incident.equipmentId) ||
+      !DEMO_EQUIPMENT.some((item) => item.id === equipmentId) ||
       !DEMO_AGENTS.some((item) => item.id === draft.agentId) ||
       !draft.title.trim() ||
       draft.title.length > 120 ||
@@ -147,7 +149,8 @@ export class DemoData {
 
     const intervention: Intervention = Object.freeze({
       id: `INT-LOCAL-${this.sessionId}-${++this.interventionSequence}`,
-      incidentId: incident.id,
+      equipmentId: equipmentId!,
+      ...(incident ? { incidentId: incident.id } : {}),
       title: draft.title,
       instructions: draft.instructions.trim() ? draft.instructions : undefined,
       agentId: draft.agentId,
