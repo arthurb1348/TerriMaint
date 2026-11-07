@@ -3,13 +3,13 @@
 ## Référence et usage
 
 Vérification ciblée du 7 novembre 2026 : base distante `origin/main`
-`d2c1a57a049ebb22f96b9aaea198a7c139959c10`, incluant la terminaison Agent #82 et la présentation
-du workflow IA #83. **En revue :** clôture d’un signalement Ouvert ou En cours
-par le Responsable, après confirmation explicite et avertissement en présence
-d’interventions planifiées ou en cours. `DemoData` revalide le statut courant ;
-seul le signalement est modifié. Statut partagé dans la session, consultation
-Agent conservée et programmation bloquée pour un signalement clôturé, y compris
-sur un formulaire déjà ouvert. Aucune persistance ni permission serveur ajoutée.
+`a778f38ffffb7b0fac538db93aed1df1220b0e03`, incluant la clôture Responsable #84 et la documentation #85.
+**En revue :** section « Interventions liées » sur la fiche signalement, avant
+les actions de programmation et de clôture. Responsable voit toutes les interventions
+du signalement ; Agent voit ses affectations via `assignedInterventions`, y compris
+les terminées. La liste suit `DemoData` et l’identifiant courant, reste consultable
+après clôture et alimente l’avertissement existant. Les cartes partagent les styles
+de la fiche matériel. Aucun renommage de rubrique, stockage ou règle métier ajouté.
 Les vérifications et le parcours précis de preview sont dans la PR. Les passages
 ci-dessous conservent leurs dates et leur contexte historiques.
 

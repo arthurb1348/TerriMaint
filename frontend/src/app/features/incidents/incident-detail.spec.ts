@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { localToday } from '../interventions/planning-date';
 import { DemoData } from '../../core/demo-data';
 import { InterventionPlanning } from '../interventions/intervention-planning';
 import { routes } from '../../app.routes';
@@ -16,10 +17,131 @@ describe('Détail local du signalement', () => {
     }).compileComponents();
     harness = await RouterTestingHarness.create();
   });
-  afterEach(() => harness.fixture.destroy());
+  afterEach(() => {
+    harness.fixture.destroy();
+    vi.restoreAllMocks();
+  });
   function content(): HTMLElement {
     return harness.routeNativeElement!;
   }
+
+  it.each(['agent', 'responsable'])(
+    'consulte tous les statuts liés dans %s avec le filtre d’affectation attendu',
+    async (space) => {
+      const data = TestBed.inject(DemoData);
+      const sample = data.getIntervention('INT-2026-035')!;
+      vi.spyOn(data, 'interventions').mockReturnValue([
+        ...(['planned', 'in-progress', 'completed'] as const).map((status) => ({
+          ...sample,
+          id: status,
+          title: `Intervention ${status}`,
+          status,
+        })),
+        { ...sample, id: 'other-agent', title: 'Autre agent', agentId: 'AG-DEMO-002' },
+        { ...sample, id: 'other-incident', incidentId: 'INC-2026-045' },
+      ]);
+      await harness.navigateByUrl(`/${space}/incidents/INC-2026-048?q=tondeuse`, IncidentDetail);
+      const section = content().querySelector('.related-interventions')!;
+      expect(section.querySelector('h2')?.textContent).toBe('Interventions liées');
+      expect(section.querySelectorAll('a')).toHaveLength(space === 'agent' ? 3 : 4);
+      expect(Array.from(section.querySelectorAll('.badge'), (badge) => badge.textContent)).toEqual(
+        space === 'agent'
+          ? ['Planifiée', 'En cours', 'Terminée']
+          : ['Planifiée', 'En cours', 'Terminée', 'En cours'],
+      );
+      for (const link of section.querySelectorAll('a')) {
+        expect(link.getAttribute('href')).toMatch(new RegExp(`^/${space}/interventions/`));
+        expect(link.getAttribute('href')).not.toContain('?');
+      }
+      if (space === 'responsable') {
+        for (const action of ['.planning-link', '#incident-close-action'])
+          expect(
+            section.compareDocumentPosition(content().querySelector(action)!) &
+              Node.DOCUMENT_POSITION_FOLLOWING,
+          ).toBeTruthy();
+      }
+    },
+  );
+
+  it.each(['agent', 'responsable'])(
+    'explique l’état vide de %s sans retirer les autres actions de la fiche',
+    async (space) => {
+      vi.spyOn(TestBed.inject(DemoData), 'interventions').mockReturnValue([]);
+      await harness.navigateByUrl(`/${space}/incidents/INC-2026-048`, IncidentDetail);
+      const section = content().querySelector('.related-interventions')!;
+      expect(section.querySelector('a')).toBeNull();
+      expect(section.textContent).toContain(
+        space === 'agent'
+          ? 'Aucune intervention ne vous est assignée pour ce signalement.'
+          : 'Aucune intervention liée à ce signalement.',
+      );
+      expect(content().querySelector('.equipment-summary a')).not.toBeNull();
+      if (space === 'responsable') {
+        expect(content().querySelector('.planning-link')).not.toBeNull();
+        expect(content().querySelector('#incident-close-action')).not.toBeNull();
+      }
+    },
+  );
+
+  it.each(['agent', 'responsable'])(
+    'actualise les liens lorsque le composant de %s est réutilisé pour un autre signalement',
+    async (space) => {
+      const first = await harness.navigateByUrl(`/${space}/incidents/INC-2026-045`, IncidentDetail);
+      expect(content().querySelector('.intervention-link')?.getAttribute('href')).toBe(
+        `/${space}/interventions/INT-2026-032`,
+      );
+      expect(await harness.navigateByUrl(`/${space}/incidents/INC-2026-046`, IncidentDetail)).toBe(
+        first,
+      );
+      const section = content().querySelector('.related-interventions')!;
+      expect(section.textContent).not.toContain('Diagnostic et remise en état');
+      if (space === 'responsable')
+        expect(section.querySelector('a')?.getAttribute('href')).toBe(
+          '/responsable/interventions/INT-2026-033',
+        );
+      else {
+        expect(section.querySelector('a')).toBeNull();
+        expect(section.textContent).toContain('Aucune intervention ne vous est assignée');
+      }
+    },
+  );
+
+  it.each(['agent', 'responsable'])(
+    'suit les nouvelles programmations et statuts dans %s, même après clôture du signalement',
+    async (space) => {
+      const data = TestBed.inject(DemoData);
+      await harness.navigateByUrl(`/${space}/incidents/INC-2026-048?q=tondeuse`, IncidentDetail);
+      for (const agentId of ['AG-DEMO-001', 'AG-DEMO-002']) {
+        expect(
+          data.createIntervention({
+            incidentId: 'INC-2026-048',
+            title: `Nouvelle intervention ${agentId}`,
+            instructions: '',
+            agentId,
+            plannedOn: localToday(),
+          }),
+        ).toBeDefined();
+      }
+      expect(data.completeAssignedIntervention('INT-2026-035')).toBe(true);
+      harness.detectChanges();
+      const section = content().querySelector('.related-interventions')!;
+      const count = space === 'agent' ? 2 : 3;
+      expect(section.querySelectorAll('a')).toHaveLength(count);
+      expect(section.querySelector('.badge')?.textContent).toBe('Terminée');
+      expect(section.textContent).toContain('Nouvelle intervention AG-DEMO-001');
+      expect(section.textContent?.includes('Nouvelle intervention AG-DEMO-002')).toBe(
+        space === 'responsable',
+      );
+      expect(data.closeIncident('INC-2026-048')).toBe(true);
+      harness.detectChanges();
+      expect(content().querySelector('.related-interventions a')).not.toBeNull();
+      expect(section.querySelectorAll('a')).toHaveLength(count);
+      expect(content().querySelector('.metadata')?.textContent).toContain('Clôturé');
+      expect(content().querySelector('.back-link')?.getAttribute('href')).toBe(
+        `/${space}/incidents?q=tondeuse`,
+      );
+    },
+  );
 
   async function clickClosure(label: string): Promise<void> {
     const button = Array.from(content().querySelectorAll<HTMLButtonElement>('button')).find(
@@ -29,6 +151,15 @@ describe('Détail local du signalement', () => {
     harness.detectChanges();
     await harness.fixture.whenStable();
   }
+
+  it('conserve l’avertissement pour une intervention active liée confiée à un autre agent', async () => {
+    await harness.navigateByUrl('/responsable/incidents/INC-2026-047', IncidentDetail);
+    expect(content().querySelector('.related-interventions .badge')?.textContent).toBe('En cours');
+    await clickClosure('Clôturer le signalement');
+    expect(content().querySelector('.closure-confirmation')?.textContent).toContain(
+      'Au moins une intervention liée est encore planifiée ou en cours',
+    );
+  });
 
   it.each(['INC-2026-045', 'INC-2026-048'])(
     'demande une confirmation pour %s et annule sans mutation',
@@ -219,6 +350,7 @@ describe('Détail local du signalement', () => {
       ).toBe(first);
       expect(content().querySelector('h1')?.textContent).toBe('Signalement introuvable');
       expect(content().querySelector('dl')).toBeNull();
+      expect(content().querySelector('.related-interventions')).toBeNull();
       expect(content().querySelector('.equipment-summary')).toBeNull();
       expect(content().querySelector('.back-link')?.getAttribute('href')).toBe(
         `${base}?q=OUT&priority=urgent&status=closed`,

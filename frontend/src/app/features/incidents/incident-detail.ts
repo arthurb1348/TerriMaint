@@ -13,6 +13,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DemoImage } from '../../shared/demo-image/demo-image';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
+import { assignedInterventions } from '../interventions/assigned-interventions';
+import { INTERVENTION_STATUSES } from '../interventions/intervention';
 import { INCIDENT_PRIORITIES, INCIDENT_STATUSES } from './incident';
 import { incidentQueryParams, readIncidentFilters } from './incident-filters';
 
@@ -21,7 +23,11 @@ import { incidentQueryParams, readIncidentFilters } from './incident-filters';
   standalone: true,
   imports: [RouterLink, DatePipe, DemoImage],
   templateUrl: './incident-detail.html',
-  styleUrls: ['./incident-presentation.css', './incident-detail.css'],
+  styleUrls: [
+    './incident-presentation.css',
+    '../interventions/intervention-links.css',
+    './incident-detail.css',
+  ],
 })
 export class IncidentDetail {
   private readonly injector = inject(Injector);
@@ -62,14 +68,16 @@ export class IncidentDetail {
   protected readonly confirmingClosure = computed(
     () => this.confirmationId() !== null && this.confirmationId() === this.incidentId(),
   );
+  protected readonly interventionStatuses = INTERVENTION_STATUSES;
+  protected readonly relatedInterventions = computed(() => {
+    const id = this.incidentId();
+    const items = this.data.interventions().filter((item) => item.incidentId === id);
+    return this.isResponsible ? items : assignedInterventions(items);
+  });
   protected readonly hasActiveInterventions = computed(() =>
-    this.data
-      .interventions()
-      .some(
-        (item) =>
-          item.incidentId === this.incidentId() &&
-          (item.status === 'planned' || item.status === 'in-progress'),
-      ),
+    this.relatedInterventions().some(
+      (item) => item.status === 'planned' || item.status === 'in-progress',
+    ),
   );
 
   protected startClosure(): void {

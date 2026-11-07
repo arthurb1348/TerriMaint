@@ -61,6 +61,32 @@
         <p>Matériel introuvable</p>
       }
     </section>
+    <section class="related-interventions" aria-labelledby="incident-interventions-title">
+      <h2 id="incident-interventions-title">Interventions liées</h2>
+      @if (relatedInterventions().length) {
+        <ul class="intervention-list">
+          @for (intervention of relatedInterventions(); track intervention.id) {
+            <li>
+              <a
+                class="business-card intervention-link"
+                [routerLink]="['../../interventions', intervention.id]"
+              >
+                <strong>{{ intervention.title }}</strong>
+                <span class="badge">{{ interventionStatuses[intervention.status] }}</span>
+              </a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>
+          {{
+            isResponsible
+              ? 'Aucune intervention liée à ce signalement.'
+              : 'Aucune intervention ne vous est assignée pour ce signalement.'
+          }}
+        </p>
+      }
+    </section>
     @if (isResponsible && equipment()) {
       @if (item.status === 'closed') {
         <p class="planning-note">

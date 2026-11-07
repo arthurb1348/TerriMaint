@@ -986,6 +986,13 @@ for (const timezoneId of ['Europe/Paris', 'America/New_York']) {
       await page.keyboard.press('Tab');
       await expect(main.getByRole('link', { name: 'Voir le matériel', exact: true })).toBeFocused();
       await page.keyboard.press('Tab');
+      const intervention = main
+        .getByRole('region', { name: 'Interventions liées', exact: true })
+        .getByRole('link');
+      await expect(intervention).toHaveCount(1);
+      await expect(intervention).toHaveAttribute('href', '/responsable/interventions/INT-2026-034');
+      await expectFocusedControlVisible(page, intervention, 'responsable');
+      await page.keyboard.press('Tab');
       const open = main.getByRole('link', { name: 'Programmer une intervention', exact: true });
       await expectFocusedControlVisible(page, open, 'responsable');
       await page.keyboard.press('Enter');
