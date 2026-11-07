@@ -162,7 +162,10 @@ test('Les créations Responsable apparaissent seulement pour leur agent, sans re
     contentType: 'image/png',
   });
   await switchSpace('Responsable');
-  await main.getByRole('link', { name: 'Interventions', exact: true }).click();
+  if (page.viewportSize()!.width <= 760)
+    await page.getByRole('button', { name: 'Ouvrir la navigation', exact: true }).click();
+  await page.getByRole('navigation', { name: 'Navigation Responsable', exact: true }).getByRole('link', { name: 'Interventions', exact: true }).click();
+  await expect(page).toHaveURL('/responsable/interventions');
   await expect(main.getByRole('heading', { level: 1 })).toHaveText('Interventions');
   await expect(main.locator('tbody tr')).toHaveCount(8);
   await main.getByRole('searchbox').fill('Mission');
