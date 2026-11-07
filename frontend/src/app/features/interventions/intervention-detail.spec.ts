@@ -27,6 +27,74 @@ describe('Détail local des interventions', () => {
     return harness.routeNativeElement!;
   }
 
+  it('termine depuis Agent, annonce le résultat et reste sur la fiche avec un focus utile', async () => {
+    await harness.navigateByUrl('/agent/interventions/INT-2026-035', InterventionDetail);
+    const data = TestBed.inject(DemoData);
+    const incidents = data.incidents();
+    const router = TestBed.inject(Router);
+    const button = content().querySelector<HTMLButtonElement>('button')!;
+    expect(button.textContent?.trim()).toBe('Intervention terminée');
+    expect(content().querySelector('[role="status"]')?.textContent?.trim()).toBe('');
+    button.focus();
+    button.click();
+    harness.detectChanges();
+    await harness.fixture.whenStable();
+    expect(router.url).toBe('/agent/interventions/INT-2026-035');
+    expect(content().querySelector('.badge')?.textContent).toBe('Terminée');
+    expect(content().querySelector('button')).toBeNull();
+    const feedback = content().querySelector<HTMLElement>('[role="status"]')!;
+    expect(feedback.textContent?.trim()).toBe('L’intervention est maintenant terminée.');
+    expect(document.activeElement).toBe(feedback);
+    expect(data.incidents()).toBe(incidents);
+    const after = data.interventions();
+    button.click();
+    harness.detectChanges();
+    expect(data.interventions()).toBe(after);
+    expect(feedback.textContent?.trim()).toBe('L’intervention est maintenant terminée.');
+  });
+
+  it.each([
+    '/responsable/interventions/INT-2026-035',
+    '/agent/interventions/INT-2026-032',
+    '/agent/interventions/INT-2026-034',
+    '/agent/interventions/INT-2026-036',
+    '/agent/interventions/absent',
+  ])('ne propose pas la transition sur %s', async (url) => {
+    await harness.navigateByUrl(url, InterventionDetail);
+    expect(content().querySelector('button')).toBeNull();
+  });
+
+  it('ne garde pas le message sur une autre fiche et partage le statut avec Responsable', async () => {
+    const first = await harness.navigateByUrl(
+      '/agent/interventions/INT-2026-035',
+      InterventionDetail,
+    );
+    content().querySelector<HTMLButtonElement>('button')!.click();
+    harness.detectChanges();
+    await harness.fixture.whenStable();
+    expect(
+      await harness.navigateByUrl('/agent/interventions/INT-2026-032', InterventionDetail),
+    ).toBe(first);
+    expect(content().querySelector('[role="status"]')?.textContent?.trim()).toBe('');
+    expect(content().querySelector('.badge')?.textContent).toBe('Planifiée');
+    await harness.navigateByUrl('/responsable/interventions/INT-2026-035', InterventionDetail);
+    expect(content().querySelector('.badge')?.textContent).toBe('Terminée');
+    expect(content().querySelector('button')).toBeNull();
+  });
+
+  it('revalide le statut si un bouton déjà rendu est activé après une mise à jour partagée', async () => {
+    await harness.navigateByUrl('/agent/interventions/INT-2026-035', InterventionDetail);
+    const button = content().querySelector<HTMLButtonElement>('button')!;
+    const data = TestBed.inject(DemoData);
+    expect(data.completeAssignedIntervention('INT-2026-035')).toBe(true);
+    const after = data.interventions();
+    button.click();
+    harness.detectChanges();
+    expect(data.interventions()).toBe(after);
+    expect(content().querySelector('button')).toBeNull();
+    expect(content().querySelector('.badge')?.textContent).toBe('Terminée');
+  });
+
   it('lit la même source et lie signalement et matériel Responsable sans aucun filtre', async () => {
     await harness.navigateByUrl(
       `${base}/INT-2026-032?q=OUT&status=planned&assignee=AG-DEMO-001`,

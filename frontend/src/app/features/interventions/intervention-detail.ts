@@ -1,7 +1,7 @@
 import { PRESENTED_AGENT } from '../../core/presented-agent';
 import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
-import { afterNextRender, Component, computed, inject } from '@angular/core';
+import { afterNextRender, Component, computed, inject, Injector, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
@@ -17,6 +17,8 @@ import { interventionQueryParams, readInterventionFilters } from './intervention
   styleUrls: ['../incidents/incident-presentation.css', './intervention-detail.css'],
 })
 export class InterventionDetail {
+  private readonly injector = inject(Injector);
+  private readonly completedId = signal<string | null>(null);
   private readonly data = inject(DemoData);
   private readonly route = inject(ActivatedRoute);
   private readonly document = inject(DOCUMENT);
@@ -52,6 +54,27 @@ export class InterventionDetail {
     interventionQueryParams(readInterventionFilters(this.queryParams(), this.agentView)),
   );
   protected readonly statuses = INTERVENTION_STATUSES;
+
+  protected readonly completionMessage = computed(() =>
+    this.completedId() && this.completedId() === this.params().get('id')
+      ? 'L’intervention est maintenant terminée.'
+      : '',
+  );
+
+  protected completeIntervention(): void {
+    if (!this.agentView) return;
+    const id = this.params().get('id');
+    if (!this.data.completeAssignedIntervention(id)) return;
+    this.completedId.set(id);
+    // Le bouton disparaît après la transition : conserver un repère de focus sur la fiche.
+    afterNextRender(
+      () => {
+        if (this.params().get('id') === id)
+          this.document.getElementById('intervention-completion-feedback')?.focus();
+      },
+      { injector: this.injector },
+    );
+  }
 
   constructor() {
     afterNextRender(() => this.document.getElementById('main-content')?.focus());

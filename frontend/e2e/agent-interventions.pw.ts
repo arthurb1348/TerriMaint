@@ -68,7 +68,8 @@ test('Mes interventions : aperçu, URL, filtres, détail et retour au clavier', 
   await expect(
     main.getByRole('link', { name: 'Voir le signalement', exact: true }),
   ).toHaveAttribute('href', '/agent/incidents/INC-2026-048');
-  await expect(main.locator('button, form')).toHaveCount(0);
+  await expect(main.locator('form')).toHaveCount(0);
+  await expect(main.getByRole('button', { name: 'Intervention terminée', exact: true })).toBeVisible();
   await fits(page);
   await info.attach('detail-agent', {
     body: await page.screenshot({ fullPage: true }),

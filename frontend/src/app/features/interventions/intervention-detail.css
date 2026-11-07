@@ -53,3 +53,10 @@ dd {
     align-items: start;
   }
 }
+
+.completion-feedback {
+  margin: 0;
+}
+.completion-feedback.has-feedback {
+  margin-top: 16px;
+}
