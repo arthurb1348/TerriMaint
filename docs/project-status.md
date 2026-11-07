@@ -2,12 +2,12 @@
 
 ## Référence et usage
 
-Vérification ciblée du 7 novembre 2026 : base distante `origin/main` `6d532f6`, incluant #89.
-**En revue (#46) :** note vocale facultative dans les deux espaces, déclenchée au clic,
-limitée à une note de 60 secondes / 10 Mio. Capture, arrêt, réécoute native et suppression ;
-confirmation après arrêt, transfert à `DemoData` dans le même onglet. Nettoyage des pistes,
-URL du brouillon et callbacks dépassés à la sortie/changement de matériel.
-Photos et localisation conservées ; aucun stockage persistant, transcription ou envoi serveur.
+Vérification ciblée du 7 novembre 2026 : base distante `origin/main` `90d8605`, incluant #90.
+**En revue (#47) :** tableau de bord Responsable avec trois compteurs réactifs et liés
+aux listes filtrées : signalements Ouverts, Urgents non clôturés et interventions Planifiées.
+Jusqu’à trois signalements non clôturés et trois interventions planifiées sont présentés,
+avec ordres et égalités documentés. Filtre URL `status=not-closed` conservé dans les retours.
+Accueil Agent, Scanner et aperçu assigné inchangés ; aucune API/persistance ajoutée.
 Les vérifications et le parcours précis de preview sont dans la PR. Les passages
 ci-dessous conservent leurs dates et leur contexte historiques.
 

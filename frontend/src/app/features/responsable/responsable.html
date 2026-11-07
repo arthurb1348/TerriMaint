@@ -1,0 +1,83 @@
+<section class="feature-page" aria-labelledby="responsable-title">
+  <h1 id="responsable-title">Tableau de bord</h1>
+  <section aria-labelledby="dashboard-indicators-title">
+    <h2 id="dashboard-indicators-title">Vue d’ensemble</h2>
+    <ul class="indicators">
+      @for (indicator of indicators(); track indicator.label) {
+        <li>
+          <a
+            class="business-card dashboard-link indicator"
+            [routerLink]="indicator.path"
+            [queryParams]="indicator.query"
+          >
+            <span>{{ indicator.label }}</span>
+            <strong class="indicator-count">{{ indicator.count }}</strong>
+          </a>
+        </li>
+      }
+    </ul>
+  </section>
+  <div class="previews">
+    <section aria-labelledby="dashboard-incidents-title">
+      <h2 id="dashboard-incidents-title">Signalements à traiter</h2>
+      @if (incidentPreview().length) {
+        <ul class="preview-list">
+          @for (item of incidentPreview(); track item.id) {
+            <li>
+              <a
+                class="business-card dashboard-link"
+                [routerLink]="['/responsable/incidents', item.id]"
+              >
+                <span class="reference">{{ item.id }}</span>
+                <strong>{{ item.title }}</strong>
+                <span>{{ equipmentName(item.equipmentId) }}</span>
+                <div class="badges">
+                  <span class="badge" [attr.data-priority]="item.priority">{{
+                    priorities[item.priority]
+                  }}</span>
+                  <span class="badge">{{ incidentStatuses[item.status] }}</span>
+                </div>
+                <span
+                  >Signalé le
+                  <time [attr.datetime]="item.reportedOn">{{
+                    item.reportedOn | date: 'dd/MM/yyyy'
+                  }}</time></span
+                >
+              </a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>Aucun signalement à traiter pour le moment.</p>
+      }
+    </section>
+    <section aria-labelledby="dashboard-interventions-title">
+      <h2 id="dashboard-interventions-title">Interventions planifiées</h2>
+      @if (interventionPreview().length) {
+        <ul class="preview-list">
+          @for (item of interventionPreview(); track item.id) {
+            <li>
+              <a
+                class="business-card dashboard-link"
+                [routerLink]="['/responsable/interventions', item.id]"
+              >
+                <span class="reference">{{ item.id }}</span>
+                <strong>{{ item.title }}</strong>
+                <span>{{ equipmentName(item.equipmentId) }}</span>
+                <span class="badge">{{ interventionStatuses[item.status] }}</span>
+                <span
+                  >Date prévue :
+                  <time [attr.datetime]="item.plannedOn">{{
+                    item.plannedOn | date: 'dd/MM/yyyy'
+                  }}</time></span
+                >
+              </a>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>Aucune intervention planifiée pour le moment.</p>
+      }
+    </section>
+  </div>
+</section>
