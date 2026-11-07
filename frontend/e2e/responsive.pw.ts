@@ -165,6 +165,10 @@ for (const space of ['agent', 'responsable']) {
       const status = main.getByRole('combobox', { name: 'Statut du signalement', exact: true });
       const reset = main.getByRole('button', { name: 'Réinitialiser les filtres', exact: true });
       await page.goto(base);
+      await expect(page.locator('.screen-title')).toHaveCount(0);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Incidents');
+      await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
       await expect(rows).toHaveCount(6);
       await expect(rows.first().locator('time')).toHaveText('28/10/2026');
       await expect(main.getByText('Données de démonstration', { exact: true })).toHaveCount(0);

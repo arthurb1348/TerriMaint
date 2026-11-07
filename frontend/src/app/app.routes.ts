@@ -19,51 +19,43 @@ export const routes: Routes = [
     path: '',
     component: Home,
     title: 'TerriMaint — Du terrain à la décision',
-    data: { label: 'TerriMaint' },
   },
   {
     path: 'agent',
     loadComponent: () => import('./features/agent/agent').then((m) => m.Agent),
     title: 'Accueil Agent — TerriMaint',
-    data: { label: 'Accueil' },
   },
   {
     path: 'responsable',
     loadComponent: () => import('./features/responsable/responsable').then((m) => m.Responsable),
     title: 'Tableau de bord — TerriMaint',
-    data: { label: 'Tableau de bord' },
   },
   ...(['agent', 'responsable'] as const).flatMap((space): Routes => [
     {
       path: `${space}/equipements/:id`,
       loadComponent: equipmentDetailPage,
       title: 'Fiche matériel — TerriMaint',
-      data: { label: 'Matériel' },
     },
     {
       path: `${space}/equipements`,
       loadComponent: equipmentPage,
       title: 'Matériel — TerriMaint',
-      data: { label: 'Matériel' },
     },
     {
       path: `${space}/incidents/nouveau/:equipmentId`,
       loadComponent: incidentDeclarationPage,
       title: 'Déclarer un incident — TerriMaint',
-      data: { label: 'Incidents' },
     },
     {
       // La route spécifique nouveau/:equipmentId reste avant le détail par identifiant.
       path: `${space}/incidents/:id`,
       loadComponent: incidentDetailPage,
       title: 'Détail du signalement — TerriMaint',
-      data: { label: 'Incidents' },
     },
     {
       path: `${space}/incidents`,
       loadComponent: incidentsPage,
       title: 'Incidents — TerriMaint',
-      data: { label: 'Incidents' },
     },
   ]),
   {
@@ -72,7 +64,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/interventions/intervention-planning').then((m) => m.InterventionPlanning),
     title: 'Programmer une intervention — TerriMaint',
-    data: { label: 'Interventions' },
   },
   ...(['agent', 'responsable'] as const).flatMap((space): Routes => [
     {
@@ -82,7 +73,6 @@ export const routes: Routes = [
         import('./features/interventions/intervention-detail').then((m) => m.InterventionDetail),
       title: 'Détail de l’intervention — TerriMaint',
       data: {
-        label: space === 'agent' ? 'Mes interventions' : 'Interventions',
         agentView: space === 'agent',
       },
     },
@@ -91,7 +81,6 @@ export const routes: Routes = [
       loadComponent: interventionsPage,
       title: `${space === 'agent' ? 'Mes interventions' : 'Interventions'} — TerriMaint`,
       data: {
-        label: space === 'agent' ? 'Mes interventions' : 'Interventions',
         agentView: space === 'agent',
       },
     },
@@ -100,7 +89,7 @@ export const routes: Routes = [
     path: `${space}/scanner`,
     loadComponent: () => import('./features/scanner/scanner').then((m) => m.Scanner),
     title: 'Scanner — TerriMaint',
-    data: { label: 'Scanner', scannerSpace: space },
+    data: { scannerSpace: space },
   })),
   ...[
     {

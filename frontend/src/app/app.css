@@ -32,13 +32,6 @@
   width: auto;
   height: 38px;
 }
-.screen-title {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
 .space-menu {
   position: relative;
   margin-left: auto;
@@ -119,7 +112,7 @@ footer {
 .responsable {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
-  grid-template-rows: minmax(72px, auto) 1fr auto;
+  grid-template-rows: auto 1fr auto;
   padding-bottom: 0;
 }
 .responsable app-main-navigation {
@@ -128,11 +121,6 @@ footer {
 }
 .responsable .app-bar {
   grid-column: 2;
-}
-.responsable .screen-title {
-  font-size: 1.375rem;
-  line-height: 1.75rem;
-  font-weight: 700;
 }
 .responsable .brand-link {
   display: none;
@@ -168,10 +156,6 @@ footer {
   .responsable main {
     padding: 24px;
     flex: 1;
-  }
-  .responsable .screen-title {
-    font-size: 1rem;
-    line-height: 1.5rem;
   }
 }
 

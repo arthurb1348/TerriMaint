@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 for (const route of ['/', '/agent', '/responsable']) {
-  test(`marque discrète, navigation native et titre long : ${route}`, async ({ page }, info) => {
+  test(`marque discrète, navigation native et titre de page long : ${route}`, async ({ page }, info) => {
     await page.route('**/api/v1/health', (request) => request.fulfill({ json: { status: 'ok' } }));
     await page.goto(route);
     const sidebar = route === '/responsable' && info.project.use.viewport!.width > 760;
@@ -38,22 +38,25 @@ for (const route of ['/', '/agent', '/responsable']) {
     }
     await info.attach('marque', { body: await page.screenshot(), contentType: 'image/png' });
 
-    // Le titre de route est remplacé seulement dans le DOM pour éprouver le shell.
-    const title = page.locator('.screen-title');
+    // Le titre de page est remplacé seulement dans le DOM pour éprouver les textes longs.
+    await expect(page.locator('.screen-title')).toHaveCount(0);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    const title = page.getByRole('heading', { level: 1 });
     await title.evaluate((node) => {
       node.textContent = 'Interventions et maintenance des équipements municipaux';
     });
     await expect
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth))
       .toBeLessThanOrEqual(1);
-    const titleBounds = await title.boundingBox();
-    const menuBounds = await page.locator('.space-menu').boundingBox();
-    expect(titleBounds!.x + titleBounds!.width).toBeLessThanOrEqual(
-      menuBounds!.x > titleBounds!.x ? menuBounds!.x : info.project.use.viewport!.width,
-    );
+    const barBounds = await page.locator('.app-bar').boundingBox();
+    expect(barBounds!.height).toBeLessThanOrEqual(65);
     if (!sidebar) {
       const brandBounds = await brand.boundingBox();
-      expect(titleBounds!.x).toBeGreaterThanOrEqual(brandBounds!.x + brandBounds!.width);
+      const menuBounds = await page.locator('.space-menu').boundingBox();
+      expect(
+        menuBounds!.x + menuBounds!.width <= brandBounds!.x ||
+          brandBounds!.x + brandBounds!.width <= menuBounds!.x,
+      ).toBe(true);
     }
     await info.attach('titre-long', { body: await page.screenshot(), contentType: 'image/png' });
 
@@ -79,7 +82,7 @@ for (const route of ['/', '/agent', '/responsable']) {
     await page.locator('.space-menu summary').click();
     await page.getByRole('link', { name: 'Espace Responsable', exact: true }).click();
     await expect(page).toHaveURL('/responsable');
-    await expect(page.locator('.screen-title')).toHaveText('Tableau de bord');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tableau de bord');
     await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(1);
   });
 }
