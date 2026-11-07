@@ -13,7 +13,11 @@ import { DEMO_EQUIPMENT } from './equipements-demo';
   standalone: true,
   imports: [RouterLink, DemoImage, DatePipe],
   templateUrl: './equipment-detail.html',
-  styleUrls: ['../incidents/incident-presentation.css', './equipment-detail.css'],
+  styleUrls: [
+    '../incidents/incident-presentation.css',
+    '../interventions/intervention-links.css',
+    './equipment-detail.css',
+  ],
 })
 export class EquipmentDetail {
   private readonly data = inject(DemoData);

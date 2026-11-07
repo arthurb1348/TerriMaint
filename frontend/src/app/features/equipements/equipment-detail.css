@@ -20,26 +20,3 @@ dd {
 .equipment-interventions {
   margin-top: 32px;
 }
-.intervention-list {
-  display: grid;
-  gap: 16px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.intervention-link {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  padding: 16px;
-  color: var(--text);
-  text-decoration: none;
-}
-.intervention-link strong {
-  flex-basis: 100%;
-  min-width: 0;
-}
-.intervention-link:hover {
-  background: var(--surface);
-}
