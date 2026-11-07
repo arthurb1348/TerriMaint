@@ -20,6 +20,7 @@
         <dd>{{ item.location }}</dd>
       </div>
     </dl>
+    <div class="equipment-actions">
     <a
       class="declaration-link page-action"
       [routerLink]="['../../incidents/nouveau', item.id]"
@@ -29,6 +30,7 @@
     @if (!agentView) {
       <a class="declaration-link page-action" [routerLink]="['../../interventions/materiel', item.id]" [queryParams]="{ q: search() || null }">Programmer une intervention</a>
     }
+    </div>
     <section class="equipment-interventions" aria-labelledby="equipment-interventions-title">
       <h2 id="equipment-interventions-title">Interventions</h2>
       @if (interventions().length) {

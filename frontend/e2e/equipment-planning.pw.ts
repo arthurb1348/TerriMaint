@@ -13,10 +13,11 @@ test('Programmer un entretien depuis le matériel conserve origine, affectation 
   const back = main.getByRole('link', { name: 'Retour au matériel', exact: true });
   await expect(back).toHaveAttribute('href', '/responsable/equipements/EQ-OUT-0001?q=tondeuse');
   await main.getByRole('link', { name: 'Voir l’intervention', exact: true }).click();
+  await expect(page).toHaveURL((url) => /^\/responsable\/interventions\/INT-LOCAL-[^/]+$/.test(url.pathname));
+  const id = new URL(page.url()).pathname.split('/').pop()!;
   await expect(main).toContainText('EQ-OUT-0001');
   await expect(main.getByRole('heading', { name: 'Signalement d’origine', exact: true })).toHaveCount(0);
   await expect(main.getByRole('link', { name: 'Retour au matériel', exact: true })).toHaveAttribute('href', '/responsable/equipements/EQ-OUT-0001?q=tondeuse');
-  const id = new URL(page.url()).pathname.split('/').pop()!;
   await main.getByRole('link', { name: 'Voir le matériel', exact: true }).click();
   await expect(main.getByRole('link', { name: /Entretien préventif/ })).toContainText('Planifiée');
   const nav = async (space: string, label: string) => {
@@ -30,7 +31,7 @@ test('Programmer un entretien depuis le matériel conserve origine, affectation 
   await nav('Responsable', 'Interventions');
   await expect(main.getByRole('link', { name: /Entretien préventif/ })).toBeVisible();
   await main.getByRole('link', { name: /Entretien préventif/ }).click();
-  await expect(page).toHaveURL(new RegExp(id));
+  await expect(page).toHaveURL((url) => url.pathname === `/responsable/interventions/${id}`);
   if (page.viewportSize()!.width <= 760) await page.getByRole('button', { name: 'Ouvrir la navigation', exact: true }).click();
   await page.locator('nav').getByRole('link', { name: 'Signalements', exact: true }).click();
   await main.getByRole('link', { name: /INC-2026-048/ }).click();
