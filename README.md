@@ -6,6 +6,10 @@ Application de suivi de maintenance pour les petites collectivités : signaler u
 consulter un équipement et organiser les interventions avec un historique partagé.
 Projet fil rouge de formation Concepteur Développeur d'Applications.
 
+**Développement assisté par agents IA :** ChatGPT contribue au cadrage, Codex à
+l'implémentation et aux tests, GitHub Actions aux vérifications ; la revue et la
+fusion restent humaines. [Voir le workflow et un exemple de PR](docs/ai-workflow.md).
+
 ## État du projet
 
 Le [bilan projet versionné](docs/project-status.md) distingue l'état réel, les travaux en cours
@@ -211,11 +215,6 @@ Actions et le SHA publié. Aucun backend n'est déployé : API indisponible est 
 | `AGENTS.md` | Consignes de travail pour Codex |
 
 ## Développer avec Codex
-
-TerriMaint utilise ChatGPT pour le cadrage et Codex pour contribuer au code, aux tests
-et à la documentation, avec des contrôles GitHub Actions et une fusion décidée par Arthur.
-La [présentation du développement assisté par agents IA](docs/ai-workflow.md) résume
-cette organisation et ses preuves à destination des recruteurs techniques.
 
 Une issue précise → une branche → implémentation et contrôles → une pull request → relecture et fusion par Arthur.
 Les instructions complètes sont dans [le workflow](docs/workflow.md).
