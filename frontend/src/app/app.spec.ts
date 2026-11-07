@@ -87,6 +87,24 @@ describe('Shell et routage', () => {
     },
   );
 
+  it.each(['/agent', '/responsable'])(
+    'conserve le lien de marque natif et un nom accessible unique depuis %s',
+    async (url) => {
+      await navigate(url);
+      const brand = element.querySelector<HTMLAnchorElement>('.brand-link')!;
+      expect(brand.getAttribute('aria-label')).toBe('TerriMaint — Accueil général');
+      expect(brand.getAttribute('href')).toBe('/');
+      expect(brand.textContent?.trim()).toBe('');
+      expect(Array.from(brand.querySelectorAll('img'), (image) => image.alt)).toEqual(['', '']);
+      brand.click();
+      await fixture.whenStable();
+      expect(router.url).toBe('/');
+      http.expectOne('/api/v1/health').flush({ status: 'ok' });
+      await fixture.whenStable();
+      expect(element.querySelector('.screen-title')?.textContent).toBe('Accueil général');
+    },
+  );
+
   it('conserve les accès métier Responsable et change d’espace par le shell', async () => {
     await navigate('/responsable');
     const links = element.querySelectorAll<HTMLAnchorElement>('main a');

@@ -1,6 +1,16 @@
 # Décisions techniques et métier
 
-## 2026-11-06 — Accès Scanner dans les deux espaces et photos grand écran (#76, en revue)
+## 2026-11-06 — Logo vectoriel validé (#78, en revue)
+
+Utiliser les SVG du pack fourni par Arthur sans redessin : symbole compact dans
+l’en-tête, logo horizontal selon la largeur disponible du bandeau, T blanc seul
+dans la sidebar Responsable. Une marque visible par disposition ; nom accessible
+porté par le lien natif, images décoratives et cible minimale de 44 px. Présence
+discrète, aplats et proportions conservés ; favicon SVG/ICO fourni, provenance et
+licence Inter conservées. Aucun ajout de police, dépendance ou PWA.
+Voir [les fichiers et la procédure de revue](brand.md).
+
+## 2026-11-06 — Accès Scanner dans les deux espaces et photos grand écran (#76, intégrée par #77)
 
 Base distante vérifiée : `b6c322d3e49738f36c5434965aa09e21ff1a5f8d`, avec #73 et #75
 fusionnées. Arthur conserve les quatre destinations principales Agent sur petit mobile et

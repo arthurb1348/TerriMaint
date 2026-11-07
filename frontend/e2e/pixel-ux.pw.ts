@@ -128,7 +128,9 @@ test('Responsable : raccourcis métier et changement d’espace uniquement dans 
   const main = page.getByRole('main');
   await expect(main.getByRole('link')).toHaveCount(3);
   await expect(main.getByRole('link', { name: /Agent|Scanner/ })).toHaveCount(0);
-  await page.getByText('Changer d’espace', { exact: true }).click();
+  const spaceToggle = page.locator('.space-menu summary');
+  await expect(spaceToggle).toHaveAccessibleName('Changer d’espace');
+  await spaceToggle.click();
   await page.getByRole('link', { name: 'Espace Agent', exact: true }).click();
   await expect(page).toHaveURL(/\/agent$/);
 });
