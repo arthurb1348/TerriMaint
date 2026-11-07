@@ -26,6 +26,23 @@ const interventionDraft = (
 });
 
 describe('Données partagées pendant la vie de l’application', () => {
+  it('programme directement un matériel sans signalement et refuse les associations incohérentes', () => {
+    const draft = interventionDraft({ incidentId: undefined, equipmentId: 'EQ-OUT-0001' });
+    const created = data.createIntervention(draft)!;
+    expect(created.equipmentId).toBe('EQ-OUT-0001');
+    expect(created.incidentId).toBeUndefined();
+    expect(created.status).toBe('planned');
+    const before = data.interventions();
+    for (const changes of [
+      { equipmentId: 'inconnu' },
+      { equipmentId: undefined },
+      { incidentId: 'inconnu' },
+      { incidentId: 'INC-2026-045' },
+      { incidentId: 'INC-2026-049', equipmentId: 'EQ-OUT-0002' },
+    ]) expect(data.createIntervention({ ...draft, ...changes })).toBeUndefined();
+    expect(data.interventions()).toBe(before);
+    expect(data.createIntervention(interventionDraft())?.equipmentId).toBe('EQ-OUT-0003');
+  });
   let data: DemoData;
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] });

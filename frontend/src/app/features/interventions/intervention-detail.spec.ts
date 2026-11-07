@@ -223,7 +223,7 @@ describe('Détail local des interventions', () => {
       expect(content().textContent).toContain(expected);
       const selector =
         relation === 'incident'
-          ? '.origin a'
+          ? '.origin-summary a'
           : relation === 'equipment'
             ? '.equipment-summary a'
             : '.metadata a';

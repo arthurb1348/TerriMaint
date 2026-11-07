@@ -1,7 +1,7 @@
 <section class="feature-page" aria-labelledby="intervention-detail-title">
-  <a class="back-link page-action secondary" [routerLink]="['..']" [queryParams]="query()"
+  <a class="back-link page-action secondary" [routerLink]="equipmentOrigin() ? ['../../equipements', equipmentOrigin()] : ['..']" [queryParams]="equipmentOrigin() ? { q: query().q } : query()"
     ><span aria-hidden="true">←</span
-    ><span>{{ agentView ? 'Retour à mes interventions' : 'Retour aux interventions' }}</span></a
+    ><span>{{ equipmentOrigin() ? 'Retour au matériel' : agentView ? 'Retour à mes interventions' : 'Retour aux interventions' }}</span></a
   >
   @if (intervention(); as item) {
     <p class="reference">{{ item.id }}</p>
@@ -48,6 +48,7 @@
         }
       </section>
       <div class="origin">
+        @if (item.incidentId) {
         <section
           class="origin-summary business-card single-destination"
           aria-labelledby="intervention-origin-title"
@@ -65,6 +66,7 @@
             <p>Signalement introuvable</p>
           }
         </section>
+        }
         <section
           class="equipment-summary business-card single-destination"
           aria-labelledby="intervention-equipment-title"

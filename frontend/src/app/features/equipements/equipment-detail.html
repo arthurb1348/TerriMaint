@@ -26,6 +26,9 @@
       [queryParams]="{ q: search() || null }"
       >Faire un signalement</a
     >
+    @if (!agentView) {
+      <a class="declaration-link page-action" [routerLink]="['../../interventions/materiel', item.id]" [queryParams]="{ q: search() || null }">Programmer une intervention</a>
+    }
     <section class="equipment-interventions" aria-labelledby="equipment-interventions-title">
       <h2 id="equipment-interventions-title">Interventions</h2>
       @if (interventions().length) {
