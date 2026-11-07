@@ -53,6 +53,17 @@ describe('Données partagées pendant la vie de l’application', () => {
     expect(data.createIncident(incidentDraft({ coordinates: { latitude: 91, longitude: 0 } }))).toBeUndefined();
     expect(data.incidents()).toBe(before);
   });
+  it('conserve une copie figée de la note acceptée et refuse les métadonnées incohérentes', () => {
+    const audioNote = { src: 'blob:note', mimeType: 'audio/webm;codecs=opus', size: 100, durationSeconds: 2 };
+    const created = data.createIncident(incidentDraft({ audioNote }))!;
+    audioNote.size = 200;
+    expect(created.audioNote?.size).toBe(100);
+    expect(Object.isFrozen(created.audioNote)).toBe(true);
+    const before = data.incidents();
+    for (const change of [{ size: 0 }, { size: 10 * 1024 * 1024 + 1 }, { durationSeconds: 61 }, { src: 'https://exemple.test' }])
+      expect(data.createIncident(incidentDraft({ audioNote: { ...audioNote, ...change } }))).toBeUndefined();
+    expect(data.incidents()).toBe(before);
+  });
   let data: DemoData;
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] });

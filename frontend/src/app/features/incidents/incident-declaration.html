@@ -212,8 +212,26 @@
               }
             </div>
           </section>
+          <section aria-labelledby="audio-heading">
+            <h2 id="audio-heading">Note vocale (facultative)</h2>
+            <p class="help">Une seule note, 60 secondes et 10 Mio maximum. Arrêtez l’enregistrement avant de vérifier et confirmer le signalement.</p>
+            <p role="status" aria-live="polite">{{ audio.message() }}</p>
+            @if (audio.state() === 'recording') {
+              <p>Microphone actif — {{ audio.seconds() }} / 60 secondes</p>
+              <button class="page-action" type="button" (click)="audio.stop()">Arrêter l’enregistrement</button>
+            } @else if (audio.state() === 'permission') {
+              <button class="page-action secondary" type="button" (click)="removeAudio()">Annuler la demande de microphone</button>
+            } @else if (audio.state() === 'idle') {
+              <app-audio-note [note]="audio.note()" />
+              @if (audio.note()) {
+                <button class="page-action secondary" type="button" (click)="removeAudio()">Supprimer la note vocale</button>
+              } @else {
+                <button id="record-audio" class="page-action secondary" type="button" (click)="recordAudio()">Enregistrer une note vocale</button>
+              }
+            }
+          </section>
           <div class="actions">
-            <button class="page-action" type="submit" [disabled]="media.busy()">
+            <button class="page-action" type="submit" [disabled]="media.busy() || audio.state() !== 'idle'">
               Vérifier le signalement
             </button>
             <a
@@ -246,6 +264,8 @@
         </dl>
         <h2>Localisation</h2>
         <app-location-summary [coordinates]="location.value()" />
+        <h2>Note vocale</h2>
+        <app-audio-note [note]="audio.note()" />
         <h2>Photos sélectionnées</h2>
         <div class="photo-gallery">
           @for (photo of media.photos(); track photo.id) {

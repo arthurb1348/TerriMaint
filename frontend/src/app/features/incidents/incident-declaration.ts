@@ -1,3 +1,5 @@
+import { IncidentAudio } from './incident-audio';
+import { AudioNote } from './audio-note';
 import { IncidentLocation } from './incident-location';
 import { LocationSummary } from './location-summary';
 import { DemoData } from '../../core/demo-data';
@@ -32,7 +34,7 @@ const nonBlank: ValidatorFn = (control) =>
 @Component({
   selector: 'app-incident-declaration',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, LocationSummary],
+  imports: [ReactiveFormsModule, RouterLink, LocationSummary, AudioNote],
   templateUrl: './incident-declaration.html',
   styleUrl: './incident-declaration.css',
 })
@@ -54,6 +56,7 @@ export class IncidentDeclaration {
   );
   protected readonly search = computed(() => this.queryParams().get('q') ?? '');
   protected readonly step = signal<'form' | 'review' | 'complete'>('form');
+  protected readonly audio = new IncidentAudio();
   protected readonly location = new IncidentLocation();
   protected readonly media = new IncidentPhotos();
   protected readonly submitted = signal(false);
@@ -92,13 +95,14 @@ export class IncidentDeclaration {
   });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => { this.media.clear(); this.location.clear(); });
+    inject(DestroyRef).onDestroy(() => { this.media.clear(); this.location.clear(); this.audio.clear(); });
     effect(() => {
       // Le routeur réutilise le composant : aucune saisie ne doit passer à un autre matériel.
       // q reste indépendant : modifier la recherche seule n'efface pas le formulaire.
       this.equipmentId();
       this.media.clear();
       this.location.clear();
+      this.audio.clear();
       this.form.reset();
       this.createdIncident.set(undefined);
       this.submitted.set(false);
@@ -107,6 +111,16 @@ export class IncidentDeclaration {
         injector: this.injector,
       });
     });
+  }
+
+  protected recordAudio(): void {
+    const equipmentId = this.route.snapshot.paramMap.get('equipmentId');
+    void this.audio.start(() => this.route.snapshot.paramMap.get('equipmentId') === equipmentId && this.step() === 'form');
+  }
+
+  protected removeAudio(): void {
+    this.audio.clear();
+    this.focusAfterRender('#record-audio');
   }
 
   protected requestLocation(): void {
@@ -136,7 +150,7 @@ export class IncidentDeclaration {
   }
 
   protected review(): void {
-    if (this.createdIncident() || this.media.busy() || !this.equipment() || this.step() !== 'form')
+    if (this.audio.state() !== 'idle' || this.createdIncident() || this.media.busy() || !this.equipment() || this.step() !== 'form')
       return;
     this.submitted.set(true);
     this.form.markAllAsTouched();
@@ -160,6 +174,7 @@ export class IncidentDeclaration {
 
   protected complete(): void {
     if (
+      this.audio.state() !== 'idle' ||
       this.createdIncident() ||
       this.media.busy() ||
       !this.equipment() ||
@@ -172,10 +187,12 @@ export class IncidentDeclaration {
       equipmentId: this.equipment()!.id,
       photos: this.media.photos(),
       coordinates: this.location.value(),
+      audioNote: this.audio.note(),
     });
     if (!incident) return;
     this.createdIncident.set(incident);
     this.media.transfer();
+    this.audio.transfer();
     this.step.set('complete');
     this.focusAfterRender('#incident-title-heading');
   }

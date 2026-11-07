@@ -1,3 +1,4 @@
+import { IncidentAudioNote } from './incident-audio';
 import { IncidentCoordinates } from './incident-location';
 import { DemoImageSource } from '../../shared/demo-image/demo-image';
 
@@ -18,6 +19,7 @@ export interface Incident {
   // Date calendaire sans heure : forcer UTC dans le rendu pourrait afficher la veille.
   readonly reportedOn: string;
   readonly risk?: boolean;
+  readonly audioNote?: IncidentAudioNote;
   readonly coordinates?: IncidentCoordinates;
   readonly photos?: readonly DemoImageSource[];
 }
