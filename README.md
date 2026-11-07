@@ -212,6 +212,11 @@ Actions et le SHA publié. Aucun backend n'est déployé : API indisponible est 
 
 ## Développer avec Codex
 
+TerriMaint utilise ChatGPT pour le cadrage et Codex pour contribuer au code, aux tests
+et à la documentation, avec des contrôles GitHub Actions et une fusion décidée par Arthur.
+La [présentation du développement assisté par agents IA](docs/ai-workflow.md) résume
+cette organisation et ses preuves à destination des recruteurs techniques.
+
 Une issue précise → une branche → implémentation et contrôles → une pull request → relecture et fusion par Arthur.
 Les instructions complètes sont dans [le workflow](docs/workflow.md).
 Ce processus se pilote depuis mobile ou PC avec GitHub et un agent dans un environnement
