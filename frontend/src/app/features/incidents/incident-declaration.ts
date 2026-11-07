@@ -1,3 +1,5 @@
+import { IncidentLocation } from './incident-location';
+import { LocationSummary } from './location-summary';
 import { DemoData } from '../../core/demo-data';
 import { DOCUMENT } from '@angular/common';
 import {
@@ -30,7 +32,7 @@ const nonBlank: ValidatorFn = (control) =>
 @Component({
   selector: 'app-incident-declaration',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, LocationSummary],
   templateUrl: './incident-declaration.html',
   styleUrl: './incident-declaration.css',
 })
@@ -52,6 +54,7 @@ export class IncidentDeclaration {
   );
   protected readonly search = computed(() => this.queryParams().get('q') ?? '');
   protected readonly step = signal<'form' | 'review' | 'complete'>('form');
+  protected readonly location = new IncidentLocation();
   protected readonly media = new IncidentPhotos();
   protected readonly submitted = signal(false);
   protected readonly createdIncident = signal<Incident | undefined>(undefined);
@@ -89,12 +92,13 @@ export class IncidentDeclaration {
   });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => this.media.clear());
+    inject(DestroyRef).onDestroy(() => { this.media.clear(); this.location.clear(); });
     effect(() => {
       // Le routeur réutilise le composant : aucune saisie ne doit passer à un autre matériel.
       // q reste indépendant : modifier la recherche seule n'efface pas le formulaire.
       this.equipmentId();
       this.media.clear();
+      this.location.clear();
       this.form.reset();
       this.createdIncident.set(undefined);
       this.submitted.set(false);
@@ -103,6 +107,13 @@ export class IncidentDeclaration {
         injector: this.injector,
       });
     });
+  }
+
+  protected requestLocation(): void {
+    const equipmentId = this.route.snapshot.paramMap.get('equipmentId');
+    this.location.request(this.document.defaultView?.navigator.geolocation, () =>
+      this.route.snapshot.paramMap.get('equipmentId') === equipmentId && this.step() === 'form',
+    );
   }
 
   protected selectPhotos(input: HTMLInputElement): void {
@@ -136,6 +147,7 @@ export class IncidentDeclaration {
       this.focusAfterRender(field === 'priority' ? '#priority-low' : `#incident-${field}`);
       return;
     }
+    this.location.stop();
     this.step.set('review');
     this.focusAfterRender('#incident-title-heading');
   }
@@ -159,6 +171,7 @@ export class IncidentDeclaration {
       ...this.form.getRawValue(),
       equipmentId: this.equipment()!.id,
       photos: this.media.photos(),
+      coordinates: this.location.value(),
     });
     if (!incident) return;
     this.createdIncident.set(incident);

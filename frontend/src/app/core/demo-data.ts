@@ -1,3 +1,4 @@
+import { IncidentCoordinates, validCoordinates } from '../features/incidents/incident-location';
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { DEMO_EQUIPMENT } from '../features/equipements/equipements-demo';
 import { Incident, INCIDENT_PRIORITIES } from '../features/incidents/incident';
@@ -10,6 +11,7 @@ import { PRESENTED_AGENT } from './presented-agent';
 import { DemoImageSource } from '../shared/demo-image/demo-image';
 
 interface IncidentDraft {
+  readonly coordinates?: IncidentCoordinates;
   readonly equipmentId: string;
   readonly title: string;
   readonly description: string;
@@ -30,6 +32,7 @@ interface InterventionDraft {
 function freezeIncident(incident: Incident): Incident {
   return Object.freeze({
     ...incident,
+    coordinates: incident.coordinates && Object.freeze({ ...incident.coordinates }),
     photos:
       incident.photos && Object.freeze(incident.photos.map((photo) => Object.freeze({ ...photo }))),
   });
@@ -110,6 +113,7 @@ export class DemoData {
       draft.title.length > 120 ||
       (draft.description.trim() && draft.description.length > 2000) ||
       !Object.hasOwn(INCIDENT_PRIORITIES, draft.priority) ||
+      (draft.coordinates !== undefined && !validCoordinates(draft.coordinates)) ||
       draft.photos.length > 3 ||
       draft.photos.some((photo) => !photo.src.startsWith('blob:') || !photo.alt.trim())
     )
@@ -124,6 +128,7 @@ export class DemoData {
       risk: draft.risk,
       status: 'open',
       reportedOn: localToday(),
+      coordinates: draft.coordinates,
       photos: draft.photos.map(({ src, alt }) => ({ src, alt })),
     });
     // La création acceptée prend possession des seules URL préparées, sans réencoder.

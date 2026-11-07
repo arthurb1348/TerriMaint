@@ -1,3 +1,4 @@
+import { LocationSummary } from './location-summary';
 import { DemoData } from '../../core/demo-data';
 import { DatePipe, DOCUMENT } from '@angular/common';
 import {
@@ -21,7 +22,7 @@ import { incidentQueryParams, readIncidentFilters } from './incident-filters';
 @Component({
   selector: 'app-incident-detail',
   standalone: true,
-  imports: [RouterLink, DatePipe, DemoImage],
+  imports: [RouterLink, DatePipe, DemoImage, LocationSummary],
   templateUrl: './incident-detail.html',
   styleUrls: [
     './incident-presentation.css',

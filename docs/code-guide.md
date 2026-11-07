@@ -1,5 +1,25 @@
 # Guide des fichiers et configurations
 
+## Localisation facultative #45 — en revue
+
+`incident-location.ts` contient le type des coordonnées, leur validation et l’état d’une
+acquisition ponctuelle. Une génération invalide les callbacks non annulables du navigateur
+après retrait, nouvelle demande, récapitulatif, changement de matériel ou destruction.
+`incident-declaration` garde cet état pendant Modifier et transmet la valeur à `DemoData`.
+Ce dernier vérifie les nombres finis et bornes latitude/longitude/précision, copie et fige
+la valeur. `location-summary` présente la présence ou l’absence dans les trois écrans.
+
+L’API nécessite un navigateur compatible et généralement HTTPS (ou localhost). Les permissions,
+la précision et la disponibilité dépendent du navigateur et de l’appareil. Aucun suivi continu,
+coordonnée dans les URL, stockage persistant, log applicatif ou transmission métier ajouté ;
+les services techniques de localisation du navigateur peuvent néanmoins utiliser le réseau.
+La position ne prouve pas le lieu du matériel ni celui de l’événement.
+
+Sur la preview, dans le même onglet : Faire un signalement → Utiliser ma position → autoriser
+→ relire → Modifier → envoyer → Voir le signalement. Refaire avec refus puis sans localisation,
+et vérifier Retirer la localisation. Les tests automatisés simulent permissions, coordonnées
+et erreurs ; GPS et permissions natifs sur Pixel restent à Arthur. Les retours/photo sont conservés.
+
 ## Accès Scanner et photos grand écran #76 — en revue
 
 Le [guide PC/Pixel](agent-scan-ux.md) décrit Scanner dans Plus Agent et Responsable.
