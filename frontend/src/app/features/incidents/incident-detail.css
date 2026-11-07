@@ -46,3 +46,22 @@ dd {
 .planning-link {
   margin-top: 24px;
 }
+
+.closure-actions {
+  margin-top: 24px;
+}
+.closure-confirmation h2 {
+  margin-top: 0;
+}
+.confirmation-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+}
+.closure-feedback {
+  margin: 0;
+}
+.closure-feedback.has-feedback {
+  margin-bottom: 16px;
+}

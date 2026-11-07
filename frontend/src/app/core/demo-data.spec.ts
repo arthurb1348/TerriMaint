@@ -48,6 +48,49 @@ describe('Données partagées pendant la vie de l’application', () => {
     vi.useRealTimers();
   });
 
+  it.each(['INC-2026-045', 'INC-2026-047', 'INC-2026-048'])(
+    'clôture %s en ne remplaçant que son statut, même avec une intervention active',
+    (id) => {
+      const before = data.incidents();
+      const original = data.getIncident(id)!;
+      const interventions = data.interventions();
+      const initial = JSON.stringify([DEMO_INCIDENTS, DEMO_INTERVENTIONS]);
+      expect(data.closeIncident(id)).toBe(true);
+      expect(data.incidents()).not.toBe(before);
+      expect(data.getIncident(id)).toEqual({ ...original, status: 'closed' });
+      expect(data.getIncident(id)?.photos).toBe(original.photos);
+      expect(Object.isFrozen(data.incidents())).toBe(true);
+      expect(Object.isFrozen(data.getIncident(id))).toBe(true);
+      for (const item of before.filter((item) => item.id !== id))
+        expect(data.getIncident(item.id)).toBe(item);
+      expect(data.interventions()).toBe(interventions);
+      expect(JSON.stringify([DEMO_INCIDENTS, DEMO_INTERVENTIONS])).toBe(initial);
+      const after = data.incidents();
+      expect(data.closeIncident(id)).toBe(false);
+      expect(data.incidents()).toBe(after);
+    },
+  );
+
+  it.each([undefined, null, 'absent', 'INC-2026-049'])(
+    'refuse la clôture de %s sans modifier les sources',
+    (id) => {
+      const incidents = data.incidents();
+      const interventions = data.interventions();
+      expect(data.closeIncident(id)).toBe(false);
+      expect(data.incidents()).toBe(incidents);
+      expect(data.interventions()).toBe(interventions);
+    },
+  );
+
+  it('réutilise le refus de programmation après une clôture en mémoire', () => {
+    expect(data.closeIncident('INC-2026-048')).toBe(true);
+    const before = data.interventions();
+    expect(
+      data.createIntervention(interventionDraft({ incidentId: 'INC-2026-048' })),
+    ).toBeUndefined();
+    expect(data.interventions()).toBe(before);
+  });
+
   it('termine une seule intervention assignée en cours sans modifier son origine ni les exemples', () => {
     const before = data.interventions();
     const incidents = data.incidents();

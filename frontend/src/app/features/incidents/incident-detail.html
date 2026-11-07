@@ -36,12 +36,17 @@
       <div class="photo-gallery">
         @for (photo of item.photos ?? []; track photo.src) {
           <app-demo-image [source]="photo" [eager]="$first" />
-        } @empty { <p>Aucune photo pour ce signalement.</p> }
+        } @empty {
+          <p>Aucune photo pour ce signalement.</p>
+        }
       </div>
     </section>
     <h2>Description</h2>
     <p class="description">{{ description() }}</p>
-    <section class="equipment-summary business-card single-destination" aria-labelledby="related-equipment-title">
+    <section
+      class="equipment-summary business-card single-destination"
+      aria-labelledby="related-equipment-title"
+    >
       <h2 id="related-equipment-title">Matériel concerné</h2>
       @if (equipment(); as material) {
         <p>
@@ -69,6 +74,70 @@
           >Programmer une intervention</a
         >
       }
+    }
+    @if (isResponsible && (canClose() || closureMessage())) {
+      <div class="closure-actions">
+        <p
+          id="incident-closure-feedback"
+          class="closure-feedback"
+          [class.has-feedback]="closureMessage()"
+          role="status"
+          tabindex="-1"
+        >
+          {{ closureMessage() }}
+        </p>
+        @if (canClose()) {
+          @if (confirmingClosure()) {
+            <div
+              class="closure-confirmation business-card"
+              role="group"
+              aria-labelledby="incident-close-heading"
+            >
+              <h2 id="incident-close-heading">Confirmer la clôture</h2>
+              <div id="incident-close-description">
+                <p>Clôturer le signalement « {{ item.title }} » ?</p>
+                @if (hasActiveInterventions()) {
+                  <p class="risk-note">
+                    Au moins une intervention liée est encore planifiée ou en cours. Vous pouvez
+                    néanmoins clôturer le signalement.
+                  </p>
+                }
+                <p>Les interventions liées conserveront leur statut.</p>
+              </div>
+              <div class="confirmation-buttons">
+                <button
+                  id="incident-close-cancel"
+                  type="button"
+                  class="page-action secondary"
+                  aria-describedby="incident-close-description"
+                  (click)="cancelClosure()"
+                  (keydown.escape)="cancelClosure(); $event.preventDefault()"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  class="page-action"
+                  aria-describedby="incident-close-description"
+                  (click)="confirmClosure()"
+                  (keydown.escape)="cancelClosure(); $event.preventDefault()"
+                >
+                  Clôturer le signalement
+                </button>
+              </div>
+            </div>
+          } @else {
+            <button
+              id="incident-close-action"
+              type="button"
+              class="page-action secondary"
+              (click)="startClosure()"
+            >
+              Clôturer le signalement
+            </button>
+          }
+        }
+      </div>
     }
     @if (item.risk) {
       <p class="risk-note">

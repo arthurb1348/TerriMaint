@@ -67,6 +67,29 @@ describe('Programmation locale d’une intervention', () => {
     await enter('date', '2026-10-30');
   }
 
+  it.each(['form', 'review'])(
+    'bloque une programmation déjà ouverte à l’étape %s si le signalement est clôturé',
+    async (step) => {
+      await harness.navigateByUrl(`${base}/INC-2026-045`, InterventionPlanning);
+      await fillValid();
+      if (step === 'review') await submit();
+      const form = content().querySelector('form');
+      const confirm = content().querySelector<HTMLButtonElement>('button');
+      const data = TestBed.inject(DemoData);
+      const interventions = data.interventions();
+      expect(data.closeIncident('INC-2026-045')).toBe(true);
+      if (step === 'form')
+        form!.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      else confirm!.click();
+      harness.detectChanges();
+      await harness.fixture.whenStable();
+      expect(heading()).toBe('Signalement clôturé');
+      expect(content().querySelector('form')).toBeNull();
+      expect(content().querySelector('button')).toBeNull();
+      expect(data.interventions()).toBe(interventions);
+    },
+  );
+
   it('ouvre directement le contexte non modifiable depuis les sources et préremplit seulement le titre', async () => {
     await harness.navigateByUrl(`${base}/INC-2026-045`, InterventionPlanning);
     expect(heading()).toBe('Programmer une intervention');
