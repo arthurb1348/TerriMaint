@@ -23,8 +23,9 @@ test('Programmer un entretien depuis le matériel conserve origine, affectation 
   const nav = async (space: string, label: string) => {
     await page.locator('.space-menu summary').click();
     await page.getByRole('link', { name: `Espace ${space}`, exact: true }).click();
+    await expect(page).toHaveURL((url) => url.pathname === `/${space.toLowerCase()}` || url.pathname.startsWith(`/${space.toLowerCase()}/`));
     if (page.viewportSize()!.width <= 760 && space === 'Responsable') await page.getByRole('button', { name: /Ouvrir.*navigation/ }).click();
-    await page.locator('nav').getByRole('link', { name: label, exact: true }).click();
+    await page.getByRole('navigation', { name: `Navigation ${space}`, exact: true }).getByRole('link', { name: label, exact: true }).click();
   };
   await nav('Agent', 'Interventions');
   await expect(main.getByRole('link', { name: /Entretien préventif/ })).toBeVisible();
