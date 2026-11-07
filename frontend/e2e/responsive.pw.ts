@@ -107,7 +107,7 @@ async function expectIncidentsActive(page: Page, space: string): Promise<void> {
     `/${space}/incidents`,
   );
   if (space === 'agent' && page.viewportSize()!.width <= 760) {
-    const plus = page.getByRole('button', { name: 'Plus — Incidents actif', exact: true });
+    const plus = page.getByRole('button', { name: 'Plus — Signalements actif', exact: true });
     await expect(plus).toBeVisible();
     await expect(plus).toHaveClass(/active/);
   }
@@ -167,7 +167,7 @@ for (const space of ['agent', 'responsable']) {
       await page.goto(base);
       await expect(page.locator('.screen-title')).toHaveCount(0);
       await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
-      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Incidents');
+      await expect(page.getByRole('heading', { level: 1 })).toHaveText('Signalements');
       await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
       await expect(rows).toHaveCount(6);
       await expect(rows.first().locator('time')).toHaveText('28/10/2026');
@@ -363,13 +363,13 @@ for (const space of ['agent', 'responsable']) {
     await page.keyboard.press('Tab');
     await expect(main.getByRole('link', { name: 'Retour au matériel', exact: true })).toBeFocused();
     await page.keyboard.press('Tab');
-    const open = main.getByRole('link', { name: 'Déclarer un incident', exact: true });
+    const open = main.getByRole('link', { name: 'Faire un signalement', exact: true });
     await expectFocusedControlVisible(page, open, space);
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(
       (url) => url.pathname === declaration && url.searchParams.get('q') === query,
     );
-    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Déclarer un incident');
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Faire un signalement');
     await expect(main.getByText('Données de démonstration', { exact: true })).toHaveCount(0);
     await expect(main.locator('.demo-notice')).toHaveCount(0);
     await expect(main.locator('.equipment-summary')).toContainText('Tondeuse autoportée');
@@ -556,7 +556,7 @@ for (const space of ['agent', 'responsable']) {
     const query = '  OUT  ';
     const main = page.getByRole('main');
     await page.goto(`${path}?${new URLSearchParams({ q: query })}`);
-    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Déclarer un incident');
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Faire un signalement');
     await expectIncidentsActive(page, space);
     const title = main.getByRole('textbox', { name: 'Intitulé', exact: true });
     const description = main.getByRole('textbox', {
@@ -575,7 +575,7 @@ for (const space of ['agent', 'responsable']) {
     await expectNoHorizontalOverflow(page);
     await capture(page, info, 'incident-recapitulatif-limites');
     await page.reload();
-    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Déclarer un incident');
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Faire un signalement');
     await expect(title).toHaveValue('');
     await expect(description).toHaveValue('');
     await expect(main.getByRole('radio', { checked: true })).toHaveCount(0);
@@ -587,7 +587,7 @@ for (const space of ['agent', 'responsable']) {
         url.pathname === `/${space}/equipements/EQ-OUT-0003` && url.searchParams.get('q') === query,
     );
     await expect(main.getByRole('heading', { level: 1 })).toHaveText('Débroussailleuse n°3');
-    await main.getByRole('link', { name: 'Déclarer un incident', exact: true }).click();
+    await main.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
     await expect(title).toHaveValue('');
     await main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true }).click();
     await expect(page).toHaveURL(
@@ -775,12 +775,12 @@ test('La navigation Agent conserve ses destinations selon la taille', async ({ p
   // Le shell remplace son lien d’accueil initial après la première navigation Angular.
   await expect(navigation.getByRole('link', { name: 'Accueil', exact: true })).toHaveAttribute('href', '/agent');
   const plus = navigation.getByRole('button', { name: /^Plus/ });
-  const incidents = navigation.getByRole('link', { name: 'Incidents', exact: true });
+  const incidents = navigation.getByRole('link', { name: 'Signalements', exact: true });
   const profile = navigation.getByRole('link', { name: 'Profil', exact: true });
 
   if ((page.viewportSize()?.width ?? 0) > 760) {
     await expect(plus).toBeHidden();
-    const names = ['Accueil', 'Matériel', 'Interventions', ...(page.viewportSize()!.width < 1200 ? ['Scanner'] : []), 'Incidents', 'Profil'];
+    const names = ['Accueil', 'Matériel', 'Interventions', ...(page.viewportSize()!.width < 1200 ? ['Scanner'] : []), 'Signalements', 'Profil'];
     await expect(navigation.getByRole('link')).toHaveText(names);
     await expect(incidents).toBeVisible();
     await expect(profile).toBeVisible();
@@ -811,7 +811,7 @@ test('La navigation Agent conserve ses destinations selon la taille', async ({ p
   await plus.tap();
   await incidents.tap();
   await expect(page).toHaveURL(/\/agent\/incidents$/);
-  await expect(plus).toHaveAccessibleName('Plus — Incidents actif');
+  await expect(plus).toHaveAccessibleName('Plus — Signalements actif');
   await expect(plus).toHaveAttribute('aria-expanded', 'false');
   await expect(page.getByRole('main')).toBeFocused();
 
@@ -840,7 +840,7 @@ test('La carte Scanner suit la présentation et la route reste accessible', asyn
   await expect(card).toBeVisible({ visible: scannerVisible });
   await expect(navigation.locator('a[href="/agent/scanner"]')).toHaveCount(1);
   await expect(main.locator('.page-shortcuts')).toHaveCount(0);
-  await expect(main.getByRole('link', { name: /^(Matériel|Incidents|Mes interventions)$/ })).toHaveCount(0);
+  await expect(main.getByRole('link', { name: /^(Matériel|Signalements|Mes interventions)$/ })).toHaveCount(0);
   await expect(main.locator('.preview-link')).toHaveCount(2);
   await capture(page, info, 'carte-scanner-accueil');
   await main.focus();
@@ -884,7 +884,7 @@ test('Redimensionner conserve la carte Scanner sous 1200 px et répartit la navi
     await expect(navigation.locator('a[href="/agent/scanner"]')).toHaveCount(1);
     await expect(navigation.getByRole('link', { name: 'Interventions', exact: true })).toBeVisible();
     if (width > 760) {
-      await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Interventions', ...(width < 1200 ? ['Scanner'] : []), 'Incidents', 'Profil']);
+      await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Interventions', ...(width < 1200 ? ['Scanner'] : []), 'Signalements', 'Profil']);
       await expectEvenAgentNavigation(navigation);
     } else {
       await expect(navigation.getByRole('link')).toHaveText(['Accueil', 'Matériel', 'Interventions']);
@@ -1445,7 +1445,7 @@ test('Déclarer puis programmer ajoute en mémoire sans écriture métier ni sto
   // Rester dans la même application : recharger pourrait masquer une mutation en mémoire.
   await navigate('Matériel');
   await main.getByRole('link', { name: /Débroussailleuse n°3/ }).click();
-  await main.getByRole('link', { name: 'Déclarer un incident', exact: true }).click();
+  await main.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
   await main.getByLabel('Intitulé', { exact: true }).fill('Exemple ajouté en mémoire');
   await main.getByRole('radio', { name: 'Basse — intervention à planifier', exact: true }).check();
   await main.getByRole('button', { name: 'Vérifier le signalement', exact: true }).click();
@@ -1454,7 +1454,7 @@ test('Déclarer puis programmer ajoute en mémoire sans écriture métier ni sto
   await navigate('Interventions');
   await expect(main.locator('tbody tr')).toHaveCount(6);
   expect(await main.locator('tbody').innerText()).toBe(initial);
-  await navigate('Incidents');
+  await navigate('Signalements');
   await main.getByRole('link', { name: /INC-2026-045/ }).click();
   await main.getByRole('link', { name: 'Programmer une intervention', exact: true }).click();
   await main
@@ -1544,7 +1544,7 @@ for (const space of ['agent', 'responsable']) {
     const back = main.getByRole('link', { name: 'Retour au matériel', exact: true });
     await expectBackAction(page, back, space);
     await expectBusinessCard(main.locator('dl'));
-    const declare = main.getByRole('link', { name: 'Déclarer un incident', exact: true });
+    const declare = main.getByRole('link', { name: 'Faire un signalement', exact: true });
     await expectPageAction(page, declare, 'primary', space);
     await expect(declare).toHaveAttribute(
       'href',

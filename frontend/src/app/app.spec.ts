@@ -62,8 +62,8 @@ describe('Shell et routage', () => {
     ['/responsable', 'Tableau de bord', 'Tableau de bord'],
     ['/agent/equipements', 'Matériel', 'Matériel'],
     ['/responsable/equipements', 'Matériel', 'Matériel'],
-    ['/agent/incidents', 'Incidents', 'Incidents'],
-    ['/responsable/incidents', 'Incidents', 'Incidents'],
+    ['/agent/incidents', 'Signalements', 'Signalements'],
+    ['/responsable/incidents', 'Signalements', 'Signalements'],
     ['/responsable/interventions', 'Interventions', 'Interventions'],
     ['/agent/scanner', 'Scanner', 'Scanner'],
     ['/responsable/scanner', 'Scanner', 'Scanner'],
@@ -123,7 +123,7 @@ describe('Shell et routage', () => {
     element.querySelector<HTMLAnchorElement>('nav a[href="/agent/incidents"]')?.click();
     await fixture.whenStable();
     expect(router.url).toBe('/agent/incidents');
-    expect(element.querySelector('h1')?.textContent).toBe('Incidents');
+    expect(element.querySelector('h1')?.textContent).toBe('Signalements');
     element.querySelector<HTMLAnchorElement>('.space-links a[href="/"]')?.click();
     await fixture.whenStable();
     http.expectOne('/api/v1/health').flush({ status: 'ok' });
@@ -195,7 +195,7 @@ describe('Shell et routage', () => {
         if (space === 'agent') {
           expect(element.querySelector('.more-toggle')?.classList.contains('active')).toBe(true);
           expect(element.querySelector('.more-toggle')?.getAttribute('aria-label')).toBe(
-            'Plus — Incidents actif',
+            'Plus — Signalements actif',
           );
         }
       };
@@ -237,7 +237,7 @@ describe('Shell et routage', () => {
     expect(active[0].getAttribute('href')).toBe(`/${space}/incidents`);
     if (space === 'agent')
       expect(element.querySelector('.more-toggle')?.getAttribute('aria-label')).toBe(
-        'Plus — Incidents actif',
+        'Plus — Signalements actif',
       );
     http.expectNone(() => true);
   });
@@ -359,7 +359,7 @@ describe('Shell et routage', () => {
   });
 
   it.each([
-    ['/agent/incidents', 'Incidents'],
+    ['/agent/incidents', 'Signalements'],
     ['/agent/profil', 'Profil'],
     ['/agent/scanner', 'Scanner'],
   ])('signale dans Plus la rubrique active en accès direct : %s', async (url, label) => {

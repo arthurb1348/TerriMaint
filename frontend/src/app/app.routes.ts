@@ -45,7 +45,7 @@ export const routes: Routes = [
     {
       path: `${space}/incidents/nouveau/:equipmentId`,
       loadComponent: incidentDeclarationPage,
-      title: 'Déclarer un incident — TerriMaint',
+      title: 'Faire un signalement — TerriMaint',
     },
     {
       // La route spécifique nouveau/:equipmentId reste avant le détail par identifiant.
@@ -56,7 +56,7 @@ export const routes: Routes = [
     {
       path: `${space}/incidents`,
       loadComponent: incidentsPage,
-      title: 'Incidents — TerriMaint',
+      title: 'Signalements — TerriMaint',
     },
   ]),
   {

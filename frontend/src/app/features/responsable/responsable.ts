@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
       <h1 id="responsable-title">Tableau de bord</h1>
       <ul class="page-shortcuts">
         <li><a class="page-action secondary" routerLink="/responsable/equipements">Matériel</a></li>
-        <li><a class="page-action" routerLink="/responsable/incidents">Incidents</a></li>
+        <li><a class="page-action" routerLink="/responsable/incidents">Signalements</a></li>
         <li>
           <a class="page-action secondary" routerLink="/responsable/interventions">Interventions</a>
         </li>

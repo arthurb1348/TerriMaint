@@ -29,7 +29,7 @@ export class MainNavigation {
   protected readonly moreOpen = signal(false);
   protected readonly secondaryDestinations = [
     { path: '/agent/scanner', label: 'Scanner', icon: 'scan' },
-    { path: '/agent/incidents', label: 'Incidents', icon: 'incident' },
+    { path: '/agent/incidents', label: 'Signalements', icon: 'incident' },
     { path: '/agent/profil', label: 'Profil', icon: 'profile' },
   ];
   protected readonly activeSecondary = computed(() =>
@@ -99,7 +99,7 @@ export class MainNavigation {
         ]
       : [
           { path: '/responsable', label: 'Tableau de bord', icon: 'building' },
-          { path: '/responsable/incidents', label: 'Incidents', icon: 'warning' },
+          { path: '/responsable/incidents', label: 'Signalements', icon: 'warning' },
           { path: '/responsable/interventions', label: 'Interventions', icon: 'intervention' },
           { path: '/responsable/equipements', label: 'Matériel', icon: 'truck' },
           { path: '/responsable/scanner', label: 'Scanner', icon: 'scan' },
