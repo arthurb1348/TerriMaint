@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 for (const route of ['/', '/agent', '/responsable']) {
-  test(`marque discrète, navigation native et titre long : ${route}`, async ({ page }, info) => {
+  test(`marque discrète, navigation native et titre de page long : ${route}`, async ({ page }, info) => {
     await page.route('**/api/v1/health', (request) => request.fulfill({ json: { status: 'ok' } }));
     await page.goto(route);
     const sidebar = route === '/responsable' && info.project.use.viewport!.width > 760;
@@ -32,28 +32,32 @@ for (const route of ['/', '/agent', '/responsable']) {
     const target = await brand.boundingBox();
     expect(target!.width).toBeGreaterThanOrEqual(44);
     expect(target!.height).toBeGreaterThanOrEqual(44);
-    if (!sidebar && info.project.use.viewport!.width < 640) {
-      expect(dimensions.width).toBe(28);
-      expect(dimensions.height).toBe(28);
+    if (!sidebar && info.project.use.viewport!.width <= 760) {
+      await expect(image).toHaveAttribute('src', '/brand/terrimaint-logo-horizontal.svg');
+      expect(dimensions.width).toBeGreaterThanOrEqual(140);
+      expect(dimensions.height).toBe(32);
     }
     await info.attach('marque', { body: await page.screenshot(), contentType: 'image/png' });
 
-    // Le titre de route est remplacé seulement dans le DOM pour éprouver le shell.
-    const title = page.locator('.screen-title');
+    // Le titre de page est remplacé seulement dans le DOM pour éprouver les textes longs.
+    await expect(page.locator('.screen-title')).toHaveCount(0);
+    await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
+    const title = page.getByRole('heading', { level: 1 });
     await title.evaluate((node) => {
       node.textContent = 'Interventions et maintenance des équipements municipaux';
     });
     await expect
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth - innerWidth))
       .toBeLessThanOrEqual(1);
-    const titleBounds = await title.boundingBox();
-    const menuBounds = await page.locator('.space-menu').boundingBox();
-    expect(titleBounds!.x + titleBounds!.width).toBeLessThanOrEqual(
-      menuBounds!.x > titleBounds!.x ? menuBounds!.x : info.project.use.viewport!.width,
-    );
+    const barBounds = await page.locator('.app-bar').boundingBox();
+    expect(barBounds!.height).toBeLessThanOrEqual(65);
     if (!sidebar) {
       const brandBounds = await brand.boundingBox();
-      expect(titleBounds!.x).toBeGreaterThanOrEqual(brandBounds!.x + brandBounds!.width);
+      const menuBounds = await page.locator('.space-menu').boundingBox();
+      expect(
+        menuBounds!.x + menuBounds!.width <= brandBounds!.x ||
+          brandBounds!.x + brandBounds!.width <= menuBounds!.x,
+      ).toBe(true);
     }
     await info.attach('titre-long', { body: await page.screenshot(), contentType: 'image/png' });
 
@@ -79,7 +83,7 @@ for (const route of ['/', '/agent', '/responsable']) {
     await page.locator('.space-menu summary').click();
     await page.getByRole('link', { name: 'Espace Responsable', exact: true }).click();
     await expect(page).toHaveURL('/responsable');
-    await expect(page.locator('.screen-title')).toHaveText('Tableau de bord');
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tableau de bord');
     await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(1);
   });
 }
@@ -89,7 +93,7 @@ test('marque adaptée au redimensionnement et favicon fourni', async ({ page }) 
   await page.goto('/agent');
   for (const width of [639, 671, 672, 688, 768, 1440, 320]) {
     await page.setViewportSize({ width, height: 1024 });
-    const horizontal = width - (width <= 760 ? 32 : 48) >= 640;
+    const horizontal = width <= 760 || width - 48 >= 640;
     await expect(page.locator(horizontal ? '.brand-horizontal' : '.brand-symbol')).toBeVisible();
     await expect(page.locator(horizontal ? '.brand-symbol' : '.brand-horizontal')).toBeHidden();
     await expect(page.locator('.brand-link')).toHaveAccessibleName('TerriMaint — Accueil général');
@@ -100,7 +104,7 @@ test('marque adaptée au redimensionnement et favicon fourni', async ({ page }) 
     await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(1);
     await expect(
       page.locator(
-        width > 760 ? '.organization' : width >= 672 ? '.brand-horizontal' : '.brand-symbol',
+        width > 760 ? '.organization' : '.brand-horizontal',
       ),
     ).toBeVisible();
   }

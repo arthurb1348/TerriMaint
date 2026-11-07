@@ -73,6 +73,8 @@ describe('Shell et routage', () => {
     'ouvre directement %s avec son titre et son contexte de navigation',
     async (url, heading, title) => {
       await navigate(url);
+      expect(element.querySelectorAll('h1')).toHaveLength(1);
+      expect(element.querySelector('.app-bar h1, .screen-title')).toBeNull();
       expect(element.querySelector('main h1')?.textContent).toBe(heading);
       expect(TestBed.inject(Title).getTitle()).toBe(`${title} — TerriMaint`);
       const current = element.querySelectorAll('nav a[aria-current="page"]');
@@ -101,7 +103,7 @@ describe('Shell et routage', () => {
       expect(router.url).toBe('/');
       http.expectOne('/api/v1/health').flush({ status: 'ok' });
       await fixture.whenStable();
-      expect(element.querySelector('.screen-title')?.textContent).toBe('Accueil général');
+      expect(element.querySelector('.app-bar h1, .screen-title')).toBeNull();
     },
   );
 
@@ -157,7 +159,7 @@ describe('Shell et routage', () => {
     element.querySelector<HTMLAnchorElement>('nav a[href="/responsable/equipements"]')?.click();
     await fixture.whenStable();
     expect(router.url).toBe('/responsable/equipements');
-    expect(element.querySelector('.screen-title')?.textContent).toBe('Matériel');
+    expect(element.querySelector('.app-bar h1, .screen-title')).toBeNull();
     expect(element.querySelectorAll('nav a[aria-current="page"]')).toHaveLength(1);
   });
 
@@ -172,7 +174,7 @@ describe('Shell et routage', () => {
     expect(element.querySelector('nav')?.getAttribute('aria-label')).toBe(
       space === 'agent' ? 'Navigation Agent' : 'Navigation Responsable',
     );
-    expect(element.querySelector('.screen-title')?.textContent).toBe('Matériel');
+    expect(element.querySelector('.app-bar h1, .screen-title')).toBeNull();
     const active = element.querySelectorAll('nav a[aria-current="page"]');
     expect(active).toHaveLength(1);
     expect(active[0].getAttribute('href')).toBe(`/${space}/equipements`);
@@ -186,7 +188,7 @@ describe('Shell et routage', () => {
       const source = JSON.stringify([DEMO_INCIDENTS, DEMO_INTERVENTIONS]);
       await navigate(`/${space}/incidents/nouveau/EQ-OUT-0003?q=OUT`);
       const assertNavigation = () => {
-        expect(element.querySelector('.screen-title')?.textContent).toBe('Incidents');
+        expect(element.querySelector('.app-bar h1, .screen-title')).toBeNull();
         const active = element.querySelectorAll('nav a[aria-current="page"]');
         expect(active).toHaveLength(1);
         expect(active[0].getAttribute('href')).toBe(`/${space}/incidents`);
@@ -229,7 +231,7 @@ describe('Shell et routage', () => {
   ])('garde le contexte et Incidents actif sur le détail de %s, id %s', async (space, id) => {
     await navigate(`/${space}/incidents/${id}?q=OUT&priority=low&status=open`);
     expect(element.querySelector('app-incident-detail')).not.toBeNull();
-    expect(element.querySelector('.screen-title')?.textContent).toBe('Incidents');
+    expect(element.querySelector('.app-bar h1, .screen-title')).toBeNull();
     const active = element.querySelectorAll('nav a[aria-current="page"]');
     expect(active).toHaveLength(1);
     expect(active[0].getAttribute('href')).toBe(`/${space}/incidents`);
@@ -269,7 +271,7 @@ describe('Shell et routage', () => {
     const source = JSON.stringify(DEMO_INTERVENTIONS);
     await navigate('/responsable/interventions/nouvelle/INC-2026-045?q=OUT');
     const assertNavigation = () => {
-      expect(element.querySelector('.screen-title')?.textContent).toBe('Interventions');
+      expect(element.querySelector('.app-bar h1, .screen-title')).toBeNull();
       const active = element.querySelectorAll('nav a[aria-current="page"]');
       expect(active).toHaveLength(1);
       expect(active[0].getAttribute('href')).toBe('/responsable/interventions');
@@ -302,7 +304,7 @@ describe('Shell et routage', () => {
     async (id) => {
       await navigate(`/responsable/interventions/${id}?q=OUT&status=planned&assignee=AG-DEMO-001`);
       expect(element.querySelector('app-intervention-detail')).not.toBeNull();
-      expect(element.querySelector('.screen-title')?.textContent).toBe('Interventions');
+      expect(element.querySelector('.app-bar h1, .screen-title')).toBeNull();
       const toggle = element.querySelector<HTMLButtonElement>('.menu-toggle')!;
       toggle.click();
       await fixture.whenStable();

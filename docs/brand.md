@@ -8,8 +8,8 @@ présentation, les exports PNG et les variantes inutilisées ne sont pas intégr
 
 | Fichier dans `frontend/public/` | Usage |
 | --- | --- |
-| `brand/terrimaint-symbol.svg` | En-tête compact : symbole 28 × 28 px, cible minimale 44 × 44 px |
-| `brand/terrimaint-logo-horizontal.svg` | En-tête sur fond clair lorsque le bandeau dispose d’au moins 640 px de contenu |
+| `brand/terrimaint-symbol.svg` | Variante compacte conservée pour le bandeau desktop étroit ; cible minimale 44 × 44 px |
+| `brand/terrimaint-logo-horizontal.svg` | En-tête mobile à 32 px de haut ; desktop à 38 px lorsque le bandeau dispose d’au moins 640 px de contenu |
 | `brand/terrimaint-mark-white.svg` | T seul, 28 × 28 px dans la sidebar Responsable verte |
 | `favicon.svg`, `favicon.ico` | Icône navigateur, avec repli ICO 16/32/48 px dans `src/index.html` |
 | `brand/README.md`, `brand/Inter-OFL.txt` | Provenance originale et licence Inter du pack |
@@ -18,7 +18,7 @@ Vert **#234E3F**, blanc **#FFFFFF**, nom anthracite **#18211E** ; aplats sans ef
 ajouté. Le nom Inter SemiBold (axe optique 24) est converti en tracés : aucun
 chargement de police ni ressource distante. Les proportions, marges internes et
 deux découpes restent celles des SVG fournis. Le logo horizontal conserve son
-`viewBox` 581 × 128, affiché sur 38 px de haut : son carré mesure environ 28,5 px.
+`viewBox` 581 × 128 : environ 145 × 32 px sur mobile, et 172 × 38 px sur desktop.
 
 ## Présence discrète et accessible
 
@@ -27,11 +27,11 @@ deux découpes restent celles des SVG fournis. Le logo horizontal conserve son
 qu’une. Le titre visible de l’accueil général décrit la destination plutôt que de
 répéter TerriMaint ; le titre du document et les libellés des pages métier sont conservés.
 
-`app.css` utilise la largeur disponible **du bandeau**, via une container query,
-plutôt qu’un seuil d’appareil. Sous 640 px disponibles, le symbole compact prévaut
-et le changement d’espace garde son nom accessible avec une icône visible. Les
-cibles restent sur la même ligne ; le titre peut se replier dans l’espace restant
-sans masquer les contrôles. Les dimensions des images sont réservées pour éviter
+`app.css` affiche le logo horizontal jusqu’à 760 px de fenêtre, dans les deux
+espaces. Le changement d’espace garde son nom accessible avec une icône visible.
+Sur desktop, une container query conserve le choix de variante selon la largeur
+disponible du bandeau. Les cibles restent sur la même ligne ; le titre de page
+figure uniquement dans le contenu. Les dimensions des images sont réservées pour éviter
 un décalage à leur chargement. Les contours de focus existants sont conservés.
 
 Dès 761 px de fenêtre, la sidebar Responsable porte seule l’identité : T blanc sans
@@ -42,7 +42,8 @@ Aucun comportement métier, stockage, manifeste PWA ou service worker n’est aj
 
 ## Captures de référence de la PR
 
-Captures du build local avec Chromium système, données fictives, santé HTTP simulée :
+Captures historiques de la PR #79 (avant le logo horizontal mobile et le retrait du titre commun),
+avec Chromium système, données fictives et santé HTTP simulée :
 [Agent mobile 390 × 844](images/brand/agent-mobile.png),
 [Agent ordinateur 1440 × 1024](images/brand/agent-desktop.png),
 [Responsable ordinateur 1440 × 1024](images/brand/responsable-desktop.png).

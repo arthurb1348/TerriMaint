@@ -17,18 +17,13 @@ export class App {
     this.router.events.pipe(
       filter((event) => event instanceof NavigationEnd),
       startWith(null),
-      map(() => ({
-        url: this.router.url.split(/[?#]/)[0],
-        label: this.router.routerState.snapshot.root.firstChild?.data['label'] as
-          string | undefined,
-      })),
+      map(() => this.router.url.split(/[?#]/)[0]),
     ),
-    { initialValue: { url: '/', label: 'TerriMaint' } },
+    { initialValue: '/' },
   );
   // Un espace décrit la navigation affichée, jamais les droits de l'utilisateur.
   protected readonly space = computed(() =>
-    this.navigation().url.startsWith('/responsable') ? 'responsable' : 'agent',
+    this.navigation().startsWith('/responsable') ? 'responsable' : 'agent',
   );
-  protected readonly label = computed(() => this.navigation().label ?? 'TerriMaint');
-  protected readonly landing = computed(() => this.navigation().url === '/');
+  protected readonly landing = computed(() => this.navigation() === '/');
 }
