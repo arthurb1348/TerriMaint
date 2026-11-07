@@ -200,6 +200,18 @@
               officielle relève du Responsable.
             </p>
           </div>
+          <section aria-labelledby="location-heading">
+            <h2 id="location-heading">Localisation (facultative)</h2>
+            <p class="help">Position obtenue pour ce signalement, sans garantie du lieu du matériel ou de l’événement. Elle reste dans cet onglet jusqu’au rechargement. Nécessite un navigateur compatible et un contexte sécurisé.</p>
+            <app-location-summary [coordinates]="location.value()" />
+            <p role="status" aria-live="polite">{{ location.message() }}</p>
+            <div class="actions">
+              <button class="page-action secondary" type="button" (click)="requestLocation()">Utiliser ma position</button>
+              @if (location.value() || location.pending()) {
+                <button class="page-action secondary" type="button" (click)="location.clear()">Retirer la localisation</button>
+              }
+            </div>
+          </section>
           <div class="actions">
             <button class="page-action" type="submit" [disabled]="media.busy()">
               Vérifier le signalement
@@ -232,6 +244,8 @@
             <dd>{{ form.controls.risk.value ? 'Oui' : 'Non' }}</dd>
           </div>
         </dl>
+        <h2>Localisation</h2>
+        <app-location-summary [coordinates]="location.value()" />
         <h2>Photos sélectionnées</h2>
         <div class="photo-gallery">
           @for (photo of media.photos(); track photo.id) {

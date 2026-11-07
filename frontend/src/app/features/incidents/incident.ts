@@ -1,3 +1,4 @@
+import { IncidentCoordinates } from './incident-location';
 import { DemoImageSource } from '../../shared/demo-image/demo-image';
 
 export const INCIDENT_PRIORITIES = { low: 'Basse', high: 'Haute', urgent: 'Urgente' } as const;
@@ -17,5 +18,6 @@ export interface Incident {
   // Date calendaire sans heure : forcer UTC dans le rendu pourrait afficher la veille.
   readonly reportedOn: string;
   readonly risk?: boolean;
+  readonly coordinates?: IncidentCoordinates;
   readonly photos?: readonly DemoImageSource[];
 }

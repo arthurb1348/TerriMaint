@@ -2,12 +2,12 @@
 
 ## Référence et usage
 
-Vérification ciblée du 7 novembre 2026 : base distante `origin/main` incluant #87.
-**En revue :** programmation ponctuelle depuis une fiche matériel Responsable,
-avec le formulaire existant. Chaque intervention référence directement un matériel ;
-le signalement d’origine est facultatif. `DemoData` valide les associations et conserve
-le refus de programmer sur un signalement clôturé. Les listes et historiques suivent
-les créations en mémoire, sans persistance ni autorisation serveur ajoutée.
+Vérification ciblée du 7 novembre 2026 : base distante `origin/main` `3026e2a`, incluant #88.
+**En revue (#45) :** localisation ponctuelle facultative lors d’un signalement, uniquement
+au clic dans les deux espaces. Coordonnées typées et précision éventuelle relues,
+retirables et conservées avec le signalement dans `DemoData` pendant la session.
+Les demandes dépassées sont ignorées ; refus/erreurs ne bloquent pas l’envoi.
+Aucune carte, transmission métier, persistance ou autorisation serveur ajoutée.
 Les vérifications et le parcours précis de preview sont dans la PR. Les passages
 ci-dessous conservent leurs dates et leur contexte historiques.
 

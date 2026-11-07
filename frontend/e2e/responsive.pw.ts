@@ -417,6 +417,8 @@ for (const space of ['agent', 'responsable']) {
     await page.keyboard.press('Space');
     await expect(risk).toBeChecked();
     await page.keyboard.press('Tab');
+    await expectFocusedControlVisible(page, main.getByRole('button', { name: 'Utiliser ma position', exact: true }), space);
+    await page.keyboard.press('Tab');
     await expectFocusedControlVisible(page, verify, space);
     await capture(page, info, 'incident-formulaire');
     await page.keyboard.press('Enter');

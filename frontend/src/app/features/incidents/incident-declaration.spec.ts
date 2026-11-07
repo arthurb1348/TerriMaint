@@ -65,6 +65,31 @@ describe('Déclaration locale d’incident', () => {
     await choose('high', true);
   }
 
+  it('ignore une position après changement de matériel puis après sortie du formulaire', async () => {
+    const descriptor = Object.getOwnPropertyDescriptor(navigator, 'geolocation');
+    const callbacks: PositionCallback[] = [];
+    Object.defineProperty(navigator, 'geolocation', { configurable: true, value: {
+      getCurrentPosition: (success: PositionCallback) => callbacks.push(success),
+    } });
+    try {
+      const first = await harness.navigateByUrl('/agent/incidents/nouveau/EQ-OUT-0001', IncidentDeclaration);
+      await click('Utiliser ma position');
+      expect(callbacks).toHaveLength(1);
+      expect(await harness.navigateByUrl('/agent/incidents/nouveau/EQ-OUT-0002', IncidentDeclaration)).toBe(first);
+      callbacks[0]({ coords: { latitude: 48.25, longitude: -1.5, accuracy: 12 } } as GeolocationPosition);
+      await harness.fixture.whenStable();
+      expect(content().textContent).toContain('Aucune localisation ajoutée.');
+      await click('Utiliser ma position');
+      await harness.navigateByUrl('/agent/equipements');
+      callbacks[1]({ coords: { latitude: 48.25, longitude: -1.5, accuracy: 12 } } as GeolocationPosition);
+      await harness.navigateByUrl('/agent/incidents/nouveau/EQ-OUT-0002', IncidentDeclaration);
+      expect(content().textContent).toContain('Aucune localisation ajoutée.');
+    } finally {
+      if (descriptor) Object.defineProperty(navigator, 'geolocation', descriptor);
+      else Reflect.deleteProperty(navigator, 'geolocation');
+    }
+  });
+
   for (const space of ['agent', 'responsable']) {
     const base = `/${space}/incidents/nouveau`;
     it(`ouvre directement le formulaire partagé dans ${space}, avec le matériel identifié et aucune priorité préchoisie`, async () => {

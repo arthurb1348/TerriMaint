@@ -41,6 +41,8 @@
         }
       </div>
     </section>
+    <h2>Localisation</h2>
+    <app-location-summary [coordinates]="item.coordinates" />
     <h2>Description</h2>
     <p class="description">{{ description() }}</p>
     <section

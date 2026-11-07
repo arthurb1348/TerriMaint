@@ -48,7 +48,7 @@ for (const space of ['agent', 'responsable'] as const) {
       .getByRole('radio', { name: 'Basse — intervention à planifier', exact: true })
       .check();
     await main.locator('#gallery-file').setInputFiles('public/images/demo/mower.webp');
-    await expect(main.getByRole('status')).toContainText('1 photo(s)');
+    await expect(main.getByRole('status').and(main.locator('#photos-status'))).toContainText('1 photo(s)');
     const preparedUrl = await main.locator('.photo-gallery img').getAttribute('src');
     await main.getByRole('button', { name: 'Vérifier le signalement', exact: true }).click();
     await main

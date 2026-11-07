@@ -43,6 +43,16 @@ describe('Données partagées pendant la vie de l’application', () => {
     expect(data.interventions()).toBe(before);
     expect(data.createIntervention(interventionDraft())?.equipmentId).toBe('EQ-OUT-0003');
   });
+  it('copie la localisation optionnelle et refuse les coordonnées invalides sans mutation', () => {
+    const coordinates = { latitude: 48.25, longitude: -1.5, accuracy: 12 };
+    const created = data.createIncident(incidentDraft({ coordinates }))!;
+    coordinates.latitude = 0;
+    expect(created.coordinates?.latitude).toBe(48.25);
+    expect(Object.isFrozen(created.coordinates)).toBe(true);
+    const before = data.incidents();
+    expect(data.createIncident(incidentDraft({ coordinates: { latitude: 91, longitude: 0 } }))).toBeUndefined();
+    expect(data.incidents()).toBe(before);
+  });
   let data: DemoData;
   beforeEach(() => {
     vi.useFakeTimers({ toFake: ['Date'] });
