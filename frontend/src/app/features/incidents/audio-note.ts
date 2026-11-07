@@ -1,10 +1,11 @@
-import { Component, DestroyRef, ElementRef, effect, inject, input, signal } from '@angular/core';
+import { Component, ElementRef, effect, input, signal, viewChild } from '@angular/core';
 import { IncidentAudioNote } from './incident-audio';
 
 @Component({
   selector: 'app-audio-note',
   template: `@if (note(); as value) {
       <audio
+        #player
         controls
         preload="metadata"
         [src]="value.src"
@@ -31,20 +32,21 @@ import { IncidentAudioNote } from './incident-audio';
 })
 export class AudioNote {
   readonly note = input<IncidentAudioNote>();
+  private readonly player = viewChild<ElementRef<HTMLAudioElement>>('player');
   protected readonly unreadable = signal(false);
   constructor() {
-    const host = inject<ElementRef<HTMLElement>>(ElementRef);
     effect(() => {
       this.note();
       this.unreadable.set(false);
     });
-    inject(DestroyRef).onDestroy(() => {
-      const audio = host.nativeElement.querySelector('audio');
-      if (audio) {
+    effect((onCleanup) => {
+      const audio = this.player()?.nativeElement;
+      if (!audio) return;
+      onCleanup(() => {
         audio.pause();
         audio.removeAttribute('src');
         audio.load();
-      }
+      });
     });
   }
 }

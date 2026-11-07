@@ -122,7 +122,12 @@ test('Suppression, nouvel enregistrement et départ arrêtent le micro simulé',
   await installAudio(page);
   await page.goto('/agent/incidents/nouveau/EQ-OUT-0001');
   await capture(page);
+  const previousPlayer = await page.locator('audio').elementHandle();
+  await previousPlayer!.evaluate(async (audio: HTMLAudioElement) => { await audio.play(); });
   await page.getByRole('button', { name: 'Supprimer la note vocale', exact: true }).click();
+  await expect.poll(() => previousPlayer!.evaluate((audio: HTMLAudioElement) => audio.paused)).toBe(true);
+  expect(await previousPlayer!.getAttribute('src')).toBeNull();
+  await previousPlayer!.dispose();
   await expect(
     page.getByRole('button', { name: 'Enregistrer une note vocale', exact: true }),
   ).toBeFocused();

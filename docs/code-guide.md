@@ -13,7 +13,7 @@ ne servent pas de chronomètre. Les événements/timers peuvent être retardés 
 notamment écran verrouillé : le test Pixel reste nécessaire. Le cumul refuse plus de 10 Mio,
 y compris le fragment final. Erreur, suppression et sortie arrêtent les pistes et révoquent
 les URL abandonnées ; une génération et un signal d’annulation ignorent les réponses tardives.
-Le lecteur `audio-note` est natif, sans autoplay, et s’arrête à sa destruction.
+Le lecteur `audio-note` est natif, sans autoplay ; sa requête de vue réactive arrête et décharge le lecteur à sa suppression et à sa destruction.
 
 Le formulaire refuse le récapitulatif/confirmation pendant la demande, capture ou préparation.
 Une demande de permission peut être annulée pour continuer sans note. Après création acceptée,
