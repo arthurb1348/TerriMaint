@@ -6,6 +6,7 @@ import { DEMO_AGENTS } from '../features/interventions/agents-demo';
 import { Intervention } from '../features/interventions/intervention';
 import { DEMO_INTERVENTIONS } from '../features/interventions/interventions-demo';
 import { localToday, plannedDateErrors } from '../features/interventions/planning-date';
+import { PRESENTED_AGENT } from './presented-agent';
 import { DemoImageSource } from '../shared/demo-image/demo-image';
 
 interface IncidentDraft {
@@ -62,6 +63,27 @@ export class DemoData {
 
   getIntervention(id: string | null | undefined): Intervention | undefined {
     return this.interventions().find((item) => item.id === id);
+  }
+
+  completeAssignedIntervention(id: string | null | undefined): boolean {
+    let completed = false;
+    this.interventionState.update((items) => {
+      const intervention = items.find((item) => item.id === id);
+      if (
+        !intervention ||
+        intervention.agentId !== PRESENTED_AGENT.id ||
+        intervention.status !== 'in-progress'
+      )
+        return items;
+
+      completed = true;
+      return Object.freeze(
+        items.map((item) =>
+          item === intervention ? Object.freeze({ ...item, status: 'completed' as const }) : item,
+        ),
+      );
+    });
+    return completed;
   }
 
   createIncident(draft: IncidentDraft): Incident | undefined {

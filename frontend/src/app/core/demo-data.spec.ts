@@ -48,6 +48,48 @@ describe('Données partagées pendant la vie de l’application', () => {
     vi.useRealTimers();
   });
 
+  it('termine une seule intervention assignée en cours sans modifier son origine ni les exemples', () => {
+    const before = data.interventions();
+    const incidents = data.incidents();
+    const initial = JSON.stringify([DEMO_INCIDENTS, DEMO_INTERVENTIONS]);
+    const original = data.getIntervention('INT-2026-035')!;
+    expect(data.completeAssignedIntervention(original.id)).toBe(true);
+    const after = data.interventions();
+    expect(after).not.toBe(before);
+    expect(data.getIntervention(original.id)).toEqual({ ...original, status: 'completed' });
+    expect(Object.isFrozen(after)).toBe(true);
+    expect(Object.isFrozen(data.getIntervention(original.id))).toBe(true);
+    expect(original.status).toBe('in-progress');
+    for (const item of before.filter((item) => item.id !== original.id))
+      expect(data.getIntervention(item.id)).toBe(item);
+    expect(data.incidents()).toBe(incidents);
+    expect(data.getIncident('INC-2026-048')?.status).toBe('in-progress');
+    expect(JSON.stringify([DEMO_INCIDENTS, DEMO_INTERVENTIONS])).toBe(initial);
+    expect(data.completeAssignedIntervention(original.id)).toBe(false);
+    expect(data.interventions()).toBe(after);
+    expect(data.getIntervention(original.id)).toBe(after.find((item) => item.id === original.id));
+  });
+
+  it.each([undefined, null, 'absent', 'INT-2026-032', 'INT-2026-034', 'INT-2026-036'])(
+    'refuse de terminer %s sans mutation ni nouvelle source réactive',
+    (id) => {
+      const before = data.interventions();
+      const incidents = data.incidents();
+      const contents = JSON.stringify([before, incidents]);
+      expect(data.completeAssignedIntervention(id)).toBe(false);
+      expect(data.interventions()).toBe(before);
+      expect(data.incidents()).toBe(incidents);
+      expect(JSON.stringify([data.interventions(), data.incidents()])).toBe(contents);
+    },
+  );
+
+  it('permet encore de programmer depuis le signalement après avoir terminé son intervention', () => {
+    expect(data.completeAssignedIntervention('INT-2026-035')).toBe(true);
+    const intervention = data.createIntervention(interventionDraft({ incidentId: 'INC-2026-048' }));
+    expect(intervention).toMatchObject({ incidentId: 'INC-2026-048', status: 'planned' });
+    expect(data.getIncident('INC-2026-048')?.status).toBe('in-progress');
+  });
+
   it('crée des objets reliés, sans altérer les jeux initiaux ni changer les statuts existants', () => {
     const initial = JSON.stringify([DEMO_INCIDENTS, DEMO_INTERVENTIONS]);
     const incident = data.createIncident(incidentDraft())!;

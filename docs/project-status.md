@@ -3,12 +3,15 @@
 ## Référence et usage
 
 Vérification ciblée du 7 novembre 2026 : base distante `origin/main`
-`2be72debe074116b6ffcb16b796effee8f260a16` ; logo #79 et simplification du bandeau
-avec logo horizontal mobile #80 intégrés. **En revue :** consultation des interventions
-sur la fiche matériel, via `intervention.incidentId` puis `incident.equipmentId` dans
-`DemoData`. Responsable voit toutes les interventions du matériel ; Agent voit celles
-de l’agent présenté, y compris les terminées. La liste suit les créations en mémoire
-et les changements de fiche ; aucune action de terminaison ni persistance ajoutée.
+`5b2dae79a6b659655ceb9c0fb602e5eb0123ad4a` ; consultation des interventions sur la
+fiche matériel intégrée par [#81](https://github.com/arthurb1348/terrimaint/pull/81).
+**En revue :** bouton « Intervention terminée » pour l’agent présenté sur une
+intervention assignée En cours. `DemoData` revalide affectation et statut avant
+la transition vers Terminée ; les refus ne modifient pas la source partagée.
+Le statut est partagé en mémoire entre listes, fiches et espaces ; le signalement
+d’origine conserve son statut et permet toujours une nouvelle programmation si
+Ouvert ou En cours. Confirmation accessible et maintien sur la fiche ; aucune
+persistance, date de fin, clôture de signalement ou permission serveur ajoutée.
 Les vérifications et le parcours précis de preview sont dans la PR. Les passages
 ci-dessous conservent leurs dates et leur contexte historiques.
 

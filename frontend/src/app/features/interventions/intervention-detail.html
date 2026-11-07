@@ -30,6 +30,22 @@
         </dl>
         <h2>Consignes</h2>
         <p class="instructions">{{ instructions() }}</p>
+        @if (agentView) {
+          <p
+            id="intervention-completion-feedback"
+            class="completion-feedback"
+            [class.has-feedback]="completionMessage()"
+            role="status"
+            tabindex="-1"
+          >
+            {{ completionMessage() }}
+          </p>
+          @if (item.status === 'in-progress') {
+            <button type="button" class="page-action" (click)="completeIntervention()">
+              Intervention terminée
+            </button>
+          }
+        }
       </section>
       <div class="origin">
         <section
