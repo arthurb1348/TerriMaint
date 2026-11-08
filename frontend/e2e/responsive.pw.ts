@@ -190,6 +190,12 @@ for (const space of ['agent', 'responsable']) {
       const historyLength = await page.evaluate(() => history.length);
       await expect(main).toBeFocused();
       await page.keyboard.press('Tab');
+      if (space === 'agent') {
+        const creation = main.getByRole('link', { name: 'Nouveau signalement', exact: true });
+        await expectFocusedControlVisible(page, creation, space);
+        await expect(creation).toHaveAttribute('href', `${base}/nouveau`);
+        await page.keyboard.press('Tab');
+      }
       await expectFocusedControlVisible(page, search, space);
       await page.keyboard.type(query);
       await expect(rows).toHaveCount(4);
