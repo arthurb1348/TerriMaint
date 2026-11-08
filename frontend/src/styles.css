@@ -1,3 +1,5 @@
+@import 'leaflet/dist/leaflet.css';
+
 /* Palette du projet et polices locales avec repli, sans téléchargement externe. */
 :root {
   --green: #234e3f;

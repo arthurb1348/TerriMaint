@@ -5,6 +5,8 @@ import { Incident } from './incident';
 export const DEMO_INCIDENTS: readonly Incident[] = [
   {
     id: 'INC-2026-045',
+    // Point fictif fixe pour la revue de la carte ; aucune position de téléphone réelle.
+    coordinates: { latitude: 48.25, longitude: -1.5, accuracy: 12 },
     title: 'Moteur qui cale à l’accélération',
     description: 'Le moteur cale lors de l’accélération et devient difficile à redémarrer.',
     equipmentId: 'EQ-OUT-0003',
