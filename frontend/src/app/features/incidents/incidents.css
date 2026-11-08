@@ -7,7 +7,7 @@ h1 {
 .filters {
   display: flex;
   flex-wrap: wrap;
-  align-items: end;
+  align-items: start;
   gap: 16px;
   margin-top: 24px;
 }
@@ -18,10 +18,20 @@ h1 {
 .filters .search-field {
   flex-basis: 320px;
 }
+/* Aligner les contrôles sans inclure l’aide dans leur hauteur. */
+.filters > button {
+  margin-top: calc(0.875rem * 1.5 + 8px);
+}
+@container (max-width: 600px) {
+  .filters > button {
+    margin-top: 0;
+  }
+}
 label {
   display: block;
   margin-bottom: 8px;
   font-size: 0.875rem;
+  line-height: 1.5;
   font-weight: 600;
 }
 input,

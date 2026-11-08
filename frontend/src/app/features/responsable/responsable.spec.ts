@@ -87,6 +87,30 @@ describe('Tableau de bord Responsable', () => {
     expect(counts()).toEqual([2, 1, 3]);
   });
 
+  it('retire la teinte à zéro puis la rétablit après une déclaration dans la même session', async () => {
+    await harness.navigateByUrl('/responsable', Responsable);
+    const links = () => content().querySelectorAll<HTMLAnchorElement>('.indicators a');
+    const urgent = () => links()[1];
+    expect(counts()[1]).toBe(1);
+    expect(urgent().classList.contains('urgent-indicator')).toBe(true);
+    expect(data.closeIncident('INC-2026-046')).toBe(true);
+    await harness.fixture.whenStable();
+    expect(counts()[1]).toBe(0);
+    expect(urgent().classList.contains('urgent-indicator')).toBe(false);
+    expect(urgent().getAttribute('href')).toBe(
+      '/responsable/incidents?priority=urgent&status=not-closed',
+    );
+    data.createIncident({
+      equipmentId: 'EQ-OUT-0001', title: 'Nouvelle urgence', description: '',
+      priority: 'urgent', risk: false, photos: [],
+    });
+    await harness.fixture.whenStable();
+    expect(counts()[1]).toBe(1);
+    expect(urgent().classList.contains('urgent-indicator')).toBe(true);
+    expect(links()[0].classList.contains('urgent-indicator')).toBe(false);
+    expect(links()[2].classList.contains('urgent-indicator')).toBe(false);
+  });
+
   it('présente les états vides et les vrais zéros avec des liens utilisables', async () => {
     vi.spyOn(data, 'incidents').mockReturnValue([]);
     vi.spyOn(data, 'interventions').mockReturnValue([]);

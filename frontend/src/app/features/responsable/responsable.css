@@ -35,6 +35,13 @@ ul {
 .dashboard-link:hover {
   background: var(--surface);
 }
+.urgent-indicator {
+  background: #fff3e0;
+  border-color: #c3823e;
+}
+.urgent-indicator:hover {
+  background: #ffe4bd;
+}
 .dashboard-link:focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 4px;

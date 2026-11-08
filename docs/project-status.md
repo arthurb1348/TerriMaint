@@ -2,14 +2,14 @@
 
 ## Référence et usage
 
-Vérification ciblée du 7 novembre 2026 : base distante `origin/main` `90d8605`, incluant #90.
-**En revue (#47) :** tableau de bord Responsable avec trois compteurs réactifs et liés
-aux listes filtrées : signalements Ouverts, Urgents non clôturés et interventions Planifiées.
-Jusqu’à trois signalements non clôturés et trois interventions planifiées sont présentés,
-avec ordres et égalités documentés. Filtre URL `status=not-closed` conservé dans les retours.
-Accueil Agent, Scanner et aperçu assigné inchangés ; aucune API/persistance ajoutée.
-Les vérifications et le parcours précis de preview sont dans la PR. Les passages
-ci-dessous conservent leurs dates et leur contexte historiques.
+Vérification ciblée du 8 novembre 2026 : dernier `origin/main` `7a1f333`,
+[PR #91 fusionnée](https://github.com/arthurb1348/terrimaint/pull/91) et présente dans cette base.
+Le tableau de bord #47 et ses compteurs réactifs sont intégrés.
+**En revue (#92) :** alignement des filtres Signalements/Interventions, avec aide visible
+et liée au champ, et teinte orange de la seule tuile urgente lorsque son compteur est positif.
+À zéro, elle reprend le style neutre. Les composants partagés restent vérifiés dans les deux espaces.
+Les résultats des contrôles et le parcours de preview sont consignés dans la PR de #92.
+Les passages ci-dessous conservent leurs dates et leur contexte historiques.
 
 Vérification ciblée du 6 novembre 2026 pour [#78](https://github.com/arthurb1348/terrimaint/issues/78) :
 base distante `origin/main` **`73da92ecc26e4236f68b8b9e60f3c061197ab00e`**,
