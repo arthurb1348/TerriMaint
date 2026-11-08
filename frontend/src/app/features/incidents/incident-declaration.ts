@@ -25,7 +25,8 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { IncidentPhotos } from './incident-photos';
-import { Incident } from './incident';
+import { Incident, INCIDENT_PLACE_LIMIT } from './incident';
+import { incidentQueryParams, readIncidentFilters } from './incident-filters';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 
 const nonBlank: ValidatorFn = (control) =>
@@ -51,10 +52,30 @@ export class IncidentDeclaration {
     initialValue: this.route.snapshot.queryParamMap,
   });
   private readonly equipmentId = computed(() => this.params().get('equipmentId'));
+  protected readonly placeMode = this.route.snapshot.data['placeIncident'] === true;
+  private readonly space = this.route.snapshot.routeConfig?.path?.startsWith('responsable/')
+    ? 'responsable'
+    : 'agent';
   protected readonly equipment = computed(() =>
     DEMO_EQUIPMENT.find((item) => item.id === this.equipmentId()),
   );
   protected readonly search = computed(() => this.queryParams().get('q') ?? '');
+  protected readonly returnLink = computed(() =>
+    this.placeMode
+      ? ['/agent/incidents']
+      : this.equipment()
+        ? [`/${this.space}/equipements`, this.equipment()!.id]
+        : [`/${this.space}/equipements`],
+  );
+  protected readonly returnQuery = computed(() =>
+    this.placeMode
+      ? incidentQueryParams(readIncidentFilters(this.queryParams()))
+      : { q: this.search() || null },
+  );
+  protected readonly createdLink = computed(() => [
+    `/${this.space}/incidents`,
+    this.createdIncident()?.id,
+  ]);
   protected readonly step = signal<'form' | 'review' | 'complete'>('form');
   protected readonly audio = new IncidentAudio();
   protected readonly location = new IncidentLocation();
@@ -68,8 +89,16 @@ export class IncidentDeclaration {
   ] as const;
   // Bornes de démonstration : elles ne constituent pas encore un contrat de validation serveur.
   protected readonly titleLimit = 120;
+  protected readonly placeLimit = INCIDENT_PLACE_LIMIT;
   protected readonly descriptionLimit = 2000;
   protected readonly form = new FormGroup({
+    place: new FormControl('', {
+      nonNullable: true,
+      validators: [
+        (control) => (this.placeMode ? nonBlank(control) : null),
+        Validators.maxLength(this.placeLimit),
+      ],
+    }),
     title: new FormControl('', {
       nonNullable: true,
       validators: [nonBlank, Validators.maxLength(this.titleLimit)],
@@ -95,7 +124,11 @@ export class IncidentDeclaration {
   });
 
   constructor() {
-    inject(DestroyRef).onDestroy(() => { this.media.clear(); this.location.clear(); this.audio.clear(); });
+    inject(DestroyRef).onDestroy(() => {
+      this.media.clear();
+      this.location.clear();
+      this.audio.clear();
+    });
     effect(() => {
       // Le routeur réutilise le composant : aucune saisie ne doit passer à un autre matériel.
       // q reste indépendant : modifier la recherche seule n'efface pas le formulaire.
@@ -115,7 +148,10 @@ export class IncidentDeclaration {
 
   protected recordAudio(): void {
     const equipmentId = this.route.snapshot.paramMap.get('equipmentId');
-    void this.audio.start(() => this.route.snapshot.paramMap.get('equipmentId') === equipmentId && this.step() === 'form');
+    void this.audio.start(
+      () =>
+        this.route.snapshot.paramMap.get('equipmentId') === equipmentId && this.step() === 'form',
+    );
   }
 
   protected removeAudio(): void {
@@ -125,8 +161,10 @@ export class IncidentDeclaration {
 
   protected requestLocation(): void {
     const equipmentId = this.route.snapshot.paramMap.get('equipmentId');
-    this.location.request(this.document.defaultView?.navigator.geolocation, () =>
-      this.route.snapshot.paramMap.get('equipmentId') === equipmentId && this.step() === 'form',
+    this.location.request(
+      this.document.defaultView?.navigator.geolocation,
+      () =>
+        this.route.snapshot.paramMap.get('equipmentId') === equipmentId && this.step() === 'form',
     );
   }
 
@@ -144,18 +182,24 @@ export class IncidentDeclaration {
     this.focusAfterRender(next ? `#remove-photo-${next.id}` : '#incident-photos');
   }
 
-  protected invalid(field: 'title' | 'description' | 'priority'): boolean {
+  protected invalid(field: 'place' | 'title' | 'description' | 'priority'): boolean {
     const control = this.form.controls[field];
     return control.invalid && (this.submitted() || control.touched);
   }
 
   protected review(): void {
-    if (this.audio.state() !== 'idle' || this.createdIncident() || this.media.busy() || !this.equipment() || this.step() !== 'form')
+    if (
+      this.audio.state() !== 'idle' ||
+      this.createdIncident() ||
+      this.media.busy() ||
+      (!this.placeMode && !this.equipment()) ||
+      this.step() !== 'form'
+    )
       return;
     this.submitted.set(true);
     this.form.markAllAsTouched();
     if (this.form.invalid) {
-      const field = (['title', 'description', 'priority'] as const).find(
+      const field = (['place', 'title', 'description', 'priority'] as const).find(
         (name) => this.form.controls[name].invalid,
       )!;
       this.focusAfterRender(field === 'priority' ? '#priority-low' : `#incident-${field}`);
@@ -177,14 +221,15 @@ export class IncidentDeclaration {
       this.audio.state() !== 'idle' ||
       this.createdIncident() ||
       this.media.busy() ||
-      !this.equipment() ||
+      (!this.placeMode && !this.equipment()) ||
       this.step() !== 'review' ||
       this.form.invalid
     )
       return;
+    const { place, ...values } = this.form.getRawValue();
     const incident = this.data.createIncident({
-      ...this.form.getRawValue(),
-      equipmentId: this.equipment()!.id,
+      ...values,
+      ...(this.placeMode ? { place } : { equipmentId: this.equipment()!.id }),
       photos: this.media.photos(),
       coordinates: this.location.value(),
       audioNote: this.audio.note(),

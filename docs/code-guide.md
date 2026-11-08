@@ -1,6 +1,21 @@
 # Guide des fichiers et configurations
 
-## Carte de la fiche partagée #93 — en revue
+## Signalement sur un lieu #94 — en revue
+
+`Incident` distingue une référence matériel et un lieu écrit avec une union exclusive.
+`DemoData.createIncident` refuse une origine absente/ambiguë et toute référence matériel
+inconnue ; sans référence, il exige un lieu non blanc de 200 caractères au plus.
+Le contenu est conservé. L’état partagé, les médias et la clôture gardent leurs règles.
+
+`app.routes.ts` place `/agent/incidents/nouveau` avant le détail par id. Sa donnée
+`placeIncident` active le même formulaire, avec le contrôle Lieu et des retours vers
+Signalements. Les routes depuis un matériel conservent leurs destinations et leur recherche.
+`incidents` recherche et affiche aussi le lieu ; `incident-detail` et l’aperçu Responsable
+le présentent sans matériel fictif. La carte existante lit les coordonnées jointes.
+L’interface et `createIntervention` refusent la programmation sur un lieu, réservée à #95.
+Voir [le guide de revue, les règles et les contrôles](place-incidents.md).
+
+## Carte de la fiche partagée #93 — intégrée par #99
 
 `incident-detail` conserve `LocationSummary` et transmet `item.id` / `item.coordinates`
 à `IncidentMap`. `incident-map.ts/html/css` chargent le moteur au clic, centrent le repère

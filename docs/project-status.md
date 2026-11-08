@@ -2,14 +2,15 @@
 
 ## Référence et usage
 
-Vérification ciblée du 8 novembre 2026 : dernier `origin/main` `c5aab3d`,
-[PR #98 fusionnée](https://github.com/arthurb1348/terrimaint/pull/98) et présente dans cette base.
-Le tableau de bord #47 et les retouches #92 (filtres et tuile urgente) sont intégrés.
-**En revue (#93) :** carte sur la fiche partagée Agent/Responsable, chargée au clic,
-avec point joint, repli réseau et attribution OpenStreetMap. Coordonnées textuelles
-conservées via `LocationSummary`, sans nouvelle demande GPS. Point fictif fixe sur
-INC-2026-045 ; fiche 046 sans position. Voir [le guide de revue et de réseau](incident-map.md).
-Les résultats des contrôles et le lien Firebase sont consignés dans la PR de #93.
+Vérification ciblée du 8 novembre 2026 : dernier `origin/main` `651fcc6`,
+[PR #99 fusionnée](https://github.com/arthurb1348/terrimaint/pull/99) et présente dans cette base.
+La carte #93 sur la fiche partagée, chargée au clic, est intégrée.
+**En revue (#94) :** déclaration sans équipement depuis Signalements Agent, avec lieu
+écrit obligatoire, médias facultatifs, récapitulatif modifiable et confirmation en mémoire.
+Le lieu apparaît dans les listes, la recherche, le détail et l’aperçu Responsable ; la
+clôture et la carte existantes sont réutilisées. Les parcours depuis Matériel sont conservés.
+La programmation sur un lieu reste à #95. Voir [le guide de revue](place-incidents.md).
+Les résultats des contrôles et le résumé Firebase sont consignés dans la PR de #94.
 Les passages ci-dessous conservent leurs dates et leur contexte historiques.
 
 Vérification ciblée du 6 novembre 2026 pour [#78](https://github.com/arthurb1348/terrimaint/issues/78) :

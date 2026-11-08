@@ -31,7 +31,9 @@
               >
                 <span class="reference">{{ item.id }}</span>
                 <strong>{{ item.title }}</strong>
-                <span>{{ equipmentName(item.equipmentId) }}</span>
+                <span>{{
+                  item.place ? 'Lieu : ' + item.place : equipmentName(item.equipmentId!)
+                }}</span>
                 <div class="badges">
                   <span class="badge" [attr.data-priority]="item.priority">{{
                     priorities[item.priority]

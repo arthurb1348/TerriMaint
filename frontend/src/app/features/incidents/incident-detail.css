@@ -22,14 +22,17 @@ dd {
   margin: 0;
   white-space: pre-wrap;
 }
-.equipment-summary {
+.equipment-summary,
+.place-summary {
   margin-top: 24px;
   border-left: 4px solid var(--green);
 }
-.equipment-summary h2 {
+.equipment-summary h2,
+.place-summary h2 {
   margin-top: 0;
 }
-.equipment-summary p {
+.equipment-summary p,
+.place-summary p {
   margin: 0;
 }
 .risk-note {

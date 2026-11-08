@@ -48,24 +48,31 @@
     <app-incident-map [incidentId]="item.id" [coordinates]="item.coordinates" />
     <h2>Description</h2>
     <p class="description">{{ description() }}</p>
-    <section
-      class="equipment-summary business-card single-destination"
-      aria-labelledby="related-equipment-title"
-    >
-      <h2 id="related-equipment-title">Matériel concerné</h2>
-      @if (equipment(); as material) {
-        <p>
-          {{ material.name
-          }}<span class="reference">{{ material.id }} · {{ material.location }}</span>
-        </p>
-        <!-- La recherche de signalements ne doit pas devenir une recherche Matériel. -->
-        <a class="page-action secondary" [routerLink]="['../../equipements', material.id]"
-          >Voir le matériel</a
-        >
-      } @else {
-        <p>Matériel introuvable</p>
-      }
-    </section>
+    @if (item.place) {
+      <section class="place-summary business-card" aria-labelledby="incident-place-title">
+        <h2 id="incident-place-title">Lieu du signalement</h2>
+        <p>{{ item.place }}</p>
+      </section>
+    } @else {
+      <section
+        class="equipment-summary business-card single-destination"
+        aria-labelledby="related-equipment-title"
+      >
+        <h2 id="related-equipment-title">Matériel concerné</h2>
+        @if (equipment(); as material) {
+          <p>
+            {{ material.name
+            }}<span class="reference">{{ material.id }} · {{ material.location }}</span>
+          </p>
+          <!-- La recherche de signalements ne doit pas devenir une recherche Matériel. -->
+          <a class="page-action secondary" [routerLink]="['../../equipements', material.id]"
+            >Voir le matériel</a
+          >
+        } @else {
+          <p>Matériel introuvable</p>
+        }
+      </section>
+    }
     <section class="related-interventions" aria-labelledby="incident-interventions-title">
       <h2 id="incident-interventions-title">Interventions liées</h2>
       @if (relatedInterventions().length) {
@@ -172,8 +179,10 @@
     }
     @if (item.risk) {
       <p class="risk-note">
-        <strong>Risque ou impossibilité d'utilisation signalé.</strong> Ce signalement ne change pas
-        le statut du matériel.
+        <strong>Risque ou impossibilité d'utilisation signalé.</strong>
+        @if (!item.place) {
+          Ce signalement ne change pas le statut du matériel.
+        }
       </p>
     }
   } @else {

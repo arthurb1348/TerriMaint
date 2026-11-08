@@ -1,5 +1,19 @@
 # Décisions techniques et métier
 
+## 2026-11-08 — Signalement sur un lieu sans équipement (#94, en revue)
+
+Depuis Signalements Agent, réutiliser `IncidentDeclaration` via une route spécifique
+avant le détail par identifiant. Exiger un lieu écrit non blanc, limité à 200 caractères,
+en gardant la saisie exacte et les médias à Modifier. GPS et autres compléments restent
+facultatifs. Le modèle porte soit un matériel valide, soit un lieu, sans référence factice.
+Le service revalide cette exclusivité ; une référence matériel inconnue reste une erreur.
+
+Afficher et rechercher le lieu dans la consultation partagée et l’aperçu Responsable.
+Réutiliser la carte #93, sans zoom ni point manuel ajoutés. Garder la clôture existante
+et les retours depuis Matériel. La programmation sur un lieu reste à #95 ; le service
+la refuse également même si un appel fournit un matériel de repli. Aucun backend métier,
+stockage persistant ou changement de dépendance. Voir [le guide de revue](place-incidents.md).
+
 ## 2026-11-08 — Carte de la fiche partagée (#93, en revue)
 
 Réutiliser les coordonnées jointes et `LocationSummary`, sans acquisition GPS à la

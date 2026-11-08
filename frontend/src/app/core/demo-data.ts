@@ -2,7 +2,11 @@ import { IncidentAudioNote, validAudioNote } from '../features/incidents/inciden
 import { IncidentCoordinates, validCoordinates } from '../features/incidents/incident-location';
 import { DestroyRef, inject, Injectable, signal } from '@angular/core';
 import { DEMO_EQUIPMENT } from '../features/equipements/equipements-demo';
-import { Incident, INCIDENT_PRIORITIES } from '../features/incidents/incident';
+import {
+  Incident,
+  INCIDENT_PLACE_LIMIT,
+  INCIDENT_PRIORITIES,
+} from '../features/incidents/incident';
 import { DEMO_INCIDENTS } from '../features/incidents/incidents-demo';
 import { DEMO_AGENTS } from '../features/interventions/agents-demo';
 import { Intervention } from '../features/interventions/intervention';
@@ -14,7 +18,8 @@ import { DemoImageSource } from '../shared/demo-image/demo-image';
 interface IncidentDraft {
   readonly audioNote?: IncidentAudioNote;
   readonly coordinates?: IncidentCoordinates;
-  readonly equipmentId: string;
+  readonly equipmentId?: string;
+  readonly place?: string;
   readonly title: string;
   readonly description: string;
   readonly priority: string;
@@ -110,8 +115,11 @@ export class DemoData {
   }
 
   createIncident(draft: IncidentDraft): Incident | undefined {
+    const onEquipment = draft.equipmentId !== undefined;
     if (
-      !DEMO_EQUIPMENT.some((item) => item.id === draft.equipmentId) ||
+      (onEquipment
+        ? !DEMO_EQUIPMENT.some((item) => item.id === draft.equipmentId) || draft.place !== undefined
+        : !draft.place?.trim() || draft.place.length > INCIDENT_PLACE_LIMIT) ||
       !draft.title.trim() ||
       draft.title.length > 120 ||
       (draft.description.trim() && draft.description.length > 2000) ||
@@ -125,7 +133,7 @@ export class DemoData {
 
     const incident = freezeIncident({
       id: `INC-LOCAL-${this.sessionId}-${++this.incidentSequence}`,
-      equipmentId: draft.equipmentId,
+      ...(onEquipment ? { equipmentId: draft.equipmentId! } : { place: draft.place! }),
       title: draft.title,
       description: draft.description.trim() ? draft.description : undefined,
       priority: draft.priority as Incident['priority'],
@@ -147,7 +155,8 @@ export class DemoData {
     const incident = this.getIncident(draft.incidentId);
     const equipmentId = incident?.equipmentId ?? draft.equipmentId;
     if (
-      (draft.incidentId !== undefined && (!incident || incident.status === 'closed')) ||
+      (draft.incidentId !== undefined &&
+        (!incident || !incident.equipmentId || incident.status === 'closed')) ||
       (incident && draft.equipmentId !== undefined && draft.equipmentId !== incident.equipmentId) ||
       !DEMO_EQUIPMENT.some((item) => item.id === equipmentId) ||
       !DEMO_AGENTS.some((item) => item.id === draft.agentId) ||
