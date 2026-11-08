@@ -96,7 +96,9 @@ test('Programmer puis consulter le matériel retrouve l’intervention en mémoi
   await expect(main.getByRole('link', { name: 'Voir le signalement', exact: true })).toBeVisible();
   await page.locator('.space-menu summary').click();
   await page.getByRole('link', { name: 'Espace Agent', exact: true }).click();
-  await page.locator('nav').getByRole('link', { name: 'Matériel', exact: true }).click();
+  await expect(page).toHaveURL('/agent');
+  await page.getByRole('navigation', { name: 'Navigation Agent', exact: true }).getByRole('link', { name: 'Matériel', exact: true }).click();
+  await expect(page).toHaveURL('/agent/equipements');
   await main.getByRole('link', { name: 'Débroussailleuse n°3', exact: true }).click();
   await expect(section.getByRole('link')).toHaveCount(1);
   await expect(section).not.toContainText('Contrôle matériel depuis la fiche');

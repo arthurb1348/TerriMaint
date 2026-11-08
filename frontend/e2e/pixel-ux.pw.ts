@@ -123,10 +123,11 @@ test('Interventions : surface en cartes, tableau conservé, filtres et actions i
   await expect(main.getByLabel('Agent affecté', { exact: true })).toHaveValue('AG-DEMO-001');
 });
 
-test('Responsable : raccourcis métier et changement d’espace uniquement dans le shell', async ({ page }) => {
+test('Responsable : indicateurs métier et changement d’espace uniquement dans le shell', async ({ page }) => {
   await page.goto('/responsable');
   const main = page.getByRole('main');
-  await expect(main.getByRole('link')).toHaveCount(3);
+  await expect(main.getByRole('link')).toHaveCount(8);
+  await expect(main.locator('.indicators').getByRole('link')).toHaveCount(3);
   await expect(main.getByRole('link', { name: /Agent|Scanner/ })).toHaveCount(0);
   const spaceToggle = page.locator('.space-menu summary');
   await expect(spaceToggle).toHaveAccessibleName('Changer d’espace');

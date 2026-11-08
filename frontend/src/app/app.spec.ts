@@ -109,11 +109,11 @@ describe('Shell et routage', () => {
 
   it('conserve les accès métier Responsable et change d’espace par le shell', async () => {
     await navigate('/responsable');
-    const links = element.querySelectorAll<HTMLAnchorElement>('main a');
+    const links = element.querySelectorAll<HTMLAnchorElement>('main .indicators a');
     expect(Array.from(links, (link) => link.getAttribute('href'))).toEqual([
-      '/responsable/equipements',
-      '/responsable/incidents',
-      '/responsable/interventions',
+      '/responsable/incidents?status=open',
+      '/responsable/incidents?priority=urgent&status=not-closed',
+      '/responsable/interventions?status=planned',
     ]);
     expect(element.querySelector('main a[href="/agent"]')).toBeNull();
     element.querySelector<HTMLAnchorElement>('.space-links a[href="/agent"]')?.click();

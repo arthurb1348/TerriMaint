@@ -1,5 +1,40 @@
 # Guide des fichiers et configurations
 
+## Tableau de bord Responsable #47 — en revue
+
+`features/responsable/responsable.ts` lit les signaux de `DemoData` dans des `computed`.
+Les compteurs n’ont pas d’état indépendant : déclarer, programmer ou clôturer recalcule
+le tableau de bord dans cet onglet. L’accueil Agent et ses affectations restent inchangés.
+
+| Indicateur | Prédicat | Destination |
+| --- | --- | --- |
+| Signalements ouverts | statut `open` uniquement | `/responsable/incidents?status=open` |
+| Signalements urgents non clôturés | priorité `urgent`, statut `open` ou `in-progress` | `/responsable/incidents?priority=urgent&status=not-closed` |
+| Interventions planifiées | statut `planned`, toutes dates prévues | `/responsable/interventions?status=planned` |
+
+`incident-filters.ts` partage le prédicat priorité/statut entre compteur et liste et lit
+le nouveau filtre `not-closed`. `incidentQueryParams` le conserve sur les liens de détail,
+les retours et la programmation. « Non clôturés » est un choix de filtre, pas un nouveau
+statut métier. Les filtres existants restent valides et les valeurs URL inconnues sont ignorées.
+
+Les aperçus sont bornés à trois et n’altèrent pas les tableaux sources :
+
+- Signalements : exclure les clôturés ; priorité **Urgente → Haute → Basse**, date
+  de signalement décroissante, puis identifiant croissant en ordre lexicographique.
+- Interventions : garder toutes les Planifiées, date prévue croissante, puis identifiant
+  croissant en ordre lexicographique. Aucune exclusion implicite des dates passées.
+
+Les chaînes calendaires ISO `YYYY-MM-DD` se comparent directement, sans instant UTC,
+filtre dépendant d’aujourd’hui ou activité relative inventée. Le départage par identifiant
+rend les égalités stables même si l’ordre d’insertion des sources change.
+`responsable.html` contient un vrai lien pour toute la surface de chaque carte, sans
+contrôle imbriqué. Les indicateurs mènent aux listes filtrées ; les aperçus ouvrent les fiches
+avec leurs retours de liste existants. Les titres, statuts, matériels et dates viennent des modèles.
+
+Adaptation du prototype Responsable `188:10470`, consulté en lecture seule : trois indicateurs
+calculables, sans immobilisation, échéance, notification, récurrence ou période inventée.
+Voir le bilan de PR pour CI et parcours Firebase ; les données sont réinitialisées au rechargement.
+
 ## Note vocale facultative #46 — en revue
 
 `incident-audio.ts` possède l’état du brouillon, le flux microphone, le `MediaRecorder`,

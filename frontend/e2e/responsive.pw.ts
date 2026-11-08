@@ -1531,7 +1531,21 @@ for (const space of ['agent', 'responsable']) {
     await page.goto(`/${space}`);
     await expect(main.locator('.back-link')).toHaveCount(0);
     if (space === 'responsable') {
-      await expectPageAction(page, main.getByRole('link', { name: 'Matériel', exact: true }), 'secondary', space);
+      const indicator = main.locator('.indicators').getByRole('link', { name: 'Signalements ouverts 2', exact: true });
+      await expect(indicator).toHaveAttribute('href', '/responsable/incidents?status=open');
+      await indicator.scrollIntoViewIfNeeded();
+      await page.mouse.move(0, 0);
+      await expectBusinessCard(indicator);
+      await expect(indicator).toHaveCSS('color', 'rgb(37, 49, 44)');
+      await expect(indicator).toHaveCSS('text-decoration-line', 'none');
+      expect((await indicator.boundingBox())!.height).toBeGreaterThanOrEqual(48);
+      await indicator.hover();
+      await expect(indicator).toHaveCSS('text-decoration-line', 'none');
+      await page.keyboard.press('Tab');
+      await indicator.focus();
+      await expectFocusedControlVisible(page, indicator, space);
+      await expect(indicator).toHaveCSS('outline-style', 'solid');
+      await expect(indicator).toHaveCSS('outline-width', '3px');
     } else {
       await expect(main.getByRole('link', { name: 'Voir toutes mes interventions', exact: true })).toBeVisible();
     }

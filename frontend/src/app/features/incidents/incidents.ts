@@ -5,7 +5,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 import { INCIDENT_PRIORITIES, INCIDENT_STATUSES } from './incident';
-import { incidentQueryParams, readIncidentFilters } from './incident-filters';
+import { incidentQueryParams, readIncidentFilters, matchesIncidentFilters } from './incident-filters';
 
 @Component({
   selector: 'app-incidents',
@@ -27,7 +27,7 @@ export class Incidents {
   protected readonly priorities = INCIDENT_PRIORITIES;
   protected readonly statuses = INCIDENT_STATUSES;
   protected readonly priorityOptions = Object.entries(INCIDENT_PRIORITIES);
-  protected readonly statusOptions = Object.entries(INCIDENT_STATUSES);
+  protected readonly statusOptions = [...Object.entries(INCIDENT_STATUSES), ['not-closed', 'Non clôturés']];
   private readonly rows = computed(() =>
     this.data.incidents().map((incident) => ({
       incident,
@@ -39,8 +39,7 @@ export class Incidents {
     const search = q.trim().toLowerCase();
     return this.rows().filter(
       ({ incident, equipment }) =>
-        (!priority || incident.priority === priority) &&
-        (!status || incident.status === status) &&
+        matchesIncidentFilters(incident, { priority, status }) &&
         [incident.id, incident.title, incident.equipmentId, equipment?.name ?? ''].some((value) =>
           value.toLowerCase().includes(search),
         ),
