@@ -39,12 +39,14 @@ export class Responsable {
   protected readonly indicators = computed(() => [
     ...INCIDENT_INDICATORS.map(({ label, filters }) => ({
       label,
+      urgent: filters.priority === 'urgent',
       count: this.data.incidents().filter((item) => matchesIncidentFilters(item, filters)).length,
       path: '/responsable/incidents',
       query: incidentQueryParams(filters),
     })),
     {
       label: 'Interventions planifiées',
+      urgent: false,
       count: this.data.interventions().filter((item) => item.status === 'planned').length,
       path: '/responsable/interventions',
       query: interventionQueryParams({ q: '', status: 'planned', assignee: '' }),

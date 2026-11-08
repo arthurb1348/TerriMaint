@@ -1,6 +1,6 @@
 # Guide des fichiers et configurations
 
-## Tableau de bord Responsable #47 — en revue
+## Tableau de bord Responsable #47 — intégré par #91
 
 `features/responsable/responsable.ts` lit les signaux de `DemoData` dans des `computed`.
 Les compteurs n’ont pas d’état indépendant : déclarer, programmer ou clôturer recalcule
@@ -34,6 +34,22 @@ avec leurs retours de liste existants. Les titres, statuts, matériels et dates 
 Adaptation du prototype Responsable `188:10470`, consulté en lecture seule : trois indicateurs
 calculables, sans immobilisation, échéance, notification, récurrence ou période inventée.
 Voir le bilan de PR pour CI et parcours Firebase ; les données sont réinitialisées au rechargement.
+
+### Retouches de présentation #92 — en revue
+
+Les CSS locaux de `incidents` et `interventions` alignent les filtres en haut de leur ligne
+flexible : l’aide sous la recherche ne décale plus les contrôles voisins. Le bouton est
+aligné avec les champs en tenant compte de la hauteur du libellé ; sous 600 px de contenu,
+il perd ce décalage. Les blocs continuent à se répartir selon la place disponible.
+L’aide reste dans le flux et liée par `aria-describedby`, sans changement d’ordre DOM,
+de filtre URL ou de retour du focus après réinitialisation.
+
+Dans `responsable.ts`, `urgent` identifie l’indicateur à partir de son filtre existant.
+Le template applique `urgent-indicator` seulement si ce repère est vrai et le compteur
+existant supérieur à zéro. Le CSS local définit les fonds normal/survol et la bordure ;
+le texte et le contour de focus restent ceux de la carte. Aucun second compteur ni état
+persistant : les signaux de `DemoData` pilotent aussi le retour au style neutre à zéro.
+Les tests de #92 couvrent les quatre largeurs, les deux espaces et le cycle 1 → 0 → 1.
 
 ## Note vocale facultative #46 — en revue
 
