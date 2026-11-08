@@ -237,8 +237,9 @@
           <section aria-labelledby="location-heading">
             <h2 id="location-heading">Localisation (facultative)</h2>
             <p class="help">
-              Position obtenue pour ce signalement, sans garantie du lieu du matériel ou de
-              l’événement. Elle reste dans cet onglet jusqu’au rechargement. Nécessite un navigateur
+              Position obtenue pour ce signalement, sans garantie du lieu
+              {{ placeMode ? 'de l’événement.' : 'du matériel ou de l’événement.' }}
+              Elle reste dans cet onglet jusqu’au rechargement. Nécessite un navigateur
               compatible et un contexte sécurisé.
             </p>
             <app-location-summary [coordinates]="location.value()" />

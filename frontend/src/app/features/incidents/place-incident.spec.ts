@@ -48,6 +48,7 @@ describe('Signalement sans équipement', () => {
     expect(content().querySelector('h1')?.textContent?.trim()).toBe('Nouveau signalement');
     expect(content().querySelector('form')).not.toBeNull();
     expect(content().querySelector('.equipment-summary')).toBeNull();
+    expect(content().querySelector('[aria-labelledby="location-heading"]')?.textContent).not.toContain('matériel');
     await enter('place', 'Rue des Écoles');
     await click('Annuler');
     expect(TestBed.inject(Router).url).toBe(
