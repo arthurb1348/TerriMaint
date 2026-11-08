@@ -1,5 +1,21 @@
 # Guide des fichiers et configurations
 
+## Carte de la fiche partagée #93 — en revue
+
+`incident-detail` conserve `LocationSummary` et transmet `item.id` / `item.coordinates`
+à `IncidentMap`. `incident-map.ts/html/css` chargent le moteur au clic, centrent le repère
+sur les coordonnées jointes et gèrent fermeture, erreur et délai de dix secondes.
+Une génération invalide l’import et les événements tardifs ; l’effet lié aux entrées
+détruit la carte lors d’un changement de fiche, même sans recréation du composant.
+Le zoom fixe évite toute commande clavier spécifique ; les boutons et l’attribution sont natifs.
+
+Leaflet est une dépendance verrouillée, ses types sont uniquement de développement.
+Sa CSS est servie localement via `styles.css` ; le moteur est un chunk différé local,
+sans CDN. `incidents-demo.ts` donne un point fictif fixe à 045 pour la preview.
+`incident-map.spec.ts` et `e2e/incident-map.pw.ts` couvrent le cycle de vie et le réseau
+avec tuiles simulées ; [le guide dédié](incident-map.md) donne les sources officielles,
+les requêtes observées, les limites et la procédure PC/téléphone.
+
 ## Tableau de bord Responsable #47 — intégré par #91
 
 `features/responsable/responsable.ts` lit les signaux de `DemoData` dans des `computed`.

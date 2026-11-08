@@ -2,13 +2,14 @@
 
 ## Référence et usage
 
-Vérification ciblée du 8 novembre 2026 : dernier `origin/main` `7a1f333`,
-[PR #91 fusionnée](https://github.com/arthurb1348/terrimaint/pull/91) et présente dans cette base.
-Le tableau de bord #47 et ses compteurs réactifs sont intégrés.
-**En revue (#92) :** alignement des filtres Signalements/Interventions, avec aide visible
-et liée au champ, et teinte orange de la seule tuile urgente lorsque son compteur est positif.
-À zéro, elle reprend le style neutre. Les composants partagés restent vérifiés dans les deux espaces.
-Les résultats des contrôles et le parcours de preview sont consignés dans la PR de #92.
+Vérification ciblée du 8 novembre 2026 : dernier `origin/main` `c5aab3d`,
+[PR #98 fusionnée](https://github.com/arthurb1348/terrimaint/pull/98) et présente dans cette base.
+Le tableau de bord #47 et les retouches #92 (filtres et tuile urgente) sont intégrés.
+**En revue (#93) :** carte sur la fiche partagée Agent/Responsable, chargée au clic,
+avec point joint, repli réseau et attribution OpenStreetMap. Coordonnées textuelles
+conservées via `LocationSummary`, sans nouvelle demande GPS. Point fictif fixe sur
+INC-2026-045 ; fiche 046 sans position. Voir [le guide de revue et de réseau](incident-map.md).
+Les résultats des contrôles et le lien Firebase sont consignés dans la PR de #93.
 Les passages ci-dessous conservent leurs dates et leur contexte historiques.
 
 Vérification ciblée du 6 novembre 2026 pour [#78](https://github.com/arthurb1348/terrimaint/issues/78) :

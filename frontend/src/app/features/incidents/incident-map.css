@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+.map-help,
+.map-attribution {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.map-canvas {
+  height: 288px;
+  width: 100%;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  /* Les panneaux Leaflet restent sous la navigation et les autres contrôles de la fiche. */
+  isolation: isolate;
+}
+.map-attribution {
+  margin-top: 0;
+}
+.map-attribution a {
+  min-height: 44px;
+}
+.map-feedback {
+  margin: 12px 0;
+}

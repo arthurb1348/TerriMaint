@@ -1,5 +1,22 @@
 # Décisions techniques et métier
 
+## 2026-11-08 — Carte de la fiche partagée (#93, en revue)
+
+Réutiliser les coordonnées jointes et `LocationSummary`, sans acquisition GPS à la
+consultation. Charger Leaflet 1.9.4 et le fond raster OpenStreetMap uniquement après
+Afficher la carte. Vue fixe au zoom 16 avec marqueur, attribution visible et coordonnées
+toujours accessibles ; repli sur erreur ou après dix secondes. Réinitialiser à chaque
+changement d’identifiant/coordonnées, y compris dans une instance Angular réutilisée.
+
+Le choix privilégie un moteur stable pour projection et tuilage, sans clé ni wrapper
+Angular. Le fournisseur externe reçoit notamment IP, origine et indices de tuiles révélant
+la zone ; le message préalable l’explique. La précision du point reste en mémoire,
+hors des URL et logs applicatifs ajoutés. `strict-origin` conserve le Referer exigé par
+OSM sans chemin de fiche. Aucun préchargement ni cache hors ligne ; cache HTTP natif.
+Point fictif fixe sur l’exemple 045. Les tests interceptent les tuiles pour rester
+indépendants du fournisseur. Voir [sources officielles, relevés réseau et revue](incident-map.md).
+Périmètre limité à la fiche, sans carte d’ensemble ou d’équipements ni backend métier.
+
 ## 2026-11-06 — Logo vectoriel validé (#78, en revue)
 
 Utiliser les SVG du pack fourni par Arthur sans redessin : symbole compact dans

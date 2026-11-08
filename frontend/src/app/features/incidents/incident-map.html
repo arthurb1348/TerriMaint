@@ -1,0 +1,52 @@
+@if (coordinates()) {
+  <p>
+    Le repère correspond à la localisation jointe au signalement, pas à votre position actuelle.
+  </p>
+  <p id="incident-map-provider" class="map-help">
+    Fond externe OpenStreetMap. Au clic, ce fournisseur reçoit votre adresse IP, l’origine du site
+    et les tuiles demandées, qui révèlent la zone affichée.
+  </p>
+  <button
+    type="button"
+    class="page-action secondary"
+    aria-describedby="incident-map-provider"
+    aria-controls="incident-map-panel"
+    [attr.aria-expanded]="state() !== 'closed'"
+    (click)="toggle()"
+  >
+    {{
+      state() === 'closed'
+        ? 'Afficher la carte'
+        : state() === 'error'
+          ? 'Réessayer la carte'
+          : 'Masquer la carte'
+    }}
+  </button>
+  <div id="incident-map-panel" [hidden]="state() === 'closed'">
+    <p class="map-feedback" role="status">
+      @switch (state()) {
+        @case ('loading') {
+          Chargement du fond de carte…
+        }
+        @case ('ready') {
+          Carte centrée sur la position jointe au signalement.
+        }
+        @case ('error') {
+          Le fond de carte est indisponible. Les coordonnées restent lisibles ci-dessus. Vous pouvez
+          réessayer ou poursuivre la consultation de la fiche.
+        }
+      }
+    </p>
+    <div
+      #canvas
+      class="map-canvas"
+      role="img"
+      aria-label="Carte centrée sur la localisation jointe au signalement, indiquée par un repère."
+      [hidden]="state() === 'closed' || state() === 'error'"
+    ></div>
+    <p class="map-attribution">
+      © <a href="https://www.openstreetmap.org/copyright" rel="noreferrer">OpenStreetMap</a>
+      contributors
+    </p>
+  </div>
+}
