@@ -1,5 +1,12 @@
 <section class="feature-page" aria-labelledby="incidents-title">
   <h1 id="incidents-title">Signalements</h1>
+  @if (isAgent) {
+    <p>
+      <a class="page-action" [routerLink]="['nouveau']" [queryParams]="query()"
+        >Nouveau signalement</a
+      >
+    </p>
+  }
   <div class="filters" role="search" aria-label="Rechercher et filtrer les signalements">
     <div class="search-field">
       <label for="incident-search">Rechercher un signalement</label>
@@ -12,7 +19,7 @@
         aria-describedby="incident-search-help"
       />
       <p id="incident-search-help" class="help">
-        Intitulé, référence, nom ou identifiant du matériel.
+        Intitulé, référence, lieu, nom ou identifiant du matériel.
       </p>
     </div>
     <div>
@@ -65,7 +72,7 @@
       <thead role="rowgroup">
         <tr role="row">
           <th scope="col" role="columnheader">Signalement</th>
-          <th scope="col" role="columnheader">Matériel</th>
+          <th scope="col" role="columnheader">Matériel ou lieu</th>
           <th scope="col" role="columnheader">Priorité</th>
           <th scope="col" role="columnheader">Statut du signalement</th>
           <th scope="col" role="columnheader">Signalé le</th>
@@ -81,9 +88,13 @@
               </a>
             </th>
             <td role="cell">
-              <span class="cell-label" aria-hidden="true">Matériel</span
-              >{{ row.equipment?.name ?? 'Matériel introuvable'
-              }}<span class="reference">{{ row.incident.equipmentId }}</span>
+              <span class="cell-label" aria-hidden="true">{{
+                row.incident.place ? 'Lieu' : 'Matériel'
+              }}</span>
+              {{ row.incident.place ?? row.equipment?.name ?? 'Matériel introuvable' }}
+              @if (row.incident.equipmentId) {
+                <span class="reference">{{ row.incident.equipmentId }}</span>
+              }
             </td>
             <td role="cell">
               <span class="cell-label" aria-hidden="true">Priorité</span

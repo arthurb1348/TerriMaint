@@ -26,6 +26,51 @@ const interventionDraft = (
 });
 
 describe('Données partagées pendant la vie de l’application', () => {
+  it('crée un signalement sur un lieu, le clôture et refuse sa programmation même avec un matériel de repli', () => {
+    const initial = data.incidents();
+    const place = '  Rue des Écoles, près du portail  ';
+    const created = data.createIncident(incidentDraft({ equipmentId: undefined, place }))!;
+    expect(created).toMatchObject({ place, status: 'open', reportedOn: '2026-11-06' });
+    expect(created.equipmentId).toBeUndefined();
+    expect(created.coordinates).toBeUndefined();
+    expect(Object.isFrozen(created)).toBe(true);
+    expect(data.getIncident(created.id)).toBe(created);
+    const interventions = data.interventions();
+    for (const equipmentId of [undefined, 'EQ-OUT-0001']) {
+      expect(data.createIntervention(interventionDraft({ incidentId: created.id, equipmentId }))).toBeUndefined();
+    }
+    expect(data.interventions()).toBe(interventions);
+    expect(data.closeIncident(created.id)).toBe(true);
+    expect(data.getIncident(created.id)).toMatchObject({ place, status: 'closed' });
+    expect(data.closeIncident(created.id)).toBe(false);
+    expect(data.incidents().slice(0, -1)).toEqual(initial);
+  });
+
+  it.each([
+    { equipmentId: undefined },
+    { equipmentId: undefined, place: '' },
+    { equipmentId: undefined, place: ' \t\n ' },
+    { equipmentId: undefined, place: 'x'.repeat(201) },
+    { equipmentId: '', place: 'Rue des Écoles' },
+    { equipmentId: 'absent', place: 'Rue des Écoles' },
+    { equipmentId: 'EQ-OUT-0001', place: 'Rue des Écoles' },
+    { equipmentId: 'EQ-OUT-0001', place: '' },
+  ])('refuse une origine absente, inconnue ou ambiguë sans mutation : %j', (changes) => {
+    const before = data.incidents();
+    expect(data.createIncident(incidentDraft(changes))).toBeUndefined();
+    expect(data.incidents()).toBe(before);
+  });
+
+  it('accepte un lieu à la borne avec coordonnées et médias selon les mêmes règles', () => {
+    const coordinates = { latitude: 48.25, longitude: -1.5 };
+    const created = data.createIncident(incidentDraft({ equipmentId: undefined, place: 'x'.repeat(200), coordinates, photos: [{ src: 'blob:place-photo', alt: 'Problème sur le lieu' }] }))!;
+    expect(created.place).toHaveLength(200);
+    expect(created.coordinates).toEqual(coordinates);
+    expect(Object.isFrozen(created.coordinates)).toBe(true);
+    expect(created.photos).toEqual([{ src: 'blob:place-photo', alt: 'Problème sur le lieu' }]);
+    expect(data.createIncident(incidentDraft({ equipmentId: undefined, place: 'Rue des Écoles', coordinates: { latitude: 91, longitude: 0 } }))).toBeUndefined();
+  });
+
   it('programme directement un matériel sans signalement et refuse les associations incohérentes', () => {
     const draft = interventionDraft({ incidentId: undefined, equipmentId: 'EQ-OUT-0001' });
     const created = data.createIntervention(draft)!;

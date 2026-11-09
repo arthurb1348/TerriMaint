@@ -5,7 +5,11 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 import { INCIDENT_PRIORITIES, INCIDENT_STATUSES } from './incident';
-import { incidentQueryParams, readIncidentFilters, matchesIncidentFilters } from './incident-filters';
+import {
+  incidentQueryParams,
+  readIncidentFilters,
+  matchesIncidentFilters,
+} from './incident-filters';
 
 @Component({
   selector: 'app-incidents',
@@ -17,6 +21,7 @@ import { incidentQueryParams, readIncidentFilters, matchesIncidentFilters } from
 export class Incidents {
   private readonly data = inject(DemoData);
   private readonly route = inject(ActivatedRoute);
+  protected readonly isAgent = this.route.snapshot.routeConfig?.path?.startsWith('agent/');
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   private readonly queryParams = toSignal(this.route.queryParamMap, {
@@ -27,7 +32,10 @@ export class Incidents {
   protected readonly priorities = INCIDENT_PRIORITIES;
   protected readonly statuses = INCIDENT_STATUSES;
   protected readonly priorityOptions = Object.entries(INCIDENT_PRIORITIES);
-  protected readonly statusOptions = [...Object.entries(INCIDENT_STATUSES), ['not-closed', 'Non clôturés']];
+  protected readonly statusOptions = [
+    ...Object.entries(INCIDENT_STATUSES),
+    ['not-closed', 'Non clôturés'],
+  ];
   private readonly rows = computed(() =>
     this.data.incidents().map((incident) => ({
       incident,
@@ -40,9 +48,13 @@ export class Incidents {
     return this.rows().filter(
       ({ incident, equipment }) =>
         matchesIncidentFilters(incident, { priority, status }) &&
-        [incident.id, incident.title, incident.equipmentId, equipment?.name ?? ''].some((value) =>
-          value.toLowerCase().includes(search),
-        ),
+        [
+          incident.id,
+          incident.title,
+          incident.equipmentId ?? '',
+          incident.place ?? '',
+          equipment?.name ?? '',
+        ].some((value) => value.toLowerCase().includes(search)),
     );
   });
 

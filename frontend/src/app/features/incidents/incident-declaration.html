@@ -1,25 +1,23 @@
 <section class="feature-page" aria-labelledby="incident-title-heading">
-  @if (equipment(); as item) {
-    <a
-      class="page-action back-link secondary"
-      [routerLink]="['../../../equipements', item.id]"
-      [queryParams]="{ q: search() || null }"
-      ><span aria-hidden="true">←</span><span>Retour à la fiche matériel</span></a
-    >
-  } @else {
-    <a
-      class="page-action back-link secondary"
-      [routerLink]="['../../../equipements']"
-      [queryParams]="{ q: search() || null }"
-      ><span aria-hidden="true">←</span><span>Retour au matériel</span></a
-    >
-  }
+  <a
+    class="page-action back-link secondary"
+    [routerLink]="returnLink()"
+    [queryParams]="returnQuery()"
+    ><span aria-hidden="true">←</span
+    ><span>{{
+      placeMode
+        ? 'Retour aux signalements'
+        : equipment()
+          ? 'Retour à la fiche matériel'
+          : 'Retour au matériel'
+    }}</span></a
+  >
 
-  @if (equipment(); as item) {
+  @if (placeMode || equipment()) {
     <h1 id="incident-title-heading" tabindex="-1">
       @switch (step()) {
         @case ('form') {
-          Faire un signalement
+          {{ placeMode ? 'Nouveau signalement' : 'Faire un signalement' }}
         }
         @case ('review') {
           Vérifier le signalement
@@ -29,15 +27,47 @@
         }
       }
     </h1>
-    <section class="equipment-summary business-card" aria-labelledby="incident-equipment-name">
-      <h2 id="incident-equipment-name">{{ item.name }}</h2>
-      <p>{{ item.id }} · {{ item.location }}</p>
-    </section>
+    @if (equipment(); as item) {
+      <section class="equipment-summary business-card" aria-labelledby="incident-equipment-name">
+        <h2 id="incident-equipment-name">{{ item.name }}</h2>
+        <p>{{ item.id }} · {{ item.location }}</p>
+      </section>
+    }
 
     @switch (step()) {
       @case ('form') {
         <form [formGroup]="form" (ngSubmit)="review()" novalidate>
-          <p>L'intitulé et la priorité sont obligatoires. La description est facultative.</p>
+          <p>
+            {{
+              placeMode
+                ? 'Le lieu, l’intitulé et la priorité sont obligatoires.'
+                : "L'intitulé et la priorité sont obligatoires."
+            }}
+            La description est facultative.
+          </p>
+          @if (placeMode) {
+            <div class="field">
+              <label for="incident-place">Lieu (obligatoire)</label>
+              <input
+                id="incident-place"
+                type="text"
+                formControlName="place"
+                required
+                [attr.maxlength]="placeLimit"
+                [attr.aria-invalid]="invalid('place')"
+                [attr.aria-describedby]="invalid('place') ? 'place-help place-error' : 'place-help'"
+              />
+              <p id="place-help" class="help">
+                Indiquez où se situe le problème, par exemple une rue ou un repère.
+                {{ placeLimit }} caractères maximum. Le GPS reste facultatif.
+              </p>
+              @if (invalid('place')) {
+                <p id="place-error" class="error">
+                  Renseignez un lieu de 1 à {{ placeLimit }} caractères, pas seulement des espaces.
+                </p>
+              }
+            </div>
+          }
           <div class="field">
             <label for="incident-title">Intitulé</label>
             <input
@@ -196,48 +226,81 @@
               <span>Je signale un risque ou une impossibilité d'utilisation</span>
             </label>
             <p id="risk-help" class="help">
-              Facultatif. Ce signalement ne change pas le statut du matériel. L'immobilisation
-              officielle relève du Responsable.
+              @if (placeMode) {
+                Facultatif. Précisez si le problème présente un risque sur ce lieu.
+              } @else {
+                Facultatif. Ce signalement ne change pas le statut du matériel. L'immobilisation
+                officielle relève du Responsable.
+              }
             </p>
           </div>
           <section aria-labelledby="location-heading">
             <h2 id="location-heading">Localisation (facultative)</h2>
-            <p class="help">Position obtenue pour ce signalement, sans garantie du lieu du matériel ou de l’événement. Elle reste dans cet onglet jusqu’au rechargement. Nécessite un navigateur compatible et un contexte sécurisé.</p>
+            <p class="help">
+              Position obtenue pour ce signalement, sans garantie du lieu
+              {{ placeMode ? 'de l’événement.' : 'du matériel ou de l’événement.' }}
+              Elle reste dans cet onglet jusqu’au rechargement. Nécessite un navigateur
+              compatible et un contexte sécurisé.
+            </p>
             <app-location-summary [coordinates]="location.value()" />
             <p role="status" aria-live="polite">{{ location.message() }}</p>
             <div class="actions">
-              <button class="page-action secondary" type="button" (click)="requestLocation()">Utiliser ma position</button>
+              <button class="page-action secondary" type="button" (click)="requestLocation()">
+                Utiliser ma position
+              </button>
               @if (location.value() || location.pending()) {
-                <button class="page-action secondary" type="button" (click)="location.clear()">Retirer la localisation</button>
+                <button class="page-action secondary" type="button" (click)="location.clear()">
+                  Retirer la localisation
+                </button>
               }
             </div>
           </section>
           <section aria-labelledby="audio-heading">
             <h2 id="audio-heading">Note vocale (facultative)</h2>
-            <p class="help">Une seule note, 60 secondes et 10 Mio maximum. Arrêtez l’enregistrement avant de vérifier et confirmer le signalement.</p>
+            <p class="help">
+              Une seule note, 60 secondes et 10 Mio maximum. Arrêtez l’enregistrement avant de
+              vérifier et confirmer le signalement.
+            </p>
             <p role="status" aria-live="polite">{{ audio.message() }}</p>
             @if (audio.state() === 'recording') {
               <p>Microphone actif — {{ audio.seconds() }} / 60 secondes</p>
-              <button class="page-action" type="button" (click)="audio.stop()">Arrêter l’enregistrement</button>
+              <button class="page-action" type="button" (click)="audio.stop()">
+                Arrêter l’enregistrement
+              </button>
             } @else if (audio.state() === 'permission') {
-              <button class="page-action secondary" type="button" (click)="removeAudio()">Annuler la demande de microphone</button>
+              <button class="page-action secondary" type="button" (click)="removeAudio()">
+                Annuler la demande de microphone
+              </button>
             } @else if (audio.state() === 'idle') {
               <app-audio-note [note]="audio.note()" />
               @if (audio.note()) {
-                <button class="page-action secondary" type="button" (click)="removeAudio()">Supprimer la note vocale</button>
+                <button class="page-action secondary" type="button" (click)="removeAudio()">
+                  Supprimer la note vocale
+                </button>
               } @else {
-                <button id="record-audio" class="page-action secondary" type="button" (click)="recordAudio()">Enregistrer une note vocale</button>
+                <button
+                  id="record-audio"
+                  class="page-action secondary"
+                  type="button"
+                  (click)="recordAudio()"
+                >
+                  Enregistrer une note vocale
+                </button>
               }
             }
           </section>
           <div class="actions">
-            <button class="page-action" type="submit" [disabled]="media.busy() || audio.state() !== 'idle'">
+            <button
+              class="page-action"
+              type="submit"
+              [disabled]="media.busy() || audio.state() !== 'idle'"
+            >
               Vérifier le signalement
             </button>
             <a
               class="page-action secondary"
-              [routerLink]="['../../../equipements', item.id]"
-              [queryParams]="{ q: search() || null }"
+              [routerLink]="returnLink()"
+              [queryParams]="returnQuery()"
               >Annuler</a
             >
           </div>
@@ -245,6 +308,12 @@
       }
       @case ('review') {
         <dl class="review-values business-card">
+          @if (placeMode) {
+            <div>
+              <dt>Lieu</dt>
+              <dd>{{ form.controls.place.value }}</dd>
+            </div>
+          }
           <div>
             <dt>Intitulé</dt>
             <dd>{{ form.controls.title.value }}</dd>
@@ -277,7 +346,9 @@
             <p>Aucune photo sélectionnée.</p>
           }
         </div>
-        <p>Le statut du matériel reste inchangé.</p>
+        @if (!placeMode) {
+          <p>Le statut du matériel reste inchangé.</p>
+        }
         <div class="actions">
           <button class="page-action" type="button" (click)="complete()">
             Envoyer le signalement
@@ -285,24 +356,23 @@
           <button type="button" class="secondary page-action" (click)="edit()">
             Modifier le signalement
           </button>
-          <a
-            class="page-action secondary"
-            [routerLink]="['../../../equipements', item.id]"
-            [queryParams]="{ q: search() || null }"
+          <a class="page-action secondary" [routerLink]="returnLink()" [queryParams]="returnQuery()"
             >Annuler</a
           >
         </div>
       }
       @case ('complete') {
         <p>Le signalement est disponible dans cet onglet jusqu’au rechargement.</p>
-        <a class="page-action secondary" [routerLink]="['../../', createdIncident()!.id]"
-          >Voir le signalement</a
-        >
+        @if (placeMode) {
+          <p>Lieu : {{ createdIncident()!.place }}</p>
+        }
+        <a class="page-action secondary" [routerLink]="createdLink()">Voir le signalement</a>
         <a
           class="return-link page-action back-link"
-          [routerLink]="['../../../equipements', item.id]"
-          [queryParams]="{ q: search() || null }"
-          ><span aria-hidden="true">←</span><span>Retour à la fiche</span></a
+          [routerLink]="returnLink()"
+          [queryParams]="returnQuery()"
+          ><span aria-hidden="true">←</span
+          ><span>{{ placeMode ? 'Retour aux signalements' : 'Retour à la fiche' }}</span></a
         >
       }
     }

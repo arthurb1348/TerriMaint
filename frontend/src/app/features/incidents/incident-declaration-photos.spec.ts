@@ -44,6 +44,7 @@ describe('Préparation en cours dans le formulaire', () => {
       step(): string;
       form: {
         setValue(value: {
+          place: string;
           title: string;
           description: string;
           priority: string;
@@ -59,7 +60,7 @@ describe('Préparation en cours dans le formulaire', () => {
         }),
     );
     Object.defineProperty(component, 'media', { value: media });
-    component.form.setValue({ title: 'Fissure', description: '', priority: 'low', risk: false });
+    component.form.setValue({ place: '', title: 'Fissure', description: '', priority: 'low', risk: false });
     const task = media.add([new File(['x'], 'photo.png')]);
     await new Promise<void>((resolve) => queueMicrotask(resolve));
     component.review();

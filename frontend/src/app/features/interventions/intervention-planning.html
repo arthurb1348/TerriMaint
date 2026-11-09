@@ -21,6 +21,9 @@
   @if (!fromEquipment() && !incident()) {
     <h1 id="planning-heading" tabindex="-1">Signalement introuvable</h1>
     <p>Aucun signalement ne correspond à cet identifiant.</p>
+  } @else if (incident()?.place) {
+    <h1 id="planning-heading" tabindex="-1">Programmation sur un lieu indisponible</h1>
+    <p>La programmation d’une intervention pour ce lieu n’est pas encore proposée.</p>
   } @else if (!equipment()) {
     <h1 id="planning-heading" tabindex="-1">Matériel introuvable</h1>
     <p>Le matériel associé à ce signalement est introuvable. La programmation est indisponible.</p>
