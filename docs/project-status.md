@@ -1,5 +1,18 @@
 # Bilan du projet TerriMaint
 
+## Agents Responsable — #96, en revue
+
+Base vérifiée : `a8bad8d`, fusion de #102. `/responsable/agents` consulte les trois
+entrées de `DEMO_AGENTS`. Le composant `features/agents/agents.ts` dérive dans un
+`computed` les effectifs Planifiées et En cours de `DemoData.interventions`, par
+identifiant d’agent ; les zéros restent visibles. Programmer ou terminer via les
+parcours existants actualise ces valeurs dans le même onglet. Les liens vers la
+liste Responsable transmettent uniquement `assignee` : les terminées y restent visibles.
+Aucun compte, droit, disponibilité ou planning ajouté. Recharge et fermeture perdent
+les créations de démonstration. Les résultats réels et la procédure téléphone sont
+consignés dans la PR de #96.
+
+
 ## Référence et usage
 
 Vérification ciblée du 13 novembre 2026 : dernier `origin/main` **`eeba26bafa200bed8698f309c41aee271d40af04`**,
