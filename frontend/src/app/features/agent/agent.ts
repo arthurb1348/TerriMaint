@@ -1,3 +1,4 @@
+import { INCIDENT_STATUSES } from '../incidents/incident';
 import { DatePipe } from '@angular/common';
 import { DemoData } from '../../core/demo-data';
 import { PRESENTED_AGENT } from '../../core/presented-agent';
@@ -51,6 +52,25 @@ import { RouterLink } from '@angular/router';
           >Voir toutes mes interventions</a
         >
       </section>
+      <section class="incident-preview" aria-labelledby="recent-incidents-title">
+        <h2 id="recent-incidents-title">Derniers signalements</h2>
+        @if (recentIncidents().length) {
+          <ul class="recent-incidents-list">
+            @for (item of recentIncidents(); track item.id) {
+              <li>
+                <a class="business-card recent-incident-link" [routerLink]="['/agent/incidents', item.id]">
+                  <strong>{{ item.title }}</strong>
+                  <span class="badge">{{ incidentStatuses[item.status] }}</span>
+                </a>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p>Aucun signalement pour le moment.</p>
+        }
+        <a class="page-action" routerLink="/agent/incidents/nouveau">Nouveau signalement</a>
+        <a class="page-action secondary" routerLink="/agent/incidents">Voir tous les signalements</a>
+      </section>
     </section>
   `,
   styleUrls: ['../incidents/incident-presentation.css', './agent.css'],
@@ -59,5 +79,14 @@ export class Agent {
   private readonly data = inject(DemoData);
   protected readonly presentedAgent = PRESENTED_AGENT;
   protected readonly statuses = INTERVENTION_STATUSES;
+  protected readonly incidentStatuses = INCIDENT_STATUSES;
+  protected readonly recentIncidents = computed(() =>
+    this.data.incidents()
+      .map((item, index) => ({ item, index }))
+      // L'index départage les dates égales sans trier la collection partagée.
+      .sort((left, right) => right.item.reportedOn.localeCompare(left.item.reportedOn) || right.index - left.index)
+      .slice(0, 2)
+      .map(({ item }) => item),
+  );
   protected readonly preview = computed(() => activeInterventionPreview(this.data.interventions()));
 }

@@ -1,5 +1,16 @@
 # Guide des fichiers et configurations
 
+## Derniers signalements sur l’accueil Agent — #107, en revue
+
+Base vérifiée `2a1b63e`, fusion de #106. `agent.ts` dérive deux signalements maximum de
+`DemoData.incidents` : date décroissante, puis index d’ajout décroissant en cas d’égalité.
+Le tri porte sur une nouvelle collection ; la source commune à la liste reste inchangée.
+Les cartes réutilisent la présentation existante, avec titre/statut et lien de fiche Agent.
+Nouveau signalement et Voir tous les signalements restent présents même à vide.
+Scanner et interventions actives restent disponibles. État de démonstration dans le même
+onglet ; recharge et fermeture perdent les créations. Résultats et revue dans la PR de #107.
+
+
 ## Agents Responsable — #96, en revue
 
 Base vérifiée : `a8bad8d`, fusion de #102. `/responsable/agents` consulte les trois
