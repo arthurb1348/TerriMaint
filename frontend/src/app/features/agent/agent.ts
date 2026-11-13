@@ -68,8 +68,10 @@ import { RouterLink } from '@angular/router';
         } @else {
           <p>Aucun signalement pour le moment.</p>
         }
-        <a class="page-action" routerLink="/agent/incidents/nouveau">Nouveau signalement</a>
-        <a class="page-action secondary" routerLink="/agent/incidents">Voir tous les signalements</a>
+        <div class="incident-actions">
+          <a class="page-action" routerLink="/agent/incidents/nouveau">Nouveau signalement</a>
+          <a class="page-action secondary" routerLink="/agent/incidents">Voir tous les signalements</a>
+        </div>
       </section>
     </section>
   `,

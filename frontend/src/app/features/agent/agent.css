@@ -82,3 +82,9 @@ h2 {
   outline: 3px solid var(--focus);
   outline-offset: 4px;
 }
+
+.incident-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
