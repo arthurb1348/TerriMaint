@@ -74,7 +74,8 @@ test('Programmer puis consulter le matériel retrouve l’intervention en mémoi
   await main.getByRole('button', { name: 'Programmer l’intervention', exact: true }).click();
   await main.getByRole('link', { name: 'Voir l’intervention', exact: true }).click();
   await expect(page).toHaveURL(/\/responsable\/interventions\/INT-LOCAL-/);
-  const interventionUrl = page.url();
+  const interventionUrl = new URL(page.url());
+  expect(Object.fromEntries(interventionUrl.searchParams)).toEqual({ fromIncident: 'INC-2026-045' });
   await main.getByRole('link', { name: 'Voir le matériel', exact: true }).click();
   await expect(main.getByRole('heading', { level: 1 })).toHaveText('Débroussailleuse n°3');
   const section = main.getByRole('region', { name: 'Interventions', exact: true });
@@ -89,7 +90,7 @@ test('Programmer puis consulter le matériel retrouve l’intervention en mémoi
     contentType: 'image/png',
   });
   await link.click();
-  await expect(page).toHaveURL(interventionUrl);
+  await expect(page).toHaveURL(interventionUrl.origin + interventionUrl.pathname);
   await expect(main.getByRole('heading', { level: 1 })).toHaveText(
     'Contrôle matériel depuis la fiche',
   );

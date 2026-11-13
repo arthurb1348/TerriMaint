@@ -1000,7 +1000,11 @@ for (const timezoneId of ['Europe/Paris', 'America/New_York']) {
         .getByRole('region', { name: 'Interventions liées', exact: true })
         .getByRole('link');
       await expect(intervention).toHaveCount(1);
-      await expect(intervention).toHaveAttribute('href', '/responsable/interventions/INT-2026-034');
+      const interventionHref = new URL((await intervention.getAttribute('href'))!, page.url());
+      expect(interventionHref.pathname).toBe('/responsable/interventions/INT-2026-034');
+      expect(Object.fromEntries(interventionHref.searchParams)).toEqual({
+        fromIncident: 'INC-2026-047', ...query,
+      });
       await expectFocusedControlVisible(page, intervention, 'responsable');
       await page.keyboard.press('Tab');
       const open = main.getByRole('link', { name: 'Programmer une intervention', exact: true });

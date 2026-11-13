@@ -12,10 +12,15 @@ async function navigate(page: Page, space: 'Agent' | 'Responsable', name: string
       await page.getByRole('button', { name: 'Ouvrir la navigation', exact: true }).click();
     else if (name === 'Signalements') await page.getByRole('button', { name: /^Plus/ }).click();
   }
-  await page
+  const link = page
     .getByRole('navigation', { name: `Navigation ${space}`, exact: true })
-    .getByRole('link', { name, exact: true })
-    .click();
+    .getByRole('link', { name, exact: true });
+  const destination = new URL((await link.getAttribute('href'))!, page.url()).pathname;
+  await link.click();
+  await expect(page).toHaveURL((url) => url.pathname === destination);
+  await expect(page.getByRole('main').getByRole('heading', { level: 1 })).toHaveText(
+    space === 'Agent' && name === 'Interventions' ? 'Mes interventions' : name,
+  );
 }
 
 for (const timezoneId of ['Europe/Paris', 'America/New_York']) {
