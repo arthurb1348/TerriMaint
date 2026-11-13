@@ -105,16 +105,16 @@ export const routes: Routes = [
     title: 'Scanner — TerriMaint',
     data: { scannerSpace: space },
   })),
+  {
+    path: 'responsable/agents',
+    loadComponent: () => import('./features/agents/agents').then((m) => m.Agents),
+    title: 'Agents — TerriMaint',
+  },
   ...[
     {
       path: 'agent/profil',
       label: 'Profil',
       description: 'Le profil sera disponible après la mise en place de l’authentification.',
-    },
-    {
-      path: 'responsable/agents',
-      label: 'Agents',
-      description: 'La consultation des intervenants sera développée dans un prochain incrément.',
     },
   ].map(({ path, label, description }) => ({
     path,
