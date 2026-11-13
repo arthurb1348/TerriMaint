@@ -23,7 +23,7 @@
         aria-describedby="intervention-search-help"
       />
       <p id="intervention-search-help" class="help">
-        Titre, référence, nom ou identifiant du matériel.
+        Titre, référence, lieu, nom ou identifiant du matériel.
       </p>
     </div>
     <div>
@@ -77,7 +77,7 @@
       <thead role="rowgroup">
         <tr role="row">
           <th scope="col" role="columnheader">Intervention</th>
-          <th scope="col" role="columnheader">Matériel</th>
+          <th scope="col" role="columnheader">Matériel ou lieu</th>
           @if (!agentView) {
             <th scope="col" role="columnheader">Agent affecté</th>
           }
@@ -95,8 +95,8 @@
               </a>
             </th>
             <td role="cell">
-              <span class="cell-label" aria-hidden="true">Matériel</span>
-              {{ row.equipment?.name ?? 'Matériel introuvable' }}
+              <span class="cell-label" aria-hidden="true">{{ row.place ? 'Lieu' : 'Matériel' }}</span>
+              {{ row.place ?? row.equipment?.name ?? 'Matériel introuvable' }}
               <span class="reference">{{ row.equipment?.id }}</span>
             </td>
             @if (!agentView) {

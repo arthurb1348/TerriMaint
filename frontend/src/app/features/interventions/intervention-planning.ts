@@ -51,11 +51,17 @@ export class InterventionPlanning {
     DEMO_EQUIPMENT.find((item) => item.id === (this.fromEquipment() ? this.params().get('equipmentId') : this.incident()?.equipmentId)),
   );
   protected readonly canPlan = computed(() =>
-    Boolean(this.equipment() && (this.fromEquipment() || (this.incident() && this.incident()?.status !== 'closed'))),
+    this.data.canPlanIntervention({
+      incidentId: this.fromEquipment() ? undefined : this.incidentId() ?? '',
+      equipmentId: this.fromEquipment() ? this.params().get('equipmentId') ?? '' : undefined,
+    }),
   );
   protected readonly query = computed(() =>
     this.fromEquipment() ? { q: this.queryParams().get('q') || null } : incidentQueryParams(readIncidentFilters(this.queryParams())),
   );
+  protected readonly consultationQuery = computed(() => this.fromEquipment()
+    ? { fromEquipment: this.equipment()?.id, q: this.query().q }
+    : { ...this.query(), fromIncident: this.incident()?.id });
   protected readonly agents = DEMO_AGENTS;
   protected readonly priorities = INCIDENT_PRIORITIES;
   protected readonly titleLimit = 120;
@@ -140,7 +146,7 @@ export class InterventionPlanning {
     const intervention = this.data.createIntervention({
       ...this.form.getRawValue(),
       incidentId: this.incident()?.id,
-      equipmentId: this.equipment()!.id,
+      equipmentId: this.fromEquipment() ? this.equipment()?.id : undefined,
     });
     if (!intervention) return;
     this.createdIntervention.set(intervention);

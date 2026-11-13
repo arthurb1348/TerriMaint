@@ -18,7 +18,7 @@ test('Les interventions liées restent consultables après terminaison puis clô
   await page.goto('/responsable/incidents/INC-2026-048');
   const link = section.getByRole('link', { name: /Vérification du plateau de coupe/ });
   await expect(section.getByRole('link')).toHaveCount(1);
-  await expect(link).toHaveAttribute('href', '/responsable/interventions/INT-2026-035');
+  await expect(link).toHaveAttribute('href', '/responsable/interventions/INT-2026-035?fromIncident=INC-2026-048');
   await expect(link.locator('.badge')).toHaveText('En cours');
   await page.keyboard.press('Tab');
   await link.focus();
@@ -35,7 +35,7 @@ test('Les interventions liées restent consultables après terminaison puis clô
   );
   await openIncidents(page, 'Agent');
   await main.locator('tbody tr').filter({ hasText: 'INC-2026-048' }).getByRole('link').click();
-  await expect(link).toHaveAttribute('href', '/agent/interventions/INT-2026-035');
+  await expect(link).toHaveAttribute('href', '/agent/interventions/INT-2026-035?fromIncident=INC-2026-048');
   await link.click();
   await main.getByRole('button', { name: 'Intervention terminée', exact: true }).click();
   await expect(main.locator('.metadata .badge')).toHaveText('Terminée');
@@ -89,7 +89,7 @@ test('Une nouvelle programmation rejoint la liste du signalement avec le filtre 
   await main.getByRole('link', { name: 'Voir le signalement', exact: true }).click();
   await expect(section.getByRole('link')).toHaveCount(2);
   const created = section.getByRole('link', { name: /Suivi du moteur lié au signalement/ });
-  await expect(created).toHaveAttribute('href', interventionPath);
+  await expect(created).toHaveAttribute('href', `${interventionPath}?fromIncident=INC-2026-045`);
   await expect(created.locator('.badge')).toHaveText('Planifiée');
   await openIncidents(page, 'Agent');
   await main.locator('tbody tr').filter({ hasText: 'INC-2026-045' }).getByRole('link').click();
@@ -97,7 +97,7 @@ test('Une nouvelle programmation rejoint la liste du signalement avec le filtre 
   await expect(section).not.toContainText('Suivi du moteur lié au signalement');
   await expect(section.getByRole('link')).toHaveAttribute(
     'href',
-    '/agent/interventions/INT-2026-032',
+    '/agent/interventions/INT-2026-032?fromIncident=INC-2026-045',
   );
   await main.getByRole('link', { name: 'Retour aux signalements', exact: true }).click();
   await main.locator('tbody tr').filter({ hasText: 'INC-2026-046' }).getByRole('link').click();

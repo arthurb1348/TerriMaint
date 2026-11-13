@@ -4,14 +4,19 @@ export const INTERVENTION_STATUSES = {
   completed: 'Terminée',
 } as const;
 
-export interface Intervention {
+interface InterventionDetails {
   readonly id: string;
   readonly title: string;
   readonly instructions?: string;
-  readonly equipmentId: string;
-  readonly incidentId?: string;
   readonly agentId: string;
   // Date calendaire sans heure, conservée comme telle jusqu'au rendu.
   readonly plannedOn: string;
   readonly status: keyof typeof INTERVENTION_STATUSES;
 }
+
+// Une intervention sur lieu garde le signalement comme seule source du lieu.
+export type Intervention = InterventionDetails &
+  (
+    | { readonly equipmentId: string; readonly incidentId?: string }
+    | { readonly equipmentId?: never; readonly incidentId: string }
+  );

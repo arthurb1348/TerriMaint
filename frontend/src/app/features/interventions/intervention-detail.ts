@@ -7,6 +7,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { DEMO_EQUIPMENT } from '../equipements/equipements-demo';
 import { DEMO_AGENTS } from './agents-demo';
 import { INTERVENTION_STATUSES } from './intervention';
+import { incidentQueryParams, readIncidentFilters } from '../incidents/incident-filters';
 import { interventionQueryParams, readInterventionFilters } from './intervention-filters';
 
 @Component({
@@ -51,11 +52,16 @@ export class InterventionDetail {
     return value?.trim() ? value : 'Non renseignées';
   });
   protected readonly query = computed(() =>
-    interventionQueryParams(readInterventionFilters(this.queryParams(), this.agentView)),
+    this.incident()?.id === this.queryParams().get('fromIncident')
+      ? { q: null, status: null, assignee: null }
+      : interventionQueryParams(readInterventionFilters(this.queryParams(), this.agentView)),
   );
   protected readonly equipmentOrigin = computed(() =>
     this.equipment()?.id === this.queryParams().get('fromEquipment') ? this.equipment()?.id : undefined,
   );
+  protected readonly incidentQuery = computed(() =>
+    this.incident()?.id === this.queryParams().get('fromIncident')
+      ? incidentQueryParams(readIncidentFilters(this.queryParams())) : {});
   protected readonly statuses = INTERVENTION_STATUSES;
 
   protected readonly completionMessage = computed(() =>

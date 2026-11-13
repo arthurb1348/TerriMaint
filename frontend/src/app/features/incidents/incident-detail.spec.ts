@@ -51,7 +51,7 @@ describe('Détail local du signalement', () => {
       );
       for (const link of section.querySelectorAll('a')) {
         expect(link.getAttribute('href')).toMatch(new RegExp(`^/${space}/interventions/`));
-        expect(link.getAttribute('href')).not.toContain('?');
+        expect(TestBed.inject(Router).parseUrl(link.getAttribute('href')!).queryParams).toEqual({ fromIncident: 'INC-2026-048', q: 'tondeuse' });
       }
       if (space === 'responsable') {
         for (const action of ['.planning-link', '#incident-close-action'])
@@ -88,7 +88,7 @@ describe('Détail local du signalement', () => {
     async (space) => {
       const first = await harness.navigateByUrl(`/${space}/incidents/INC-2026-045`, IncidentDetail);
       expect(content().querySelector('.intervention-link')?.getAttribute('href')).toBe(
-        `/${space}/interventions/INT-2026-032`,
+        `/${space}/interventions/INT-2026-032?fromIncident=INC-2026-045`,
       );
       expect(await harness.navigateByUrl(`/${space}/incidents/INC-2026-046`, IncidentDetail)).toBe(
         first,
@@ -97,7 +97,7 @@ describe('Détail local du signalement', () => {
       expect(section.textContent).not.toContain('Diagnostic et remise en état');
       if (space === 'responsable')
         expect(section.querySelector('a')?.getAttribute('href')).toBe(
-          '/responsable/interventions/INT-2026-033',
+          '/responsable/interventions/INT-2026-033?fromIncident=INC-2026-046',
         );
       else {
         expect(section.querySelector('a')).toBeNull();

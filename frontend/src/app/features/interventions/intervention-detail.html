@@ -59,7 +59,7 @@
               <span class="reference">{{ source.id }}</span
               >{{ source.title }}
             </p>
-            <a class="page-action" [routerLink]="['../../incidents', source.id]"
+            <a class="page-action" [routerLink]="['../../incidents', source.id]" [queryParams]="incidentQuery()"
               >Voir le signalement</a
             >
           } @else {
@@ -67,6 +67,12 @@
           }
         </section>
         }
+        @if (incident()?.place) {
+          <section class="place-summary business-card" aria-labelledby="intervention-place-title">
+            <h2 id="intervention-place-title">Lieu du signalement</h2>
+            <p>{{ incident()!.place }}</p>
+          </section>
+        } @else if (item.equipmentId) {
         <section
           class="equipment-summary business-card single-destination"
           aria-labelledby="intervention-equipment-title"
@@ -84,6 +90,7 @@
             <p>Matériel introuvable</p>
           }
         </section>
+        }
       </div>
     </div>
   } @else if (otherAgent()) {

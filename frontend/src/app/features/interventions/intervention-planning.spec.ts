@@ -272,7 +272,7 @@ describe('Programmation locale d’une intervention', () => {
     const created = TestBed.inject(DemoData).interventions().at(-1)!;
     expect(created.title).toBe('Contrôle du moteur');
     expect(
-      content().querySelector(`a[href="/responsable/interventions/${created.id}"]`),
+      content().querySelector(`a[href^="/responsable/interventions/${created.id}?"]`),
     ).not.toBeNull();
     expect(content().textContent).not.toMatch(/notifié|synchronisé/i);
     expect(content().querySelector('form')).toBeNull();

@@ -64,6 +64,9 @@ export class IncidentDetail {
   protected readonly priorities = INCIDENT_PRIORITIES;
   protected readonly statuses = INCIDENT_STATUSES;
 
+  protected readonly canPlan = computed(() => this.isResponsible &&
+    this.data.canPlanIntervention({ incidentId: this.incidentId() ?? '' }));
+
   protected readonly canClose = computed(() => {
     const status = this.incident()?.status;
     return this.isResponsible && (status === 'open' || status === 'in-progress');

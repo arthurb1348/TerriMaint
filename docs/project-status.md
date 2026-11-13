@@ -2,15 +2,18 @@
 
 ## Référence et usage
 
-Vérification ciblée du 8 novembre 2026 : dernier `origin/main` `651fcc6`,
-[PR #99 fusionnée](https://github.com/arthurb1348/terrimaint/pull/99) et présente dans cette base.
-La carte #93 sur la fiche partagée, chargée au clic, est intégrée.
-**En revue (#94) :** déclaration sans équipement depuis Signalements Agent, avec lieu
-écrit obligatoire, médias facultatifs, récapitulatif modifiable et confirmation en mémoire.
-Le lieu apparaît dans les listes, la recherche, le détail et l’aperçu Responsable ; la
-clôture et la carte existantes sont réutilisées. Les parcours depuis Matériel sont conservés.
-La programmation sur un lieu reste à #95. Voir [le guide de revue](place-incidents.md).
-Les résultats des contrôles et le résumé Firebase sont consignés dans la PR de #94.
+Vérification ciblée du 13 novembre 2026 : dernier `origin/main` **`eeba26bafa200bed8698f309c41aee271d40af04`**,
+avec [#100](https://github.com/arthurb1348/terrimaint/pull/100) et
+[#101](https://github.com/arthurb1348/terrimaint/pull/101) fusionnées et présentes dans cette base.
+La déclaration sur lieu #94 et la carte #93 sont intégrées.
+**En revue (#95) :** programmer depuis la fiche Responsable d’un signalement sur lieu
+Ouvert/En cours. Le lieu écrit seul suffit et reste fourni par le signalement ; formulaire,
+récapitulatif, consultation et recherche le présentent sans lien Matériel fictif.
+La création est Planifiée, sans changer le statut du signalement. Service et interface
+refusent les origines invalides ou clôturées. Les nouvelles affectations sont partagées
+entre Responsable et Agent dans le même onglet. Les parcours matériel sont conservés.
+Voir [le guide de revue](place-incidents.md). Résultats réels, commits contrôlés et lien
+Firebase sont consignés dans la PR de #95 ; validation et fusion restent à Arthur.
 Les passages ci-dessous conservent leurs dates et leur contexte historiques.
 
 Vérification ciblée du 6 novembre 2026 pour [#78](https://github.com/arthurb1348/terrimaint/issues/78) :

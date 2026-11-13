@@ -194,7 +194,7 @@ for (const mode of ['absent', 'refused', 'joined'] as const) {
     await expect(main).not.toContainText('Matériel introuvable');
     await expect(
       main.getByRole('link', { name: 'Programmer une intervention', exact: true }),
-    ).toHaveCount(0);
+    ).toHaveCount(1);
     if (photo) await expect(main.locator('.photo-gallery img')).toHaveAttribute('src', photo);
     if (audio) await expect(main.locator('audio')).toHaveAttribute('src', audio);
     await info.attach(`lieu-${mode}`, {

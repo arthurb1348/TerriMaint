@@ -26,7 +26,7 @@ const interventionDraft = (
 });
 
 describe('Données partagées pendant la vie de l’application', () => {
-  it('crée un signalement sur un lieu, le clôture et refuse sa programmation même avec un matériel de repli', () => {
+  it('programme un lieu depuis son signalement puis refuse la programmation après clôture ou avec un matériel de repli', () => {
     const initial = data.incidents();
     const place = '  Rue des Écoles, près du portail  ';
     const created = data.createIncident(incidentDraft({ equipmentId: undefined, place }))!;
@@ -36,14 +36,42 @@ describe('Données partagées pendant la vie de l’application', () => {
     expect(Object.isFrozen(created)).toBe(true);
     expect(data.getIncident(created.id)).toBe(created);
     const interventions = data.interventions();
-    for (const equipmentId of [undefined, 'EQ-OUT-0001']) {
-      expect(data.createIntervention(interventionDraft({ incidentId: created.id, equipmentId }))).toBeUndefined();
-    }
+    expect(data.createIntervention(interventionDraft({ incidentId: created.id, equipmentId: 'EQ-OUT-0001' }))).toBeUndefined();
     expect(data.interventions()).toBe(interventions);
+    const intervention = data.createIntervention(interventionDraft({ incidentId: created.id }))!;
+    expect(intervention).toMatchObject({ incidentId: created.id, status: 'planned' });
+    expect(intervention.equipmentId).toBeUndefined();
+    expect(Object.hasOwn(intervention, 'place')).toBe(false);
+    expect(Object.isFrozen(intervention)).toBe(true);
+    expect(data.getIncident(created.id)).toBe(created);
     expect(data.closeIncident(created.id)).toBe(true);
     expect(data.getIncident(created.id)).toMatchObject({ place, status: 'closed' });
     expect(data.closeIncident(created.id)).toBe(false);
+    const after = data.interventions();
+    for (const equipmentId of [undefined, 'EQ-OUT-0001']) {
+      expect(data.createIntervention(interventionDraft({ incidentId: created.id, equipmentId }))).toBeUndefined();
+    }
+    expect(data.interventions()).toBe(after);
     expect(data.incidents().slice(0, -1)).toEqual(initial);
+  });
+
+  it.each([
+    { place: 'Rue des Écoles', equipmentId: undefined, status: 'in-progress', accepted: true },
+    { place: ' ', equipmentId: undefined, status: 'open', accepted: false },
+    { place: 'x'.repeat(201), equipmentId: undefined, status: 'open', accepted: false },
+    { place: undefined, equipmentId: undefined, status: 'open', accepted: false },
+    { place: 'Rue des Écoles', equipmentId: 'EQ-OUT-0001', status: 'open', accepted: false },
+    { place: undefined, equipmentId: 'inconnu', status: 'open', accepted: false },
+    { place: 'Rue des Écoles', equipmentId: undefined, status: 'inconnu', accepted: false },
+  ])('revalide l’origine du signalement et conserve son statut : %j', ({ accepted, ...origin }) => {
+    const incident = { ...DEMO_INCIDENTS[0], ...origin };
+    vi.spyOn(data, 'getIncident').mockReturnValue(incident as typeof DEMO_INCIDENTS[number]);
+    const before = data.interventions();
+    expect(data.canPlanIntervention({ incidentId: incident.id })).toBe(accepted);
+    const result = data.createIntervention(interventionDraft({ incidentId: incident.id }));
+    expect(Boolean(result)).toBe(accepted);
+    expect(incident.status).toBe(origin.status);
+    if (!accepted) expect(data.interventions()).toBe(before);
   });
 
   it.each([

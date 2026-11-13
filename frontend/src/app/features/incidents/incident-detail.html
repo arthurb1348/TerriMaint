@@ -82,6 +82,7 @@
               <a
                 class="business-card intervention-link"
                 [routerLink]="['../../interventions', intervention.id]"
+                [queryParams]="{ fromIncident: item.id, q: query().q, priority: query().priority, status: query().status }"
               >
                 <strong>{{ intervention.title }}</strong>
                 <span class="badge">{{ interventionStatuses[intervention.status] }}</span>
@@ -99,12 +100,12 @@
         </p>
       }
     </section>
-    @if (isResponsible && equipment()) {
+    @if (isResponsible) {
       @if (item.status === 'closed') {
         <p class="planning-note">
           Ce signalement est clôturé. Aucune intervention ne peut y être programmée.
         </p>
-      } @else {
+      } @else if (canPlan()) {
         <a
           class="planning-link page-action"
           [routerLink]="['../../interventions/nouvelle', item.id]"
