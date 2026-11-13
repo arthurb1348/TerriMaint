@@ -16,30 +16,20 @@ responsive utilisable sur mobile et sur ordinateur ; le rôle ne détermine pas 
 
 ## Priorité validée pour l'oral de décembre 2026
 
-Arthur privilégie la réalisation rapide des parcours frontend pour préparer son oral de
-décembre 2026. La liste et le détail des signalements de l'[issue #39](https://github.com/arthurb1348/terrimaint/issues/39)
-sont intégrés par la PR #40 fusionnée, avec priorité à la présentation Responsable et composants
-partagés avec Agent. La programmation simulée depuis un signalement Responsable de
-l'[issue #41](https://github.com/arthurb1348/terrimaint/issues/41) est intégrée par la
-[PR #49](https://github.com/arthurb1348/terrimaint/pull/49), fusionnée le 31 octobre 2026.
-La consultation d'un jeu fixe d'interventions de l'[issue #42](https://github.com/arthurb1348/terrimaint/issues/42)
-est intégrée par la [PR #50](https://github.com/arthurb1348/terrimaint/pull/50), fusionnée le
-31 octobre 2026. Les créations en mémoire de #59 (intégrée par #69) complètent ce jeu. L'[issue #51](https://github.com/arthurb1348/terrimaint/issues/51)
-porte l’harmonisation UX intégrée par la PR #52 : Basse/Haute/
-Urgente, actions hiérarchisées sans soulignement, retours fléchés avec libellé et cartes légèrement
-teintées. C'est l'incrément **4/10**, après ajout de ce retour utilisateur au programme initial.
-Les contrastes #53/PR #54 sont intégrés. Les images/photos #43 sont intégrées par la [PR #55](https://github.com/arthurb1348/terrimaint/pull/55).
-L’identification QR et la saisie manuelle #44 sont intégrées par la PR #56, fusionnée le
-1er novembre 2026 (`5d1867a17a993f1005c87276665b29004787eab6`).
-Les ajustements Pixel #58 sont intégrés par la PR #60 (`7388912…`). Les photos #57 sont intégrées par #63. La mémoire partagée #59 est intégrée par #69.
-Mes interventions #70 est intégrée par #71 ; UX accueil/navigation/guide QR #72 intégrée par #73.
-#75 fixe les validations ciblées ; les accès Scanner des deux espaces et les actions photo
-grand écran #76 sont en revue.
-Suite : interventions sur fiche matériel → gestion des états
-→ #45 GPS → #46 audio → #47 dashboard → #48 stabilisation.
-Le [guide Agent](agent-interventions.md) décrit cet incrément de consultation. Le
-[guide #59](shared-memory.md) précise les données locales et leur perte au rechargement.
-Ces parcours restent locaux et fictifs ; leurs limites sont documentées dans le README et les guides.
+La base vérifiée le 13 novembre 2026 est `5ae8095`, après fusion de la
+[PR #108](https://github.com/arthurb1348/terrimaint/pull/108). Les parcours de démonstration
+Agent et Responsable partagent leurs signalements et interventions en mémoire dans l’onglet :
+identification QR/manuelle, fiches Matériel, déclaration avec matériel ou lieu écrit,
+photos/GPS/audio facultatifs, programmation, consultation de l’agent affecté, fin
+d’intervention et clôture Responsable. Les accueils, les compteurs et la page Agents
+lisent ce même état. Le pied de page donne accès à Confidentialité dans les deux espaces.
+
+Les PR fusionnées et leurs limites sont recensées en tête du [bilan](project-status.md).
+La dernière passe [#48](https://github.com/arthurb1348/terrimaint/issues/48) est **en revue** :
+retours et confirmations, tableaux, logo Responsable PC, validations transversales et
+[guide de démonstration de six minutes](demo-oral.md). Les essais automatisés ne remplacent
+ni la relecture d’Arthur ni les contrôles sur appareil réel et avec lecteur d’écran.
+Les parcours restent locaux et fictifs ; recharger rétablit les exemples initiaux.
 PostgreSQL ([#38](https://github.com/arthurb1348/terrimaint/issues/38)) est **différé** et ne
 bloque pas ces écrans. La cible Django/DRF/PostgreSQL est conservée ; cette priorité ne
 constitue pas une annonce de parcours métier connecté ou de livraison en production.

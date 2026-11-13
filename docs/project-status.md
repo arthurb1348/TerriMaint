@@ -1,6 +1,37 @@
 # Bilan du projet TerriMaint
 
-## Derniers signalements sur l’accueil Agent — #107, en revue
+## État courant vérifié — 13 novembre 2026, préparation #48
+
+Dernier `origin/main` vérifié : **`5ae809590cbb9e56a96eafd606df65ddee07ab4f`**, fusion
+[#108](https://github.com/arthurb1348/terrimaint/pull/108). Git et GitHub concordent ;
+les étapes suivantes sont **intégrées**, et non plus en attente de la feuille de route :
+
+| Fonctionnalité intégrée | PR fusionnée |
+| --- | --- |
+| Mémoire partagée, consultation des affectations Agent et accès Scanner des deux espaces | [#69](https://github.com/arthurb1348/terrimaint/pull/69), [#71](https://github.com/arthurb1348/terrimaint/pull/71), [#77](https://github.com/arthurb1348/terrimaint/pull/77) |
+| Logo/bandeau, interventions sur Matériel, fin d’intervention Agent, clôture Responsable, relations et programmation depuis Matériel | [#79](https://github.com/arthurb1348/terrimaint/pull/79), [#80](https://github.com/arthurb1348/terrimaint/pull/80), [#81](https://github.com/arthurb1348/terrimaint/pull/81), [#82](https://github.com/arthurb1348/terrimaint/pull/82), [#84](https://github.com/arthurb1348/terrimaint/pull/84), [#86](https://github.com/arthurb1348/terrimaint/pull/86), [#88](https://github.com/arthurb1348/terrimaint/pull/88) |
+| GPS #45, audio #46, tableau de bord #47, finitions #92 | [#89](https://github.com/arthurb1348/terrimaint/pull/89), [#90](https://github.com/arthurb1348/terrimaint/pull/90), [#91](https://github.com/arthurb1348/terrimaint/pull/91), [#98](https://github.com/arthurb1348/terrimaint/pull/98) |
+| Carte #93, signalement sur lieu #94, intervention sur lieu #95 | [#99](https://github.com/arthurb1348/terrimaint/pull/99), [#100](https://github.com/arthurb1348/terrimaint/pull/100), [#102](https://github.com/arthurb1348/terrimaint/pull/102) |
+| Agents #96, Confidentialité #97, déclaration Responsable sur lieu #105, derniers signalements Agent #107 | [#103](https://github.com/arthurb1348/terrimaint/pull/103), [#104](https://github.com/arthurb1348/terrimaint/pull/104), [#106](https://github.com/arthurb1348/terrimaint/pull/106), [#108](https://github.com/arthurb1348/terrimaint/pull/108) |
+
+**En revue : #48**, sur une branche distincte : retour unique pendant la déclaration,
+confirmations à deux actions espacées, cellules de tableaux centrées verticalement,
+logo horizontal dans l’en-tête Responsable PC et libellés de barre Agent sans chevauchement
+à texte agrandi. Le [guide oral](demo-oral.md) prépare six
+minutes ; la [revue](stabilization-review.md) distingue preuves automatisées, simulations,
+diagnostic #33 et contrôles manuels restant à Arthur. Résultats et commits effectivement
+contrôlés sont dans la PR #48 ; aucune validation humaine n’est cochée.
+
+**Prévu / non présent :** PostgreSQL #38 différé, API et persistance métier,
+authentification, autorisations serveur et isolation des collectivités, notifications,
+synchronisation, PWA/hors connexion. Profil reste une page d’attente. La santé Django/DRF
+ne vérifie pas une base ; Firebase ne publie que le frontend. Créations et états ne sont
+partagés que dans le même onglet et disparaissent au rechargement/à la fermeture.
+
+Les notes ci-dessous conservent les bases et dates de chaque incrément ; les sections
+anciennes décrivent leur état **à cette date**, pas l’état courant résumé ci-dessus.
+
+## Derniers signalements sur l’accueil Agent — #107, intégrée par #108
 
 Base vérifiée `2a1b63e`, fusion de #106. `agent.ts` dérive deux signalements maximum de
 `DemoData.incidents` : date décroissante, puis index d’ajout décroissant en cas d’égalité.
@@ -11,16 +42,16 @@ Scanner et interventions actives restent disponibles. État de démonstration da
 onglet ; recharge et fermeture perdent les créations. Résultats et revue dans la PR de #107.
 
 
-## Déclaration sur lieu côté Responsable — #105, en revue
+## Déclaration sur lieu côté Responsable — #105, intégrée par #106
 
 Base vérifiée `e578a33`, fusion de #104. La liste Responsable propose Nouveau signalement,
 avec la route spécifique avant le détail et le formulaire partagé en mode lieu.
-Annuler/Retour conservent ses filtres ; Voir le signalement ouvre la nouvelle fiche dans
+Le retour contextuel conserve ses filtres ; Voir le signalement ouvre la nouvelle fiche dans
 l’espace d’origine sans ces filtres. Les validations et les créations en mémoire restent
 communes aux deux espaces. Résultats et procédure téléphone dans la PR de #105.
 
 
-## Confidentialité de la démo — #97, en revue
+## Confidentialité de la démo — #97, intégrée par #104
 
 Base vérifiée `78f0f6f`, fusion de #103. Le pied de page commun donne accès à une
 page partagée sous chaque espace, qui décrit les permissions, la mémoire de l’onglet
@@ -28,7 +59,7 @@ et le chargement explicite des tuiles OpenStreetMap. La portée reste la démo a
 Les preuves de code, requêtes observées, interceptions et résultats figurent dans la PR.
 
 
-## Agents Responsable — #96, en revue
+## Agents Responsable — #96, intégrée par #103
 
 Base vérifiée : `a8bad8d`, fusion de #102. `/responsable/agents` consulte les trois
 entrées de `DEMO_AGENTS`. Le composant `features/agents/agents.ts` dérive dans un

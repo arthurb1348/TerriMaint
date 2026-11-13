@@ -1,6 +1,34 @@
 # Guide des fichiers et configurations
 
-## Derniers signalements sur l’accueil Agent — #107, en revue
+## Stabilisation de la démo — #48, en revue
+
+Base `5ae8095` (#108 fusionnée). `incident-declaration.html` affiche le retour
+contextuel avant saisie/récapitulatif, sans Annuler de même effet. Après confirmation,
+seules les deux actions Voir le signalement / retour à l’origine sont dans `.actions`.
+`intervention-planning.html` emploie le même groupe après programmation. La règle partagée
+de `styles.css` apporte flex, retour à la ligne et espacement de 12 px ; aucune navigation
+ou mutation métier n’est dupliquée. Les informations utiles de validation et le focus
+existant sont conservés ; les répétitions de limites de démonstration restent dans les guides.
+
+Les deux CSS de listes changent seulement `vertical-align` en mode tableau à partir de
+960 px de contenu. Les cartes mobiles restent inchangées. `app.css` montre désormais
+le logo horizontal dans l’en-tête Responsable aussi avec sidebar, suivant #48 ; la marque
+de sidebar conserve son lien vers le tableau de bord. Voir [la marque](brand.md).
+La revue visuelle à 200 % avec espacements a révélé un chevauchement des libellés
+Agent : `main-navigation.css` autorise leur retour à la ligne et borne leurs textes
+à la largeur du contrôle. Le shell réserve aussi une hauteur en rem pour le bas de page.
+Les marges de défilement des actions, champs et cartes suivent cette réserve agrandie
+pour que le contrôle focalisé reste au-dessus de la barre fixe.
+Le test contrôle les rectangles du texte dans chaque cible et l’accès à Confidentialité.
+
+`e2e/stabilization.pw.ts` vérifie retours uniques, deux actions finales, destination/filtres,
+clavier, espacement géométrique, texte agrandi/espacé, paysage, cellules multiligne et
+diagnostic de recherche #33. Les suites existantes conservent les assertions métier et
+ressources ; seuls les contrôles visant les doublons retirés sont actualisés.
+Le [guide oral](demo-oral.md) et la [matrice de revue/limites](stabilization-review.md)
+complètent ces preuves sans revendiquer une validation d’appareil ou un audit exhaustif.
+
+## Derniers signalements sur l’accueil Agent — #107, intégrée par #108
 
 Base vérifiée `2a1b63e`, fusion de #106. `agent.ts` dérive deux signalements maximum de
 `DemoData.incidents` : date décroissante, puis index d’ajout décroissant en cas d’égalité.
@@ -11,7 +39,7 @@ Scanner et interventions actives restent disponibles. État de démonstration da
 onglet ; recharge et fermeture perdent les créations. Résultats et revue dans la PR de #107.
 
 
-## Agents Responsable — #96, en revue
+## Agents Responsable — #96, intégrée par #103
 
 Base vérifiée : `a8bad8d`, fusion de #102. `/responsable/agents` consulte les trois
 entrées de `DEMO_AGENTS`. Le composant `features/agents/agents.ts` dérive dans un
@@ -36,7 +64,7 @@ Le contenu est conservé. L’état partagé, les médias et la clôture gardent
 Signalements. Les routes depuis un matériel conservent leurs destinations et leur recherche.
 `incidents` recherche et affiche aussi le lieu ; `incident-detail` et l’aperçu Responsable
 le présentent sans matériel fictif. La carte existante lit les coordonnées jointes.
-#95, en revue, réutilise la programmation depuis un lieu. `Intervention` est une union :
+#95, intégrée par #102, réutilise la programmation depuis un lieu. `Intervention` est une union :
 équipement avec signalement facultatif, ou signalement obligatoire sans équipement.
 Le lieu n’est jamais copié : les vues le lisent sur le signalement d’origine.
 `DemoData.canPlanIntervention` vérifie origine, exclusivité et statut Ouvert/En cours ;

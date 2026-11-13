@@ -1,7 +1,9 @@
 <section class="feature-page" aria-labelledby="planning-heading">
   @if (step() !== 'complete') {
     @if (fromEquipment()) {
-      <a class="back-link page-action secondary" [routerLink]="returnLink()" [queryParams]="query()">← Retour au matériel</a>
+      <a class="back-link page-action secondary" [routerLink]="returnLink()" [queryParams]="query()"
+        >← Retour au matériel</a
+      >
     } @else if (incident(); as item) {
       <a
         class="back-link page-action secondary"
@@ -32,7 +34,10 @@
     <p>Le matériel associé est introuvable. La programmation est indisponible.</p>
   } @else if (!canPlan()) {
     <h1 id="planning-heading" tabindex="-1">Origine indisponible</h1>
-    <p>Le matériel ou le lieu du signalement est introuvable ou incohérent. La programmation est indisponible.</p>
+    <p>
+      Le matériel ou le lieu du signalement est introuvable ou incohérent. La programmation est
+      indisponible.
+    </p>
   } @else {
     <h1 id="planning-heading" tabindex="-1">
       @switch (step()) {
@@ -49,23 +54,23 @@
     </h1>
     <section class="origin-summary business-card" aria-labelledby="planning-origin-heading">
       @if (incident()) {
-      <h2>Signalement d’origine</h2>
-      <p>
-        {{ incident()!.title }}<span class="reference">{{ incident()!.id }}</span>
-      </p>
-      <p>
-        Priorité : <strong>{{ priorities[incident()!.priority] }}</strong>
-      </p>
+        <h2>Signalement d’origine</h2>
+        <p>
+          {{ incident()!.title }}<span class="reference">{{ incident()!.id }}</span>
+        </p>
+        <p>
+          Priorité : <strong>{{ priorities[incident()!.priority] }}</strong>
+        </p>
       }
       @if (incident()?.place) {
         <h2 id="planning-origin-heading">Lieu du signalement</h2>
         <p>{{ incident()!.place }}</p>
       } @else {
-      <h2 id="planning-origin-heading">Matériel concerné</h2>
-      <p>
-        {{ equipment()!.name }}
-        <span class="reference">{{ equipment()!.id }} · {{ equipment()!.location }}</span>
-      </p>
+        <h2 id="planning-origin-heading">Matériel concerné</h2>
+        <p>
+          {{ equipment()!.name }}
+          <span class="reference">{{ equipment()!.id }} · {{ equipment()!.location }}</span>
+        </p>
       }
     </section>
     @switch (step()) {
@@ -128,9 +133,7 @@
                 formControlName="agentId"
                 required
                 [attr.aria-invalid]="invalid('agentId')"
-                [attr.aria-describedby]="
-                  invalid('agentId') ? 'planning-agent-error' : null
-                "
+                [attr.aria-describedby]="invalid('agentId') ? 'planning-agent-error' : null"
               >
                 <option value="">Choisir un agent</option>
                 @for (agent of agents; track agent.id) {
@@ -168,10 +171,7 @@
           </div>
           <div class="actions">
             <button class="page-action" type="submit">Vérifier l’intervention</button>
-            <a
-              class="page-action secondary"
-              [routerLink]="returnLink()"
-              [queryParams]="query()"
+            <a class="page-action secondary" [routerLink]="returnLink()" [queryParams]="query()"
               >Annuler</a
             >
           </div>
@@ -201,35 +201,32 @@
           </div>
         </dl>
         <div class="actions">
-          <button
-            class="page-action"
-            type="button"
-            (click)="complete()"
-          >
+          <button class="page-action" type="button" (click)="complete()">
             Programmer l’intervention
           </button>
           <button type="button" class="secondary page-action" (click)="edit()">
             Modifier l’intervention
           </button>
-          <a
-            class="page-action secondary"
-            [routerLink]="returnLink()"
-            [queryParams]="query()"
+          <a class="page-action secondary" [routerLink]="returnLink()" [queryParams]="query()"
             >Annuler</a
           >
         </div>
       }
       @case ('complete') {
-        <p>L’intervention est disponible dans cet onglet jusqu’au rechargement.</p>
-        <a class="page-action secondary" [routerLink]="['../../', createdIntervention()!.id]" [queryParams]="consultationQuery()"
-          >Voir l’intervention</a
-        >
-        <a
-          class="return-link page-action back-link"
-          [routerLink]="returnLink()"
-          [queryParams]="query()"
-          ><span aria-hidden="true">←</span><span>{{ returnLabel() }}</span></a
-        >
+        <div class="actions">
+          <a
+            class="page-action"
+            [routerLink]="['../../', createdIntervention()!.id]"
+            [queryParams]="consultationQuery()"
+            >Voir l’intervention</a
+          >
+          <a
+            class="return-link page-action secondary"
+            [routerLink]="returnLink()"
+            [queryParams]="query()"
+            ><span aria-hidden="true">←</span><span>{{ returnLabel() }}</span></a
+          >
+        </div>
       }
     }
   }

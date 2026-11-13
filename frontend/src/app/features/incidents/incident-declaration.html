@@ -1,17 +1,19 @@
 <section class="feature-page" aria-labelledby="incident-title-heading">
-  <a
-    class="page-action back-link secondary"
-    [routerLink]="returnLink()"
-    [queryParams]="returnQuery()"
-    ><span aria-hidden="true">←</span
-    ><span>{{
-      placeMode
-        ? 'Retour aux signalements'
-        : equipment()
-          ? 'Retour à la fiche matériel'
-          : 'Retour au matériel'
-    }}</span></a
-  >
+  @if (step() !== 'complete') {
+    <a
+      class="page-action back-link secondary"
+      [routerLink]="returnLink()"
+      [queryParams]="returnQuery()"
+      ><span aria-hidden="true">←</span
+      ><span>{{
+        placeMode
+          ? 'Retour aux signalements'
+          : equipment()
+            ? 'Retour à la fiche matériel'
+            : 'Retour au matériel'
+      }}</span></a
+    >
+  }
 
   @if (placeMode || equipment()) {
     <h1 id="incident-title-heading" tabindex="-1">
@@ -43,7 +45,6 @@
                 ? 'Le lieu, l’intitulé et la priorité sont obligatoires.'
                 : "L'intitulé et la priorité sont obligatoires."
             }}
-            La description est facultative.
           </p>
           @if (placeMode) {
             <div class="field">
@@ -239,8 +240,7 @@
             <p class="help">
               Position obtenue pour ce signalement, sans garantie du lieu
               {{ placeMode ? 'de l’événement.' : 'du matériel ou de l’événement.' }}
-              Elle reste dans cet onglet jusqu’au rechargement. Nécessite un navigateur
-              compatible et un contexte sécurisé.
+              Nécessite un navigateur compatible et un contexte sécurisé.
             </p>
             <app-location-summary [coordinates]="location.value()" />
             <p role="status" aria-live="polite">{{ location.message() }}</p>
@@ -297,12 +297,6 @@
             >
               Vérifier le signalement
             </button>
-            <a
-              class="page-action secondary"
-              [routerLink]="returnLink()"
-              [queryParams]="returnQuery()"
-              >Annuler</a
-            >
           </div>
         </form>
       }
@@ -346,9 +340,6 @@
             <p>Aucune photo sélectionnée.</p>
           }
         </div>
-        @if (!placeMode) {
-          <p>Le statut du matériel reste inchangé.</p>
-        }
         <div class="actions">
           <button class="page-action" type="button" (click)="complete()">
             Envoyer le signalement
@@ -356,24 +347,24 @@
           <button type="button" class="secondary page-action" (click)="edit()">
             Modifier le signalement
           </button>
-          <a class="page-action secondary" [routerLink]="returnLink()" [queryParams]="returnQuery()"
-            >Annuler</a
-          >
         </div>
       }
       @case ('complete') {
-        <p>Le signalement est disponible dans cet onglet jusqu’au rechargement.</p>
         @if (placeMode) {
           <p>Lieu : {{ createdIncident()!.place }}</p>
         }
-        <a class="page-action secondary" [routerLink]="createdLink()">Voir le signalement</a>
-        <a
-          class="return-link page-action back-link"
-          [routerLink]="returnLink()"
-          [queryParams]="returnQuery()"
-          ><span aria-hidden="true">←</span
-          ><span>{{ placeMode ? 'Retour aux signalements' : 'Retour à la fiche' }}</span></a
-        >
+        <div class="actions">
+          <a class="page-action" [routerLink]="createdLink()">Voir le signalement</a>
+          <a
+            class="return-link page-action secondary"
+            [routerLink]="returnLink()"
+            [queryParams]="returnQuery()"
+            ><span aria-hidden="true">←</span
+            ><span>{{
+              placeMode ? 'Retour aux signalements' : 'Retour à la fiche matériel'
+            }}</span></a
+          >
+        </div>
       }
     }
   } @else {

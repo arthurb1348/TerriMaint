@@ -485,7 +485,7 @@ for (const space of ['agent', 'responsable']) {
     const created = main.getByRole('link', { name: 'Voir le signalement', exact: true });
     await expectFocusedControlVisible(page, created, space);
     await page.keyboard.press('Tab');
-    const back = main.getByRole('link', { name: 'Retour à la fiche', exact: true });
+    const back = main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true });
     await expectFocusedControlVisible(page, back, space);
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(
@@ -552,7 +552,7 @@ for (const space of ['agent', 'responsable']) {
     await page.keyboard.press('Enter');
     await expect(main.getByRole('heading', { level: 1 })).toHaveText('Signalement terminé');
     await expect(main.locator('.return-link')).toHaveAttribute('href', /\/equipements\/EQ-/);
-    await main.getByRole('link', { name: 'Retour à la fiche', exact: true }).click();
+    await main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true }).click();
     await expect(page).toHaveURL(
       (url) =>
         url.pathname === `/${space}/equipements/EQ-OUT-0003` && url.searchParams.get('q') === query,
@@ -591,7 +591,7 @@ for (const space of ['agent', 'responsable']) {
     await expect(main.getByRole('radio', { checked: true })).toHaveCount(0);
     await expect(main.getByRole('checkbox')).not.toBeChecked();
     await expect(main.locator('.error')).toHaveCount(0);
-    await main.getByRole('link', { name: 'Annuler', exact: true }).click();
+    await main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true }).click();
     await expect(page).toHaveURL(
       (url) =>
         url.pathname === `/${space}/equipements/EQ-OUT-0003` && url.searchParams.get('q') === query,
@@ -1609,16 +1609,16 @@ for (const space of ['agent', 'responsable']) {
     await expectBusinessCard(main.locator('.review-values'));
     const edit = main.getByRole('button', { name: 'Modifier le signalement', exact: true });
     await expectPageAction(page, edit, 'secondary', space);
-    const cancel = main.getByRole('link', { name: 'Annuler', exact: true });
-    await expectPageAction(page, cancel, 'secondary', space);
-    await expect(cancel).toHaveAttribute('href', `${detail}?q=${encodeURIComponent(q)}`);
+    await expect(main.getByRole('link', { name: 'Annuler', exact: true })).toHaveCount(0);
+    await expectBackAction(page, formBack, space);
+    await expect(formBack).toHaveAttribute('href', `${detail}?q=${encodeURIComponent(q)}`);
     const send = main.getByRole('button', { name: 'Envoyer le signalement', exact: true });
     await expectPageAction(page, send, 'primary', space);
     await capture(page, info, 'ux-recapitulatif-signalement');
     await page.keyboard.press('Enter');
-    const completedBack = main.getByRole('link', { name: 'Retour à la fiche', exact: true });
+    const completedBack = main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true });
     await expect(completedBack.locator('span[aria-hidden="true"]')).toHaveText('←');
-    await expectPageAction(page, completedBack, 'primary', space);
+    await expectPageAction(page, completedBack, 'secondary', space);
     await page.keyboard.press('Enter');
     await expect(page).toHaveURL(
       (url) => url.pathname === detail && url.searchParams.get('q') === q,
@@ -1707,7 +1707,7 @@ test('L’harmonisation de la programmation conserve les liens, Basse et les cri
   await expect(main.getByRole('heading', { level: 1 })).toHaveText('Programmation terminée');
   const completedBack = main.getByRole('link', { name: 'Retour au signalement', exact: true });
   await expect(completedBack.locator('span[aria-hidden="true"]')).toHaveText('←');
-  await expectPageAction(page, completedBack, 'primary', 'responsable');
+  await expectPageAction(page, completedBack, 'secondary', 'responsable');
   await page.keyboard.press('Enter');
   await expect(page).toHaveURL(
     (url) =>

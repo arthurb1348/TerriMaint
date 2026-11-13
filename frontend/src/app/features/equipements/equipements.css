@@ -59,7 +59,7 @@ li p {
 }
 /* Au focus clavier, laisser le lien visible au-dessus de la navigation Agent fixée en bas. */
 .equipment-list a {
-  scroll-margin-bottom: calc(104px + env(safe-area-inset-bottom));
+  scroll-margin-bottom: calc(max(104px, 6.5rem) + env(safe-area-inset-bottom));
 }
 @media (min-width: 761px) {
   .equipment-list {

@@ -3,7 +3,7 @@
 }
 .shell {
   min-height: 100dvh;
-  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+  padding-bottom: calc(max(88px, 5.5rem) + env(safe-area-inset-bottom));
 }
 .app-bar {
   container-type: inline-size;
@@ -128,7 +128,13 @@ footer {
   grid-column: 2;
 }
 .responsable .brand-link {
+  display: flex;
+}
+.responsable .brand-symbol {
   display: none;
+}
+.responsable .brand-horizontal {
+  display: block;
 }
 .responsable main {
   grid-column: 2;
@@ -144,9 +150,6 @@ footer {
     gap: 8px;
     padding: 8px 16px;
     flex-wrap: nowrap;
-  }
-  .responsable .brand-link {
-    display: flex;
   }
   .brand-symbol {
     display: none;
@@ -196,7 +199,7 @@ footer a {
   min-height: 44px;
   padding: 8px;
   color: var(--green);
-  scroll-margin-block: 24px calc(112px + env(safe-area-inset-bottom));
+  scroll-margin-block: 24px calc(max(112px, 7rem) + env(safe-area-inset-bottom));
 }
 footer a:focus-visible {
   outline: 3px solid var(--focus);

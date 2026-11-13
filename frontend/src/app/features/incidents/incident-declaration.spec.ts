@@ -154,7 +154,7 @@ describe('Déclaration locale d’incident', () => {
       expect(content().textContent).toContain('Urgente — danger immédiat');
       await click('Envoyer le signalement');
       expect(heading()).toBe('Signalement terminé');
-      expect(content().querySelectorAll('a')).toHaveLength(3);
+      expect(content().querySelectorAll('a')).toHaveLength(2);
       const component = harness.routeDebugElement!.componentInstance as {
         complete(): void;
         edit(): void;
@@ -169,7 +169,7 @@ describe('Déclaration locale d’incident', () => {
       expect(content().querySelector('form')).toBeNull();
       expect(JSON.stringify(DEMO_EQUIPMENT)).toBe(sourceBefore);
       expect(TestBed.inject(Router).url).toBe(`${base}/EQ-OUT-0003?q=OUT`);
-      await click('Retour à la fiche');
+      await click('Retour à la fiche matériel');
       expect(TestBed.inject(Router).url).toBe(`/${space}/equipements/EQ-OUT-0003?q=OUT`);
     });
 
@@ -235,7 +235,7 @@ describe('Déclaration locale d’incident', () => {
       );
       await fillValid();
       await submit();
-      await click('Annuler');
+      await click('Retour à la fiche matériel');
       expect(TestBed.inject(DemoData).incidents()).toHaveLength(6);
       const router = TestBed.inject(Router);
       expect(router.url.split('?')[0]).toBe(`/${space}/equipements/EQ-OUT-0001`);
@@ -320,7 +320,7 @@ describe('Déclaration locale d’incident', () => {
     await fillValid();
     expect(await harness.navigateByUrl(`${base}?q=OUT`, IncidentDeclaration)).toBe(first);
     expect(field('title').value).toBe('Le moteur cale');
-    await click('Annuler');
+    await click('Retour à la fiche matériel');
     await harness.navigateByUrl(base, IncidentDeclaration);
     expect(field('title').value).toBe('');
     expect(content().querySelector('input[type="radio"]:checked')).toBeNull();

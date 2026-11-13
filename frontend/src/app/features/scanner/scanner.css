@@ -101,7 +101,7 @@ input {
   background: white;
   color: var(--text);
   font: inherit;
-  scroll-margin-block: 24px calc(112px + env(safe-area-inset-bottom));
+  scroll-margin-block: 24px calc(max(112px, 7rem) + env(safe-area-inset-bottom));
 }
 input:focus-visible {
   outline: 3px solid var(--focus);

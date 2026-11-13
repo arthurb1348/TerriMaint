@@ -12,10 +12,12 @@ for (const route of ['/', '/agent', '/responsable']) {
     const organization = page.locator('.organization');
     const brand = sidebar ? organization : headerBrand;
     await expect(brand).toBeVisible();
-    await expect(sidebar ? page.locator('.brand-link') : organization).toBeHidden();
-    await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(1);
+    if (sidebar) await expect(organization).toBeVisible();
+    else await expect(organization).toBeHidden();
+    await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(sidebar ? 2 : 1);
     await expect(brand).toHaveAttribute('href', sidebar ? '/responsable' : '/');
-    if (!sidebar) await expect(brand).toHaveAccessibleName('TerriMaint — Accueil général');
+    await expect(headerBrand).toBeVisible();
+    await expect(headerBrand).toHaveAccessibleName('TerriMaint — Accueil général');
     for (const image of await brand.locator('img').all())
       await expect(image).toHaveAttribute('alt', '');
     const image = brand.locator('img:visible');
@@ -84,7 +86,9 @@ for (const route of ['/', '/agent', '/responsable']) {
     await page.getByRole('link', { name: 'Espace Responsable', exact: true }).click();
     await expect(page).toHaveURL('/responsable');
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('Tableau de bord');
-    await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(1);
+    await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(
+      page.viewportSize()!.width > 760 ? 2 : 1,
+    );
   });
 }
 
@@ -101,12 +105,11 @@ test('marque adaptée au redimensionnement et favicon fourni', async ({ page }) 
   await page.goto('/responsable');
   for (const width of [768, 760, 1440, 390]) {
     await page.setViewportSize({ width, height: 1024 });
-    await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(1);
-    await expect(
-      page.locator(
-        width > 760 ? '.organization' : '.brand-horizontal',
-      ),
-    ).toBeVisible();
+    await expect(page.locator('.brand-link:visible, .organization:visible')).toHaveCount(
+      page.viewportSize()!.width > 760 ? 2 : 1,
+    );
+    await expect(page.locator('.brand-horizontal')).toBeVisible();
+    await expect(page.locator('.brand-symbol')).toBeHidden();
   }
   for (const type of ['image/svg+xml', 'image/x-icon']) {
     const href = await page.locator(`link[rel="icon"][type="${type}"]`).getAttribute('href');

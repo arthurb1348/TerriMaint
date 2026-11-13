@@ -267,7 +267,7 @@ test('Lieu obligatoire : vide, espaces, intitulé, priorité, clavier et annulat
     body: await page.screenshot({ fullPage: true }),
     contentType: 'image/png',
   });
-  await main.getByRole('link', { name: 'Annuler', exact: true }).click();
+  await main.getByRole('link', { name: 'Retour aux signalements', exact: true }).click();
   await expect(page).toHaveURL(
     (url) =>
       url.pathname === '/agent/incidents' &&

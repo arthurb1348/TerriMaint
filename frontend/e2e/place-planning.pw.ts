@@ -109,7 +109,17 @@ for (const timezoneId of ['Europe/Paris', 'America/New_York']) {
           button.click();
         });
       await expect(main.getByRole('heading', { level: 1 })).toHaveText('Programmation terminée');
+      await expect(main.getByRole('heading', { level: 1 })).toBeFocused();
+      await expect(main.locator('.actions > a')).toHaveCount(2);
+      await expect(main.getByRole('link')).toHaveCount(2);
+      await expect(main.locator('.actions')).toHaveCSS('gap', '12px');
+      await page.keyboard.press('Tab');
+      await expect(main.getByRole('link', { name: 'Voir l’intervention', exact: true })).toBeFocused();
+      await page.keyboard.press('Tab');
       const back = main.getByRole('link', { name: 'Retour au signalement', exact: true });
+      await expect(back).toBeFocused();
+      await expect(back).toHaveCSS('outline-style', 'solid');
+      await info.attach('programmation-lieu-confirmation', { body: await page.screenshot(), contentType: 'image/png' });
       await expect(back).toHaveAttribute(
         'href',
         new URL(sourceUrl).pathname + new URL(sourceUrl).search,

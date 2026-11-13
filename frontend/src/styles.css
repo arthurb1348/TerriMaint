@@ -75,7 +75,8 @@ summary:focus-visible {
   text-decoration: none;
   overflow-wrap: anywhere;
   cursor: pointer;
-  scroll-margin-block: 24px calc(112px + env(safe-area-inset-bottom));
+  /* La réserve suit aussi l’agrandissement du texte de la barre Agent fixe. */
+  scroll-margin-block: 24px calc(max(112px, 7rem) + env(safe-area-inset-bottom));
 }
 .feature-page .page-action:is(:hover, :focus, :active, :visited) {
   text-decoration: none;
