@@ -136,7 +136,7 @@ test('Suppression, nouvel enregistrement et départ arrêtent le micro simulé',
   await expect(
     page.getByRole('button', { name: 'Vérifier le signalement', exact: true }),
   ).toBeDisabled();
-  await page.getByRole('link', { name: 'Annuler', exact: true }).click();
+  await page.getByRole('link', { name: 'Retour à la fiche matériel', exact: true }).click();
   await expect.poll(async () => (await stats(page)).stops).toBe(2);
   await page.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
   await expect(page.getByText('Aucune note vocale ajoutée.', { exact: true })).toBeVisible();

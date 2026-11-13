@@ -101,7 +101,7 @@ test('Retrait et réponses tardives simulées ne réintroduisent pas de position
   await respond(4, 2);
   await expect(main).toContainText('indisponible');
   await request.click();
-  await main.getByRole('link', { name: 'Annuler', exact: true }).click();
+  await main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true }).click();
   await respond(5);
   await main.getByRole('link', { name: 'Faire un signalement', exact: true }).click();
   await expect(main).toContainText('Aucune localisation ajoutée.');

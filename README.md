@@ -23,6 +23,11 @@ restent à développer par petites tâches. La PWA et le hors connexion
 ciblé ne sont pas encore implémentés. Voir les [décisions techniques](docs/decisions.md).
 L'endpoint de santé vérifie que l'API répond ; il ne vérifie pas de base de données.
 
+Les parcours frontend Agent/Responsable sont désormais partagés en mémoire dans l’onglet :
+signalements matériel/lieu, programmation, affectations, fin d’intervention et clôture.
+Le [guide oral de six minutes](docs/demo-oral.md) décrit la démo actuelle ; la
+[revue de stabilisation](docs/stabilization-review.md) précise les preuves et contrôles manuels restants.
+
 ## Installation
 
 Prérequis : Git, Python 3.12, [uv](https://docs.astral.sh/uv/getting-started/installation/),
@@ -141,7 +146,7 @@ arrêter Django puis cliquer sur le bouton pour voir « API indisponible ». Rel
 et vérifier à nouveau. Tester à 375 px et au clavier : contenu sans débordement,
 focus visible et libellé de statut lisible sans dépendre de la couleur.
 
-## Scanner Agent et Responsable (#44 intégrée, #76 en revue)
+## Scanner Agent et Responsable (#44 et #76 intégrées)
 
 `/agent/scanner` propose une lecture QR après clic et une
 saisie manuelle toujours disponible. Le QR contient seulement une référence connue
@@ -152,7 +157,7 @@ décodage testé et les limites. Sur téléphone, la caméra exige HTTPS avec ce
 reconnu ; une adresse LAN HTTP ne remplace pas le `localhost` de l’ordinateur.
 #43/PR #55 et #44/PR #56 sont intégrées.
 
-L’UX #72 est intégrée par #73. Dans #76 **en revue**, la carte d’accueil porte le libellé
+L’UX #72 est intégrée par #73. Depuis #76/PR #77, la carte d’accueil porte le libellé
 Scanner ; Plus Agent ajoute Scanner sans changer les quatre destinations principales.
 Responsable obtient `/responsable/scanner`, avec le même scanner et des fiches ouvertes
 sans changer d’espace. Carte et liens restent visibles sous 1200 px, masqués dès 1200 inclus ;
@@ -177,7 +182,7 @@ liens natifs, accueil Responsable simplifié, messages métier et erreurs QR ide
 Le [guide de revue](docs/pixel-ux.md) précise les choix et la procédure Pixel.
 
 Les photos **#57 sont intégrées par la PR #63** : sous 1200 px, Prendre une photo / Choisir des photos ;
-dans #76 en revue, dès 1200 px, Ajouter des photos seul ouvre le sélecteur multiple existant,
+depuis #76/PR #77, dès 1200 px, Ajouter des photos seul ouvre le sélecteur multiple existant,
 préparation locale séquentielle, 3 photos facultatives, entrées JPEG/PNG/WebP jusqu’à
 24 Mio / 24 MP / 8 192 px par axe, JPEG préparés jusqu’à 1 920 px et 1,5 Mio réellement
 contrôlés. Aperçu, récapitulatif et Modifier partagent la version préparée, puis #59

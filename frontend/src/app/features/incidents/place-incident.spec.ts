@@ -50,7 +50,7 @@ describe('Signalement sans équipement', () => {
     expect(content().querySelector('.equipment-summary')).toBeNull();
     expect(content().querySelector('[aria-labelledby="location-heading"]')?.textContent).not.toContain('matériel');
     await enter('place', 'Rue des Écoles');
-    await click('Annuler');
+    await click('Retour aux signalements');
     expect(TestBed.inject(Router).url).toBe(
       `/${space}/incidents?q=%C3%A9coles&priority=urgent&status=open`,
     );

@@ -16,7 +16,7 @@ for (const space of ['agent', 'responsable']) {
     await expect(main.getByRole('heading', { level: 1 })).toHaveText('Nouveau signalement');
     await expect(page).toHaveURL(url => url.pathname === `${base}/nouveau`);
     await main.getByLabel('Lieu (obligatoire)', { exact: true }).fill('Brouillon à abandonner');
-    await main.getByRole('link', { name: 'Annuler', exact: true }).click();
+    await main.getByRole('link', { name: 'Retour aux signalements', exact: true }).click();
     await expect(main.getByRole('heading', { level: 1 })).toHaveText('Signalements');
     expect(Object.fromEntries(new URL(page.url()).searchParams)).toEqual(query);
     await entry.click();
@@ -54,7 +54,7 @@ for (const space of ['agent', 'responsable']) {
     await main.getByRole('button', { name: 'Vérifier le signalement', exact: true }).click();
     await main.getByRole('button', { name: 'Envoyer le signalement', exact: true }).click();
     const returns = main.getByRole('link', { name: 'Retour aux signalements', exact: true });
-    await expect(returns).toHaveCount(2);
+    await expect(returns).toHaveCount(1);
     for (const link of await returns.all()) {
       const target = new URL((await link.getAttribute('href'))!, page.url());
       expect(target.pathname).toBe(base);

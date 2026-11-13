@@ -60,7 +60,7 @@ for (const space of ['agent', 'responsable']) {
     await expect(main.locator('#photos-errors')).toContainText('3 photos maximum');
     await info.attach('photos-formulaire', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' });
     expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
-    await main.getByRole('link', { name: 'Annuler', exact: true }).click();
+    await main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true }).click();
     await page.goto(`/${space}/incidents/nouveau/EQ-OUT-0002`);
     await expect(preview).toHaveCount(0);
     await chooser.setInputFiles(sample);

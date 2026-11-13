@@ -1,4 +1,4 @@
-# Signalement et intervention sur un lieu — #94 intégrée par #100, #95 en revue
+# Signalement et intervention sur un lieu — #94 intégrée par #100, #95 intégrée par #102
 
 ## Revue sur la preview
 
@@ -51,13 +51,15 @@ Le rôle présenté reste une convention frontend, sans autorisation serveur.
 
 ## Formulaire et navigation
 
-`/agent/incidents/nouveau` et `/responsable/incidents/nouveau` (#105, en revue) sont
+`/agent/incidents/nouveau` et `/responsable/incidents/nouveau` (#105, intégrée par #106) sont
 déclarées **avant** les détails `incidents/:id` de chaque espace. Sa donnée de
 route `placeIncident` active le mode sans matériel du **même** `IncidentDeclaration`.
 L’absence d’équipement sur une ancienne route ne déclenche jamais ce mode implicitement.
 Un identifiant matériel inconnu continue à afficher Équipement introuvable.
 
-Les liens Annuler et Retour aux signalements conservent les filtres de la liste d’origine.
+Le lien Retour aux signalements conserve les filtres de la liste d’origine. Depuis #48,
+il est seul en haut pendant la saisie et la vérification ; après confirmation il est
+groupé avec Voir le signalement, sans retour supplémentaire.
 Après confirmation, Voir le signalement ouvre sa fiche sans imposer ces filtres.
 Depuis un matériel, les destinations et `q` restent ceux de la fiche matériel. Les brouillons
 sont effacés au départ ; les réponses média/GPS tardives ne sont pas transférées à une
@@ -68,7 +70,7 @@ mobiles précisent Lieu ou Matériel. Le détail montre Lieu du signalement, et 
 Responsable utilise ce libellé au lieu d’afficher Matériel introuvable. Les tris, compteurs,
 filtres, états et relations des signalements sur matériel sont conservés.
 
-## Programmer une intervention sur le lieu (#95, en revue)
+## Programmer une intervention sur le lieu (#95, intégrée par #102)
 
 Depuis la fiche Responsable d’un signalement **Ouvert** ou **En cours**, choisir
 **Programmer une intervention**. Le formulaire partagé préremplit le titre et présente

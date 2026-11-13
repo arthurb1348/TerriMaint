@@ -60,7 +60,7 @@ for (const space of ['agent', 'responsable'] as const) {
     const viewIncident = main.getByRole('link', { name: 'Voir le signalement', exact: true });
     const incidentUrl = (await viewIncident.getAttribute('href'))!;
     await expect(
-      main.getByRole('link', { name: 'Retour à la fiche', exact: true }),
+      main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true }),
     ).toHaveAttribute('href', /q=.*broussailleuse/);
     await viewIncident.focus();
     await expect(viewIncident).toBeFocused();
