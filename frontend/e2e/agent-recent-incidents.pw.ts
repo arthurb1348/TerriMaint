@@ -10,7 +10,9 @@ test('Derniers signalements : deux créations du même jour, liens et clavier sa
   await expect(cards.nth(0)).toContainText('Bruit au freinage');
   await expect(cards.nth(1)).toContainText('Moteur qui cale');
   await expect(main.locator('.intervention-preview .preview-link')).toHaveCount(2);
-  await expect(main.getByRole('link', { name: 'Scanner', exact: true })).toHaveCount(1);
+  const scanner = main.locator('a.scanner-card');
+  await expect(scanner).toHaveCount(1);
+  await expect(scanner).toBeVisible({ visible: page.viewportSize()!.width < 1200 });
   await cards.first().focus();
   for (const link of [cards.first(), cards.nth(1), section.getByRole('link', { name: 'Nouveau signalement', exact: true }), section.getByRole('link', { name: 'Voir tous les signalements', exact: true })]) {
     await expect(link).toBeFocused();
