@@ -1616,6 +1616,8 @@ for (const space of ['agent', 'responsable']) {
     await expectPageAction(page, send, 'primary', space);
     await capture(page, info, 'ux-recapitulatif-signalement');
     await page.keyboard.press('Enter');
+    await expect(main.getByRole('heading', { level: 1 })).toHaveText('Signalement terminé');
+    await expect(main.getByRole('heading', { level: 1 })).toBeFocused();
     const completedBack = main.getByRole('link', { name: 'Retour à la fiche matériel', exact: true });
     await expect(completedBack.locator('span[aria-hidden="true"]')).toHaveText('←');
     await expectPageAction(page, completedBack, 'secondary', space);
