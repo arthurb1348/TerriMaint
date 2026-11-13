@@ -30,13 +30,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/responsable/responsable').then((m) => m.Responsable),
     title: 'Tableau de bord — TerriMaint',
   },
-  {
+  ...(['agent', 'responsable'] as const).map((space) => ({
     // Cette création sans matériel doit précéder le détail incidents/:id.
-    path: 'agent/incidents/nouveau',
+    path: `${space}/incidents/nouveau`,
     loadComponent: incidentDeclarationPage,
     title: 'Nouveau signalement — TerriMaint',
     data: { placeIncident: true },
-  },
+  })),
   ...(['agent', 'responsable'] as const).flatMap((space): Routes => [
     {
       path: `${space}/equipements/:id`,

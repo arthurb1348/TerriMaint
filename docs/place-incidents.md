@@ -2,7 +2,7 @@
 
 ## Revue sur la preview
 
-Dans le même onglet, ouvrir **Agent → Signalements → Nouveau signalement**.
+Dans le même onglet, ouvrir **Agent ou Responsable → Signalements → Nouveau signalement**.
 
 1. Vérifier sans lieu, puis avec des espaces seuls : refus et focus sur Lieu. Après un
    lieu valide, vérifier l’intitulé puis la priorité obligatoires. La description, les
@@ -51,7 +51,8 @@ Le rôle présenté reste une convention frontend, sans autorisation serveur.
 
 ## Formulaire et navigation
 
-`/agent/incidents/nouveau` est déclarée **avant** `/agent/incidents/:id`. Sa donnée de
+`/agent/incidents/nouveau` et `/responsable/incidents/nouveau` (#105, en revue) sont
+déclarées **avant** les détails `incidents/:id` de chaque espace. Sa donnée de
 route `placeIncident` active le mode sans matériel du **même** `IncidentDeclaration`.
 L’absence d’équipement sur une ancienne route ne déclenche jamais ce mode implicitement.
 Un identifiant matériel inconnu continue à afficher Équipement introuvable.

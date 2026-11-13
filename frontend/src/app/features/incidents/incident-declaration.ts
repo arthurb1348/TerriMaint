@@ -62,7 +62,7 @@ export class IncidentDeclaration {
   protected readonly search = computed(() => this.queryParams().get('q') ?? '');
   protected readonly returnLink = computed(() =>
     this.placeMode
-      ? ['/agent/incidents']
+      ? [`/${this.space}/incidents`]
       : this.equipment()
         ? [`/${this.space}/equipements`, this.equipment()!.id]
         : [`/${this.space}/equipements`],

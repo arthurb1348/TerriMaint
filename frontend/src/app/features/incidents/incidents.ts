@@ -21,7 +21,6 @@ import {
 export class Incidents {
   private readonly data = inject(DemoData);
   private readonly route = inject(ActivatedRoute);
-  protected readonly isAgent = this.route.snapshot.routeConfig?.path?.startsWith('agent/');
   private readonly router = inject(Router);
   private readonly document = inject(DOCUMENT);
   private readonly queryParams = toSignal(this.route.queryParamMap, {

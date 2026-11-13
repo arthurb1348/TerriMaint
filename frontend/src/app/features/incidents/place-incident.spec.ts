@@ -42,8 +42,8 @@ describe('Signalement sans équipement', () => {
     await harness.fixture.whenStable();
   }
 
-  it('ouvre le formulaire avant la route de détail depuis la liste Agent et conserve les filtres à l’annulation', async () => {
-    await harness.navigateByUrl('/agent/incidents?q=écoles&priority=urgent&status=open', Incidents);
+  it.each(['agent', 'responsable'])('ouvre le formulaire de %s avant le détail et conserve les filtres à l’annulation', async (space) => {
+    await harness.navigateByUrl(`/${space}/incidents?q=écoles&priority=urgent&status=open`, Incidents);
     await click('Nouveau signalement');
     expect(content().querySelector('h1')?.textContent?.trim()).toBe('Nouveau signalement');
     expect(content().querySelector('form')).not.toBeNull();
@@ -52,10 +52,10 @@ describe('Signalement sans équipement', () => {
     await enter('place', 'Rue des Écoles');
     await click('Annuler');
     expect(TestBed.inject(Router).url).toBe(
-      '/agent/incidents?q=%C3%A9coles&priority=urgent&status=open',
+      `/${space}/incidents?q=%C3%A9coles&priority=urgent&status=open`,
     );
-    await harness.navigateByUrl('/responsable/incidents', Incidents);
-    expect(content().textContent).not.toContain('Nouveau signalement');
+    await harness.navigateByUrl(`/${space}/incidents/nouveau`, IncidentDeclaration);
+    expect(content().querySelector('form')).not.toBeNull();
   });
 
   it.each(['', '   ', 'x'.repeat(201)])(
