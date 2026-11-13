@@ -1,5 +1,13 @@
 # Bilan du projet TerriMaint
 
+## Confidentialité de la démo — #97, en revue
+
+Base vérifiée `78f0f6f`, fusion de #103. Le pied de page commun donne accès à une
+page partagée sous chaque espace, qui décrit les permissions, la mémoire de l’onglet
+et le chargement explicite des tuiles OpenStreetMap. La portée reste la démo actuelle.
+Les preuves de code, requêtes observées, interceptions et résultats figurent dans la PR.
+
+
 ## Agents Responsable — #96, en revue
 
 Base vérifiée : `a8bad8d`, fusion de #102. `/responsable/agents` consulte les trois

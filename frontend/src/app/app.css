@@ -91,6 +91,11 @@ main {
   min-width: 0;
 }
 footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 24px;
   padding: 24px;
   color: var(--muted);
   font-size: 0.75rem;
@@ -183,4 +188,17 @@ footer {
     overflow: hidden;
     clip-path: inset(50%);
   }
+}
+
+footer a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px;
+  color: var(--green);
+  scroll-margin-block: 24px calc(112px + env(safe-area-inset-bottom));
+}
+footer a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
 }

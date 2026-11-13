@@ -122,6 +122,11 @@ export const routes: Routes = [
     title: `${label} — TerriMaint`,
     data: { label, description },
   })),
+  ...(['agent', 'responsable'] as const).map((space) => ({
+    path: `${space}/confidentialite`,
+    loadComponent: () => import('./features/privacy/privacy').then((m) => m.Privacy),
+    title: 'Confidentialité — TerriMaint',
+  })),
   // Les anciennes URL restent accessibles ; les nouvelles conservent le contexte de navigation.
   { path: 'equipements', redirectTo: 'agent/equipements', pathMatch: 'full' },
   { path: 'incidents', redirectTo: 'agent/incidents', pathMatch: 'full' },

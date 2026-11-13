@@ -25,5 +25,8 @@
   </header>
   <app-main-navigation [space]="space()" [landing]="landing()" />
   <main id="main-content" tabindex="-1"><router-outlet /></main>
-  <footer>TerriMaint · Du terrain à la décision.</footer>
+  <footer>
+    <span>TerriMaint · Du terrain à la décision.</span>
+    <a [routerLink]="['/', space(), 'confidentialite']">Confidentialité</a>
+  </footer>
 </div>
