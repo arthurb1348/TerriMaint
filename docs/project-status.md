@@ -1,5 +1,14 @@
 # Bilan du projet TerriMaint
 
+## Déclaration sur lieu côté Responsable — #105, en revue
+
+Base vérifiée `e578a33`, fusion de #104. La liste Responsable propose Nouveau signalement,
+avec la route spécifique avant le détail et le formulaire partagé en mode lieu.
+Annuler/Retour conservent ses filtres ; Voir le signalement ouvre la nouvelle fiche dans
+l’espace d’origine sans ces filtres. Les validations et les créations en mémoire restent
+communes aux deux espaces. Résultats et procédure téléphone dans la PR de #105.
+
+
 ## Confidentialité de la démo — #97, en revue
 
 Base vérifiée `78f0f6f`, fusion de #103. Le pied de page commun donne accès à une
