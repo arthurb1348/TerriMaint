@@ -129,7 +129,7 @@ describe('Signalement sans équipement', () => {
       content().querySelector('#dashboard-incidents-title')?.parentElement?.textContent,
     ).toContain(created.place);
     await harness.navigateByUrl(`/responsable/incidents/${created.id}`, IncidentDetail);
-    expect(content().querySelector('.planning-link')).toBeNull();
+    expect(content().querySelector('.planning-link')).not.toBeNull();
     await click('Clôturer le signalement');
     await click('Annuler');
     expect(data.getIncident(created.id)?.status).toBe('open');
@@ -142,7 +142,7 @@ describe('Signalement sans équipement', () => {
       InterventionPlanning,
     );
     expect(content().querySelector('h1')?.textContent).toBe(
-      'Programmation sur un lieu indisponible',
+      'Signalement clôturé',
     );
     expect(content().querySelector('form')).toBeNull();
     await harness.navigateByUrl(`/agent/incidents/${created.id}`, IncidentDetail);

@@ -1,4 +1,4 @@
-# Signalement sans équipement — #94, en revue
+# Signalement et intervention sur un lieu — #94 intégrée par #100, #95 en revue
 
 ## Revue sur la preview
 
@@ -67,13 +67,51 @@ mobiles précisent Lieu ou Matériel. Le détail montre Lieu du signalement, et 
 Responsable utilise ce libellé au lieu d’afficher Matériel introuvable. Les tris, compteurs,
 filtres, états et relations des signalements sur matériel sont conservés.
 
-## Limite volontaire : interventions et carte
+## Programmer une intervention sur le lieu (#95, en revue)
 
-La programmation sur un lieu reste réservée à **#95**. Aucun lien de programmation
-n’est présenté sur ces fiches. Une URL directe explique l’indisponibilité sans formulaire ;
-le service refuse aussi une programmation de ce signalement, même avec un matériel de repli.
-La carte de [#93](incident-map.md) est réutilisée telle quelle : aucune nouvelle commande
-de zoom ni pose manuelle du point. Les coordonnées proviennent uniquement de la position jointe.
+Depuis la fiche Responsable d’un signalement **Ouvert** ou **En cours**, choisir
+**Programmer une intervention**. Le formulaire partagé préremplit le titre et présente
+le lieu exact du signalement. Titre non blanc (120 caractères au plus), agent connu
+choisi explicitement et date calendaire locale valide (aujourd’hui ou après) restent
+obligatoires ; les consignes restent facultatives, limitées à 2000 caractères si renseignées.
+Le lieu écrit suffit : aucune position GPS ni pièce jointe n’est requise.
+
+Vérifier, puis Modifier conserve la saisie. Le contexte du récapitulatif montre le lieu.
+Confirmer crée une seule intervention **Planifiée** et conserve le statut du signalement.
+**Voir l’intervention** ouvre sa nouvelle fiche : lieu, agent et date, lien vers le
+signalement, aucun lien Matériel. **Voir le signalement** retrouve les filtres d’origine,
+puis Retour aux signalements retrouve la liste filtrée. Le lien d’une intervention déjà
+liée sur la fiche transmet aussi ce contexte (`fromIncident`, `q`, `priority`, `status`).
+Les critères du signalement ne deviennent pas des filtres d’interventions.
+
+`Intervention` porte soit un `equipmentId` valide avec un `incidentId` facultatif,
+soit un `incidentId` obligatoire sans équipement. Aucun champ `place` n’est copié :
+le signalement est la seule source du lieu. Liste/recherche et détail partagés, ainsi
+que l’aperçu Responsable, retrouvent ce texte via `DemoData.getIncident`.
+
+`DemoData.canPlanIntervention` centralise l’admissibilité pour le service et l’interface.
+`createIntervention` la revérifie avant tout identifiant ou mutation : origine connue,
+statut Ouvert/En cours, matériel existant ou lieu non blanc borné, sans deux origines
+simultanées ni matériel de repli pour un lieu. Une URL directe invalide n’affiche aucun
+formulaire actif. Une clôture pendant le récapitulatif empêche aussi la confirmation.
+
+### Scénario court téléphone
+
+1. Dans **Agent → Signalements → Nouveau signalement**, saisir **Rue des Écoles, entrée nord**,
+   **Barrière endommagée**, priorité **Urgente** ; laisser GPS et médias vides. Confirmer.
+2. Sans recharger, changer d’espace vers **Responsable**, ouvrir Signalements, rechercher
+   **ÉCOLES**, filtrer Urgente/Ouvert, ouvrir la fiche et programmer pour **Camille Durand**
+   à la date locale du jour. Vérifier le lieu, Modifier puis confirmer.
+3. Ouvrir Voir l’intervention : **Planifiée**, lieu visible et aucun lien Matériel.
+   Voir le signalement : statut toujours **Ouvert**, intervention liée ; revenir à la
+   liste et retrouver la recherche et les deux filtres.
+4. Dans le même onglet, changer vers **Agent → Interventions**, rechercher **ÉCOLES** et
+   ouvrir l’affectation de Camille : même lieu, même date, retour au signalement fonctionnel.
+5. Rejouer un signalement sur équipement puis **Matériel → Programmer une intervention** :
+   matériel et liens présents, retour Matériel avec sa recherche. Recharger perd les créations.
+
+La carte de [#93](incident-map.md) reste inchangée : les coordonnées proviennent uniquement
+de la position jointe, sans zoom ni pose manuelle du point.
 
 ## Contrôles et points à comprendre
 
@@ -85,16 +123,18 @@ npm run lint
 npm test
 npm run build
 npx playwright install chromium
-npm run test:responsive -- place-incident.pw.ts shared-memory.pw.ts location.pw.ts
+npm run test:responsive -- place-planning.pw.ts place-incident.pw.ts shared-memory.pw.ts equipment-planning.pw.ts incident-interventions.pw.ts
 ```
 
-Les nouveaux cas du service et `place-incident.spec.ts` couvrent le modèle, les refus sans
+Les cas du service, `place-planning.spec.ts` et `place-incident.spec.ts` couvrent le modèle, les refus sans
 mutation, les bornes, les routes, les retours, le récapitulatif, Modifier, la recherche,
 l’aperçu, la consultation partagée et la clôture. Un ancien fixture de formulaire photo
 inclut désormais la valeur vide du contrôle Lieu ; ses assertions de préparation et
 d’annulation sont conservées.
 
-`place-incident.pw.ts` vérifie le parcours complet dans les quatre formats existants,
+`place-planning.pw.ts` vérifie la programmation avec lieu écrit seul, ses retours, les refus
+en URL directe et la consultation par l’agent affecté, dans les quatre formats et les
+fuseaux Paris/New York. `place-incident.pw.ts` vérifie le parcours complet dans les quatre formats existants,
 avec GPS absent/refusé/joint. Il utilise une vraie image préparée et un vrai enregistrement
 issu d’une source sonore synthétique ; il contrôle leur conservation et leur lecture après
 confirmation. Le fond est une réponse locale interceptée, sans disponibilité OSM requise.

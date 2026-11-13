@@ -1,6 +1,6 @@
 # Guide des fichiers et configurations
 
-## Signalement sur un lieu #94 — en revue
+## Signalement sur un lieu #94 — intégrée par #100
 
 `Incident` distingue une référence matériel et un lieu écrit avec une union exclusive.
 `DemoData.createIncident` refuse une origine absente/ambiguë et toute référence matériel
@@ -12,7 +12,17 @@ Le contenu est conservé. L’état partagé, les médias et la clôture gardent
 Signalements. Les routes depuis un matériel conservent leurs destinations et leur recherche.
 `incidents` recherche et affiche aussi le lieu ; `incident-detail` et l’aperçu Responsable
 le présentent sans matériel fictif. La carte existante lit les coordonnées jointes.
-L’interface et `createIntervention` refusent la programmation sur un lieu, réservée à #95.
+#95, en revue, réutilise la programmation depuis un lieu. `Intervention` est une union :
+équipement avec signalement facultatif, ou signalement obligatoire sans équipement.
+Le lieu n’est jamais copié : les vues le lisent sur le signalement d’origine.
+`DemoData.canPlanIntervention` vérifie origine, exclusivité et statut Ouvert/En cours ;
+le lien, les étapes du formulaire et `createIntervention` utilisent cette même règle.
+Le service revalide avant mutation, même avec un matériel de repli ou une origine inconnue.
+Après confirmation, `consultationQuery` transmet `fromIncident` et les filtres du
+signalement au détail ; `incidentQuery` les réinterprète uniquement pour le retour à
+cette origine. Les filtres d’interventions restent distincts. Les listes partagées et
+l’aperçu Responsable résolvent aussi le lieu ; le détail omet tout lien Matériel absent.
+`place-planning.spec.ts` / `e2e/place-planning.pw.ts` couvrent création, refus et retours.
 Voir [le guide de revue, les règles et les contrôles](place-incidents.md).
 
 ## Carte de la fiche partagée #93 — intégrée par #99
@@ -687,17 +697,18 @@ sans enregistrement depuis ce formulaire.
 ### Route, contexte et circulation des données
 
 Le flux est **lien du détail Responsable → `incidentId` dans la route → recherche du
-signalement → `equipmentId` → matériel existant → formulaire → récapitulatif → confirmation**.
+signalement → matériel via `equipmentId` ou lieu écrit du signalement → formulaire →
+récapitulatif → confirmation**.
 `/responsable/interventions/nouvelle/:incidentId` charge un composant standalone différé,
 `InterventionPlanning`. `incidentId` est une chaîne d'identification, pas le signalement
-lui-même. `toSignal` suit le paramètre et `computed` retrouve les objets dans `DEMO_INCIDENTS`
-et `DEMO_EQUIPMENT`. Le HTML lit leur contexte sans dupliquer leurs données dans une autre
+lui-même. `toSignal` suit le paramètre et `computed` retrouve le signalement dans `DemoData`
+et le matériel éventuel dans `DEMO_EQUIPMENT`. Le HTML lit leur contexte sans dupliquer leurs données dans une autre
 source : référence/intitulé/priorité du signalement et nom/id/emplacement du matériel.
 
 `IncidentDetail` propose un vrai lien pour le contexte Responsable et les statuts Ouvert
 ou En cours ; Agent conserve ses liens existants. Le cas Clôturé affiche une explication,
 sans bouton désactivé artificiel. Le composant de programmation contrôle aussi les accès
-directs : origine inconnue, matériel absent ou clôture empêchent tout formulaire actif.
+directs : origine inconnue/incohérente, matériel absent sans lieu valide ou clôture empêchent tout formulaire actif.
 Ces conditions de présentation ne sont pas des permissions : les routes restent publiques.
 
 Le lien transmet `q`, `priority`, `status` avec `incident-filters.ts`, réutilisé au retour.
@@ -856,7 +867,9 @@ actualiser la fiche et ses relations quand Angular réutilise le composant ; l'�
 ne conserve aucun ancien contenu. Des consignes absentes/blanches deviennent **Non renseignées**
 à l'affichage. Retour aux interventions vise une URL explicite avec les critères connus,
 même après accès direct. Voir le signalement et Voir le matériel visent le même espace
-Responsable **sans paramètres de recherche**, pour éviter de donner un autre sens à `q`.
+Responsable. Le lien Matériel ne transmet pas de recherche issue d’un signalement.
+Depuis #95, un contexte `fromIncident` correspondant à l’origine permet au lien Signalement
+de retrouver ses critères ; il empêche de réutiliser `q` comme recherche d’interventions.
 
 La route `nouvelle/:incidentId` reste avant le détail variable et garde sa simulation en
 mémoire. Les filtres de retour de cette programmation restent ceux des signalements, avec

@@ -151,14 +151,24 @@ export class DemoData {
     return incident;
   }
 
+  canPlanIntervention(origin: { readonly incidentId?: string; readonly equipmentId?: string }): boolean {
+    if (origin.incidentId === undefined) {
+      return DEMO_EQUIPMENT.some((item) => item.id === origin.equipmentId);
+    }
+    const incident = this.getIncident(origin.incidentId);
+    if (!incident || (incident.status !== 'open' && incident.status !== 'in-progress')) return false;
+    if (incident.equipmentId !== undefined) {
+      return incident.place === undefined &&
+        DEMO_EQUIPMENT.some((item) => item.id === incident.equipmentId) &&
+        (origin.equipmentId === undefined || origin.equipmentId === incident.equipmentId);
+    }
+    return origin.equipmentId === undefined && Boolean(incident.place?.trim()) &&
+      incident.place!.length <= INCIDENT_PLACE_LIMIT;
+  }
+
   createIntervention(draft: InterventionDraft): Intervention | undefined {
-    const incident = this.getIncident(draft.incidentId);
-    const equipmentId = incident?.equipmentId ?? draft.equipmentId;
     if (
-      (draft.incidentId !== undefined &&
-        (!incident || !incident.equipmentId || incident.status === 'closed')) ||
-      (incident && draft.equipmentId !== undefined && draft.equipmentId !== incident.equipmentId) ||
-      !DEMO_EQUIPMENT.some((item) => item.id === equipmentId) ||
+      !this.canPlanIntervention(draft) ||
       !DEMO_AGENTS.some((item) => item.id === draft.agentId) ||
       !draft.title.trim() ||
       draft.title.length > 120 ||
@@ -167,10 +177,13 @@ export class DemoData {
     )
       return undefined;
 
+    const incident = this.getIncident(draft.incidentId);
+    const equipmentId = incident?.equipmentId ?? draft.equipmentId;
     const intervention: Intervention = Object.freeze({
       id: `INT-LOCAL-${this.sessionId}-${++this.interventionSequence}`,
-      equipmentId: equipmentId!,
-      ...(incident ? { incidentId: incident.id } : {}),
+      ...(equipmentId !== undefined
+        ? { equipmentId, ...(incident ? { incidentId: incident.id } : {}) }
+        : { incidentId: incident!.id }),
       title: draft.title,
       instructions: draft.instructions.trim() ? draft.instructions : undefined,
       agentId: draft.agentId,

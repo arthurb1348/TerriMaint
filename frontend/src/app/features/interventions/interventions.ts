@@ -54,6 +54,7 @@ export class Interventions {
       return {
         intervention,
         equipment: DEMO_EQUIPMENT.find((item) => item.id === intervention.equipmentId),
+        place: this.data.getIncident(intervention.incidentId)?.place,
         agent: DEMO_AGENTS.find((item) => item.id === intervention.agentId),
       };
     }),
@@ -62,10 +63,10 @@ export class Interventions {
     const { q, status, assignee } = this.filters();
     const search = q.trim().toLowerCase();
     return this.rows().filter(
-      ({ intervention, equipment }) =>
+      ({ intervention, equipment, place }) =>
         (!status || intervention.status === status) &&
         (!assignee || intervention.agentId === assignee) &&
-        [intervention.id, intervention.title, equipment?.id ?? '', equipment?.name ?? ''].some(
+        [intervention.id, intervention.title, equipment?.id ?? '', equipment?.name ?? '', place ?? ''].some(
           (value) => value.toLowerCase().includes(search),
         ),
     );

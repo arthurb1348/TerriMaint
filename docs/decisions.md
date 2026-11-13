@@ -1,6 +1,24 @@
 # Décisions techniques et métier
 
-## 2026-11-08 — Signalement sur un lieu sans équipement (#94, en revue)
+## 2026-11-13 — Intervention sur le lieu du signalement (#95, en revue)
+
+Réutiliser la programmation Responsable depuis un signalement Ouvert/En cours.
+Une intervention sans équipement conserve obligatoirement son `incidentId` ; le
+signalement reste la seule source du lieu, affiché dans le formulaire, le récapitulatif,
+la consultation et les listes/recherches des deux espaces. Aucun équipement fictif ni
+lien Matériel absent. Les règles de titre, agent et date calendaire locale restent communes.
+
+Centraliser l’admissibilité dans `DemoData.canPlanIntervention`, l’utiliser dans les
+liens/formulaires et la revérifier dans `createIntervention` avant toute création.
+Refuser origines inconnues, clôturées, ambiguës ou incohérentes, même en URL directe
+ou avec un matériel de repli. Confirmer crée **Planifiée** sans changer le statut du
+signalement, conformément à la règle actuelle de programmation (#59).
+Le contexte `fromIncident` conserve les filtres de retour sans les appliquer à la liste
+des interventions. Les parcours matériel restent disponibles. État en mémoire dans
+le même onglet uniquement ; aucun nouveau stockage, backend, composant ou dépendance.
+Voir [la procédure de revue](place-incidents.md#programmer-une-intervention-sur-le-lieu-95-en-revue).
+
+## 2026-11-08 — Signalement sur un lieu sans équipement (#94, intégrée par #100)
 
 Depuis Signalements Agent, réutiliser `IncidentDeclaration` via une route spécifique
 avant le détail par identifiant. Exiger un lieu écrit non blanc, limité à 200 caractères,
@@ -10,8 +28,8 @@ Le service revalide cette exclusivité ; une référence matériel inconnue rest
 
 Afficher et rechercher le lieu dans la consultation partagée et l’aperçu Responsable.
 Réutiliser la carte #93, sans zoom ni point manuel ajoutés. Garder la clôture existante
-et les retours depuis Matériel. La programmation sur un lieu reste à #95 ; le service
-la refuse également même si un appel fournit un matériel de repli. Aucun backend métier,
+et les retours depuis Matériel. #95 étend la programmation aux lieux selon la décision
+ci-dessus ; un matériel de repli reste refusé pour un signalement sur lieu. Aucun backend métier,
 stockage persistant ou changement de dépendance. Voir [le guide de revue](place-incidents.md).
 
 ## 2026-11-08 — Carte de la fiche partagée (#93, en revue)

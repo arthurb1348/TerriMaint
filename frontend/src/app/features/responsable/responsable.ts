@@ -75,7 +75,11 @@ export class Responsable {
       .slice(0, 3),
   );
 
-  protected equipmentName(id: string): string {
+  protected interventionPlace(incidentId: string | undefined): string | undefined {
+    return this.data.getIncident(incidentId)?.place;
+  }
+
+  protected equipmentName(id: string | undefined): string {
     return DEMO_EQUIPMENT.find((item) => item.id === id)?.name ?? 'Matériel introuvable';
   }
 }
