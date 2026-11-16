@@ -257,7 +257,7 @@ for (const space of ['agent', 'responsable']) {
     await expect(page.locator('.photo-gallery img')).toHaveCount(2);
     await expect(page.locator('#photos-errors')).toContainText('image trop grande');
     await expect(page.getByLabel('Intitulé', { exact: true })).toHaveValue('Fissure à examiner');
-    await page.getByRole('link', { name: 'Annuler', exact: true }).click();
+    await page.getByRole('link', { name: 'Retour à la fiche matériel', exact: true }).click();
     await page.goto(`/${space}/incidents/nouveau/EQ-OUT-0002`);
     await expect(page.locator('.photo-gallery img')).toHaveCount(0);
   });

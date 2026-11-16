@@ -1,6 +1,31 @@
 # Décisions techniques et métier
 
-## 2026-11-13 — Intervention sur le lieu du signalement (#95, en revue)
+## 2026-11-13 — Finitions de la démonstration (#48, en revue)
+
+Conserver un seul retour contextuel en haut de la déclaration et de sa vérification,
+en retirant Annuler de même destination et même effet. Les confirmations de déclaration
+et de programmation regroupent ouverture de la nouvelle fiche et retour à l’origine
+avec les actions flex existantes. Supprimer les répétitions sans supprimer les erreurs,
+les consignes utiles ou les confirmations. Les limites de mémoire restent expliquées
+dans le README, Confidentialité et le [guide oral de six minutes](demo-oral.md).
+
+À la demande explicite de #48, l’en-tête Responsable présente le logo horizontal aussi
+sur ordinateur, en plus de la marque de sidebar. Cette adaptation remplace le choix de
+masquage du bandeau desktop décrit dans les notes antérieures. Tableaux : centrer les
+cellules verticalement sans changer la présentation en cartes ni les seuils.
+
+Constat des règles déjà intégrées (#82/#84/#88) : terminer une intervention En cours
+assignée à Camille ne clôture pas son signalement. La clôture Responsable accepte un
+signalement Ouvert/En cours, indépendamment des interventions actives ; elle bloque toute
+nouvelle programmation depuis cette origine. Créer une intervention produit Planifiée et
+conserve le statut courant du signalement. L’intention du 6 novembre de bloquer la clôture
+sur une intervention active n’a pas été retenue dans le code livré et ne doit plus être
+présentée comme acquise. Cette passe ne change aucune de ces règles.
+
+Voir [la revue et ses limites](stabilization-review.md) ; les preuves CI et les validations
+sur appareil réel restent distinctes. Aucun ajout de backend, stockage ou dépendance.
+
+## 2026-11-13 — Intervention sur le lieu du signalement (#95, intégrée par #102)
 
 Réutiliser la programmation Responsable depuis un signalement Ouvert/En cours.
 Une intervention sans équipement conserve obligatoirement son `incidentId` ; le
@@ -16,7 +41,7 @@ signalement, conformément à la règle actuelle de programmation (#59).
 Le contexte `fromIncident` conserve les filtres de retour sans les appliquer à la liste
 des interventions. Les parcours matériel restent disponibles. État en mémoire dans
 le même onglet uniquement ; aucun nouveau stockage, backend, composant ou dépendance.
-Voir [la procédure de revue](place-incidents.md#programmer-une-intervention-sur-le-lieu-95-en-revue).
+Voir [la procédure de revue](place-incidents.md#programmer-une-intervention-sur-le-lieu-95-intégrée-par-102).
 
 ## 2026-11-08 — Signalement sur un lieu sans équipement (#94, intégrée par #100)
 
@@ -32,7 +57,7 @@ et les retours depuis Matériel. #95 étend la programmation aux lieux selon la 
 ci-dessus ; un matériel de repli reste refusé pour un signalement sur lieu. Aucun backend métier,
 stockage persistant ou changement de dépendance. Voir [le guide de revue](place-incidents.md).
 
-## 2026-11-08 — Carte de la fiche partagée (#93, en revue)
+## 2026-11-08 — Carte de la fiche partagée (#93, intégrée par #99)
 
 Réutiliser les coordonnées jointes et `LocationSummary`, sans acquisition GPS à la
 consultation. Charger Leaflet 1.9.4 et le fond raster OpenStreetMap uniquement après
@@ -152,7 +177,8 @@ Décision d’Arthur, documentée sans implémentation dans #59 :
 - Cela ne clôture pas automatiquement le signalement ; une intervention terminée reste consultable.
 - Le responsable choisit de clôturer le signalement ou de le garder En cours et de créer
   une nouvelle intervention si le problème persiste.
-- La clôture est empêchée tant qu’une intervention liée reste active.
+- Intention initiale : empêcher la clôture tant qu’une intervention liée reste active.
+  Non retenue dans #84 ; voir le constat actuel du 13 novembre en tête de document.
 
 #59 conserve uniquement les statuts initiaux Ouvert / Planifiée des créations. Aucune action
 « Mes interventions », transition d’état, GPS, audio, logo, footer ou ajustement photo PC ajouté

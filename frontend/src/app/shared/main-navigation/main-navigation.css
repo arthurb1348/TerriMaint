@@ -149,8 +149,13 @@ img {
   }
   .navigation:not(.sidebar) nav > a,
   .more-toggle {
-    white-space: nowrap;
-    overflow-wrap: normal;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+  }
+  .navigation:not(.sidebar) nav > a > span:last-child,
+  .more-toggle > span {
+    max-width: 100%;
   }
   .more-group {
     display: flex;

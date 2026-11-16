@@ -9,7 +9,7 @@ présentation, les exports PNG et les variantes inutilisées ne sont pas intégr
 | Fichier dans `frontend/public/` | Usage |
 | --- | --- |
 | `brand/terrimaint-symbol.svg` | Variante compacte conservée pour le bandeau desktop étroit ; cible minimale 44 × 44 px |
-| `brand/terrimaint-logo-horizontal.svg` | En-tête mobile à 32 px de haut ; desktop à 38 px lorsque le bandeau dispose d’au moins 640 px de contenu |
+| `brand/terrimaint-logo-horizontal.svg` | En-tête mobile à 32 px ; Responsable tablette/desktop à 38 px ; ailleurs desktop à 38 px dès 640 px de contenu |
 | `brand/terrimaint-mark-white.svg` | T seul, 28 × 28 px dans la sidebar Responsable verte |
 | `favicon.svg`, `favicon.ico` | Icône navigateur, avec repli ICO 16/32/48 px dans `src/index.html` |
 | `brand/README.md`, `brand/Inter-OFL.txt` | Provenance originale et licence Inter du pack |
@@ -29,14 +29,15 @@ répéter TerriMaint ; le titre du document et les libellés des pages métier s
 
 `app.css` affiche le logo horizontal jusqu’à 760 px de fenêtre, dans les deux
 espaces. Le changement d’espace garde son nom accessible avec une icône visible.
-Sur desktop, une container query conserve le choix de variante selon la largeur
-disponible du bandeau. Les cibles restent sur la même ligne ; le titre de page
+Sur desktop Agent/accueil général, une container query choisit la variante selon la largeur
+disponible. Depuis #48, Responsable garde toujours le logo horizontal dans le bandeau,
+aligné avec le menu de changement d’espace. Les cibles restent sur la même ligne ; le titre de page
 figure uniquement dans le contenu. Les dimensions des images sont réservées pour éviter
 un décalage à leur chargement. Les contours de focus existants sont conservés.
 
-Dès 761 px de fenêtre, la sidebar Responsable porte seule l’identité : T blanc sans
+Dès 761 px de fenêtre, la sidebar Responsable porte également l’identité : T blanc sans
 cercle, texte TerriMaint / Espace Responsable et lien `/responsable` conservés.
-Sous ce seuil, cette marque disparaît et celle de l’en-tête devient visible. Les
+Sous ce seuil, la marque de sidebar disparaît ; celle de l’en-tête reste visible. Les
 icônes métier, cartes, formulaires, scanner et footer ne reçoivent aucun logo.
 Aucun comportement métier, stockage, manifeste PWA ou service worker n’est ajouté.
 
@@ -53,7 +54,8 @@ Les quatre formats et les titres longs figurent aussi dans les pièces jointes d
 
 1. Ouvrir la preview indiquée en tête de PR et comparer `/deployment.json` au SHA annoncé.
 2. Accueil général, Agent et Responsable : comparer 320 × 568, 390 × 844,
-   768 × 1024 et 1440 × 1024. Vérifier une marque visible, proportions, absence
+   768 × 1024 et 1440 × 1024. Vérifier la marque de l’en-tête et, côté Responsable dès
+   761 px, celle de la sidebar ; proportions, absence
    de débordement, titres longs et passage 760/761 px sans recharge.
 3. Utiliser Tab/Entrée : lien d’évitement, marque, changement d’espace et menu
    Responsable. Le lien de marque de l’en-tête retourne à l’accueil général ;
